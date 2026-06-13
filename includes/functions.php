@@ -26,7 +26,7 @@ function getUserByUsername($pdo, $username) {
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':username', $username);
     $stmt->execute();
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function insertUser($pdo, $username, $email, $senha) {
@@ -36,7 +36,31 @@ function insertUser($pdo, $username, $email, $senha) {
     $stmt->bindParam(':username', $username);
     $stmt->bindParam(':email', $email);
     $stmt->bindParam(':senha', $senha);
+    return $stmt->execute();
+}
+
+function getTransactionsByUserIdAndDate($pdo, $idUsuario, $dataInicial, $dataFinal) {
+    $sql = "SELECT * FROM transacoes WHERE id_usuario = :idUsuario AND
+    data_transacao BETWEEN :dataInicial AND :dataFinal";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':idUsuario', $idUsuario);
+    $stmt->bindParam(':dataInicial', $dataInicial);
+    $stmt->bindParam(':dataFinal', $dataFinal);
     $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function insertTransacao($pdo, $idUsuario, $tipo, $descricao, $valor, $categoria, $data_transacao) {
+    $sql = "INSERT INTO transacoes (id_usuario, tipo, descricao, valor, categoria, data_transacao) VALUES
+    (:idUsuario, :tipo, :descricao, :valor, :categoria, :data_transacao)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':idUsuario', $idUsuario);
+    $stmt->bindParam(':tipo', $tipo);
+    $stmt->bindParam(':descricao', $descricao);
+    $stmt->bindParam(':valor', $valor);
+    $stmt->bindParam(':categoria', $categoria);
+    $stmt->bindParam(':data_transacao', $data_transacao);
+    return $stmt->execute();
 }
 
 ?>

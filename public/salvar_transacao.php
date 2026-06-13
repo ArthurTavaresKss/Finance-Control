@@ -1,0 +1,35 @@
+<?php
+    require_once __DIR__ . '/../includes/auth.php';
+    require_once __DIR__ . '/../config/db.php';
+    require_once __DIR__ . '/../includes/functions.php';
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $tipo = sanitizeInput($_POST['tipo']);
+        $descricao = sanitizeInput($_POST['descricao']);
+        $valor = sanitizeInput($_POST['valor']);
+        $categoria = sanitizeInput($_POST['categoria']);
+        $data_transacao = sanitizeInput($_POST['data_transacao']);
+        $idUsuario = $_SESSION['idUsuario'];
+
+        $sucesso = insertTransacao($pdo, $idUsuario, $tipo, $descricao, $valor, $categoria, $data_transacao);
+    } else {
+        redirect("index.php");
+    }
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Transação</title>
+</head>
+<body>
+    <?php if ($sucesso): ?>
+        <p style="color:green;">Transação cadastrada com sucesso!</p>
+        <a href="index.php">Voltar</a>
+    <?php else: ?>
+        <p style="color:red;">Erro no cadastro da transação. Tente novamente.</p>
+        <a href="index.php">Voltar</a>
+    <?php endif ?>
+</body>
+</html>
