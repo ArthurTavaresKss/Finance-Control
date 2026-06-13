@@ -14,7 +14,7 @@ function isLoggedIn() {
 }
 
 function getUserByEmail($pdo, $email) {
-    $sql = "SELECT * FROM usuarios WHERE email = :email";
+    $sql = "SELECT * FROM usuarios WHERE email = :email AND ativo = 1";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':email', $email);
     $stmt->execute();
@@ -22,7 +22,7 @@ function getUserByEmail($pdo, $email) {
 }
 
 function getUserByUsername($pdo, $username) {
-    $sql = "SELECT * FROM usuarios WHERE username = :username";
+    $sql = "SELECT * FROM usuarios WHERE username = :username AND ativo = 1";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':username', $username);
     $stmt->execute();
