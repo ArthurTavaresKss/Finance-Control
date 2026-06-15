@@ -17,6 +17,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finance Control</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <script src="assets/js/script.js"></script>
 </head>
 <body>
     <h1>Finance Control</h1>
@@ -110,7 +111,7 @@
                         }
                         ?>
 
-                        <option value="nova_categoria">+ Adicionar nova categoria...</option>
+                        <option value="nova_categoria">+ Adicionar nova categoria..</option>
                     </select>
 
                     <!-- Campo para digitar nova categoria (fica escondido no início) -->
@@ -128,20 +129,4 @@
             </form>
         </dialog>
 </body>
-<script>
-function mostrarCampoNovaCategoria() {
-    const select = document.getElementById('categoria');
-    const inputNova = document.getElementById('nova_categoria');
-
-    if (select.value === 'nova_categoria') {
-        inputNova.style.display = 'block';
-        inputNova.required = true;
-        select.required = false;
-    } else {
-        inputNova.style.display = 'none';
-        inputNova.required = false;
-        select.required = true;
-    }
-}
-</script>
 </html>

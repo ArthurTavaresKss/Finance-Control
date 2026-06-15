@@ -58,6 +58,15 @@ function getTransactionsByUserId($pdo, $idUsuario) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function getTransactionByUserIdAndId($pdo, $idUsuario, $idTransacao) {
+    $sql = "SELECT * FROM transacoes WHERE id_usuario = :idUsuario AND id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':idUsuario', $idUsuario);
+    $stmt->bindParam(':id', $idTransacao);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
 function insertTransacao($pdo, $idUsuario, $tipo, $descricao, $valor, $categoria, $data_transacao) {
     $sql = "INSERT INTO transacoes (id_usuario, tipo, descricao, valor, categoria, data_transacao) VALUES
     (:idUsuario, :tipo, :descricao, :valor, :categoria, :data_transacao)";
@@ -68,6 +77,35 @@ function insertTransacao($pdo, $idUsuario, $tipo, $descricao, $valor, $categoria
     $stmt->bindParam(':valor', $valor);
     $stmt->bindParam(':categoria', $categoria);
     $stmt->bindParam(':data_transacao', $data_transacao);
+    return $stmt->execute();
+}
+
+function AlterTransactionById($pdo, $id, $idUsuario, $tipo, $descricao, $valor, $categoria, $data_transacao) {
+    $sql = "UPDATE transacoes 
+            SET 
+                tipo = :tipo,
+                descricao = :descricao,
+                valor = :valor,
+                categoria = :categoria,
+                data_transacao = :data_transacao
+            WHERE id = :id 
+              AND id_usuario = :idUsuario";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':tipo', $tipo);
+    $stmt->bindParam(':descricao', $descricao);
+    $stmt->bindParam(':valor', $valor);
+    $stmt->bindParam(':categoria', $categoria);
+    $stmt->bindParam(':data_transacao', $data_transacao);
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->bindParam(':idUsuario', $idUsuario, PDO::PARAM_INT);
+    return $stmt->execute();
+}
+
+function deleteTransactionByUserIdAndId($pdo, $idUsuario, $idTransacao) {
+    $sql = "DELETE FROM transacoes WHERE id_usuario = :idUsuario AND id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':idUsuario', $idUsuario);
+    $stmt->bindParam(':id', $idTransacao);
     return $stmt->execute();
 }
 

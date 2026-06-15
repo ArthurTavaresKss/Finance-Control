@@ -29,10 +29,10 @@
 <body>
     <?php if ($sucesso): ?>
         <p style="color:green;">Transação cadastrada com sucesso!</p>
-        <a href="index.php">Voltar</a>
     <?php else: ?>
         <p style="color:red;">Erro no cadastro da transação. Tente novamente.</p>
-        <a href="index.php">Voltar</a>
-    <?php endif ?>
+    <?php endif; ?>
+
+<a href="index.php">Voltar</a>
 </body>
 </html>
