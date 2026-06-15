@@ -4,11 +4,14 @@
     require_once __DIR__ . '/../includes/functions.php';
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $tipo = sanitizeInput($_POST['tipo']);
-        $descricao = sanitizeInput($_POST['descricao']);
-        $valor = sanitizeInput($_POST['valor']);
-        $categoria = sanitizeInput($_POST['categoria']);
-        $data_transacao = sanitizeInput($_POST['data_transacao']);
+        $tipo = ($_POST['tipo']);
+        $descricao = trim($_POST['descricao']);
+        $valor = ($_POST['valor']);
+        $categoria = ($_POST['categoria']);
+        if ($categoria === 'nova_categoria') {
+            $categoria = trim($_POST['nova_categoria']);
+        }
+        $data_transacao = ($_POST['data_transacao']);
         $idUsuario = $_SESSION['idUsuario'];
 
         $sucesso = insertTransacao($pdo, $idUsuario, $tipo, $descricao, $valor, $categoria, $data_transacao);

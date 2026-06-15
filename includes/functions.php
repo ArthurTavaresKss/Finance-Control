@@ -50,6 +50,14 @@ function getTransactionsByUserIdAndDate($pdo, $idUsuario, $dataInicial, $dataFin
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function getTransactionsByUserId($pdo, $idUsuario) {
+    $sql = "SELECT * FROM transacoes WHERE id_usuario = :idUsuario";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':idUsuario', $idUsuario);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 function insertTransacao($pdo, $idUsuario, $tipo, $descricao, $valor, $categoria, $data_transacao) {
     $sql = "INSERT INTO transacoes (id_usuario, tipo, descricao, valor, categoria, data_transacao) VALUES
     (:idUsuario, :tipo, :descricao, :valor, :categoria, :data_transacao)";
