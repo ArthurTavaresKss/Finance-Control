@@ -3,11 +3,28 @@
     require_once __DIR__ . '/../config/db.php';
     require_once __DIR__ . '/../includes/functions.php';
 
-    $data_inicial = ($_POST['data_inicial'] ?? date('Y-m-01'));
-    $data_final = ($_POST['data_final'] ?? date('Y-m-t'));
     $idUsuario = $_SESSION['idUsuario'];
+    $data_inicial    = $_POST['data_inicial']    ?? date('Y-m-01');
+    $data_final      = $_POST['data_final']      ?? date('Y-m-t');
+    $tipo            = $_POST['tipo']            ?? '';
+    $descricao       = $_POST['descricao']       ?? '';
+    $categoria       = $_POST['categoria']       ?? '';
+    $operador_valor  = $_POST['operador_valor']  ?? '';
+    $valor           = $_POST['valor']           ?? '';
+    $data_transacao  = $_POST['data_transacao']  ?? '';
 
-    $transacoes = getTransactionsByUserIdAndDate($pdo, $idUsuario, $data_inicial, $data_final);
+    $transacoes = getTransactionsByUserIdAndParams(
+        $pdo,
+        $idUsuario,
+        $data_inicial,
+        $data_final,
+        $tipo,
+        $descricao,
+        $categoria,
+        $operador_valor,
+        $valor,
+        $data_transacao
+    );
     
 ?>
 <!DOCTYPE html>
@@ -27,23 +44,19 @@
         <a href="logout.php">Perfil</a> | 
         <a href="logout.php">Sair</a>
     </nav>
-    <br><br>
-    <button type="button" onclick="document.getElementById('modalTransacao').showModal()">
-        Adicionar transação
-    </button>
-    <p>Mostrando transações de </p>
-    <form method='POST' action="index.php">
-        <input type="date" id="data_inicial" name="data_inicial" required value="<?= $data_inicial ?>">
-        Até
-        <input type="date" id="data_final" name="data_final" required value="<?= $data_final ?>">
-        <button type="submit">Filtrar</button>
-        <button type="button" onclick="window.location.href='index.php'">Resetar Filtros</button>
-    </form>
     <br>
-    <?php if (count($transacoes) === 0): ?>
-            <p>Nenhuma transação cadastrada no período informado.</p>
-        <?php else: ?>
-            <table border="1" cellpadding="8" cellspacing="0">
+    <button type="button" onclick="document.getElementById('modalTransacao').showModal()">
+        + Adicionar transação
+    </button>
+    <form method="POST" action="index.php">
+        <p>
+            Mostrando transações de
+            <input type="date" name="data_inicial" value="<?= $data_inicial ?>" required>
+            até
+            <input type="date" name="data_final" value="<?= $data_final ?>" required>
+        </p>
+        <table border="1" cellpadding="8" cellspacing="0">
+            <thead>
                 <tr>
                     <th>Tipo</th>
                     <th>Descrição</th>
@@ -52,27 +65,87 @@
                     <th>Data</th>
                     <th>Ações</th>
                 </tr>
+                <tr>
+                    <th>
+                        <select name="tipo" style="text-align: center;">
+                            <option value="">~</option>
+                            <option value="Entrada" <?= $tipo == 'Entrada' ? 'selected' : '' ?>>Entrada</option>
+                            <option value="Saída"   <?= $tipo == 'Saída'   ? 'selected' : '' ?>>Saída</option>
+                        </select>
+                    </th>
+                    <th>
+                        <input type="text" name="descricao" placeholder="~" maxlength="90" 
+                               value="<?= htmlspecialchars($descricao) ?>" style="text-align: center;">
+                    </th>
+                    <th>
+                        <select name="categoria" style="text-align: center;">
+                            <option value="">~</option>
+                            <?php
+                            $todasTransacoes = getTransactionsByUserId($pdo, $idUsuario);
+                            $categoriasUnicas = [];
+                            foreach ($todasTransacoes as $t) {
+                                $cat = sanitizeInput($t['categoria']);
+                                if (!empty($cat) && !in_array($cat, $categoriasUnicas)) {
+                                    $categoriasUnicas[] = $cat;
+                                }
+                            }
+                            foreach ($categoriasUnicas as $cat) {
+                                $selected = ($cat === $categoria) ? 'selected' : '';
+                                echo '<option value="' . htmlspecialchars($cat) . '" ' . $selected . '>' 
+                                     . htmlspecialchars($cat) . '</option>';
+                            }
+                            ?>
+                        </select>
+                    </th>
+                    <th>
+                        <select name="operador_valor" style="text-align: center;">
+                            <option value="">~</option>
+                            <option value="igual_a"   <?= $operador_valor == 'igual_a'   ? 'selected' : '' ?>>Igual a</option>
+                            <option value="maior_que" <?= $operador_valor == 'maior_que' ? 'selected' : '' ?>>Maior que</option>
+                            <option value="menor_que" <?= $operador_valor == 'menor_que' ? 'selected' : '' ?>>Menor que</option>
+                        </select>
+                        <input type="number" step="0.01" name="valor" placeholder="0.00" 
+                               value="<?= htmlspecialchars($valor) ?>" style="text-align: center;">
+                    </th>
+                    <th>
+                        <input type="date" name="data_transacao" value="<?= $data_transacao ?>" style="text-align: center;">
+                    </th>
 
-                <?php foreach ($transacoes as $transacao): ?>
+                    <th>
+                        <button type="submit">Filtrar</button>
+                        <button type="button" onclick="window.location.href='index.php'">Resetar</button>
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <?php if (count($transacoes) === 0): ?>
                     <tr>
-                        <td><?= sanitizeInput($transacao['tipo']) ?></td>
-                        <td><?= sanitizeInput($transacao['descricao']) ?></td>
-                        <td><?= sanitizeInput($transacao['categoria']) ?></td>
-                        <td>R$ <?= sanitizeInput($transacao['valor']) ?></td>
-                        <td><?= sanitizeInput($transacao['data_transacao']) ?></td>
-                        <td style="text-align: center;">
-                            <a href="editar_transacao.php?id=<?= $transacao['id'] ?>" title="Editar transação">
-                                <img src="assets/img/editar.png" alt="Editar" width="23" height="23">
-                            </a>
-                            <a href="excluir_transacao.php?id=<?= $transacao['id'] ?>" 
-                            onclick="return confirm('Tem certeza que deseja excluir esta transação?')" 
-                            title="Excluir transação">
-                                <img src="assets/img/excluir.png" alt="Excluir" width="23" height="23">
-                            </a>
-                        </td>
-                <?php endforeach; ?>
-            </table>
-        <?php endif; ?>
+                        <td colspan="6" style="text-align: center;">Nenhuma transação encontrada.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($transacoes as $transacao): ?>
+                        <tr>
+                            <td><?= sanitizeInput($transacao['tipo']) ?></td>
+                            <td><?= sanitizeInput($transacao['descricao']) ?></td>
+                            <td><?= sanitizeInput($transacao['categoria']) ?></td>
+                            <td>R$ <?= sanitizeInput($transacao['valor']) ?></td>
+                            <td><?= date('d/m/Y', strtotime(sanitizeInput($transacao['data_transacao']))) ?></td>
+                            <td style="text-align: center;">
+                                <a href="editar_transacao.php?id=<?= $transacao['id'] ?>">
+                                    <img src="assets/img/editar.png" alt="Editar" width="23" height="23">
+                                </a>
+                                <a href="excluir_transacao.php?id=<?= $transacao['id'] ?>"
+                                   onclick="return confirm('Tem certeza que deseja excluir esta transação?')">
+                                    <img src="assets/img/excluir.png" alt="Excluir" width="23" height="23">
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </form>
         <dialog id="modalTransacao">
             <h2>Nova Transação</h2>
             <form method="POST" action="salvar_transacao.php">

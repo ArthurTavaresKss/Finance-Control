@@ -8,6 +8,7 @@
         $idUsuario = $_SESSION['idUsuario'];
 
         $sucesso = deleteTransactionByUserIdAndId($pdo, $idUsuario, $idTransacao);
+        redirect("index.php");
     } else {
         redirect("index.php");
     }

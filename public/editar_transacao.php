@@ -32,6 +32,7 @@
             $categoria,
             $data_transacao
         );
+        redirect("index.php");
     }
 ?>
 <!DOCTYPE html>

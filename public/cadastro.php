@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="login.php">Voltar</a>
     <?php else: ?>
     <form method="POST" action="cadastro.php">
-        <label for="username">Username:</label>
+        <label for="username">Nome de Usuário:</label>
         <input type="text" id="username" name="username" required value=<?= sanitizeInput($username ?? '') ?>><br><br>
 
         <label for="email">Email:</label>
