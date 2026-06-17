@@ -4,14 +4,16 @@
     require_once __DIR__ . '/../includes/functions.php';
 
     $idUsuario = $_SESSION['idUsuario'];
-    $data_inicial    = $_POST['data_inicial']    ?? date('Y-m-01');
-    $data_final      = $_POST['data_final']      ?? date('Y-m-t');
-    $tipo            = $_POST['tipo']            ?? '';
-    $descricao       = $_POST['descricao']       ?? '';
-    $categoria       = $_POST['categoria']       ?? '';
-    $operador_valor  = $_POST['operador_valor']  ?? '';
-    $valor           = $_POST['valor']           ?? '';
-    $data_transacao  = $_POST['data_transacao']  ?? '';
+    
+    $data_inicial    = $_GET['data_inicial']    ?? date('Y-m-01');
+    $data_final      = $_GET['data_final']      ?? date('Y-m-t');
+    $tipo            = $_GET['tipo']            ?? '';
+    $descricao       = $_GET['descricao']       ?? '';
+    $categoria       = $_GET['categoria']       ?? '';
+    $operador_valor  = $_GET['operador_valor']  ?? '';
+    $valor           = $_GET['valor']           ?? '';
+    $data_transacao  = $_GET['data_transacao']  ?? '';
+    
     $limite = 10;
     $paginaAtual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
 
@@ -29,11 +31,14 @@
     );
 
     $totalPaginas = (int) ceil(count($transacoes) / $limite);
-    if (!isset($paginaAtual)) {
-        if ($paginaAtual < 1 || $paginaAtual > $totalPaginas) {
-            redirect("?pagina=1");
-        }
+    
+    if ($paginaAtual < 1 || ($totalPaginas > 0 && $paginaAtual > $totalPaginas)) {
+        $query_params = $_GET;
+        $query_params['pagina'] = 1;
+        header("Location: ?" . http_build_query($query_params));
+        exit;
     }
+    
     $offset = ($paginaAtual - 1) * $limite;
 
     $transacoesPaginadas = getTransactionsByUserIdAndParamsAndPagination(
@@ -50,7 +55,6 @@
         $limite,
         $offset
     );
-    
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -73,7 +77,8 @@
     <button type="button" onclick="document.getElementById('modalTransacao').showModal()">
         + Adicionar transação
     </button>
-    <form method="POST" action="index.php">
+    
+    <form method="GET" action="index.php">
         <p>
             Mostrando transações de
             <input type="date" name="data_inicial" value="<?= $data_inicial ?>" required>
@@ -84,7 +89,7 @@
         <table border="1" cellpadding="8" cellspacing="0">
             <thead>
                 <tr>
-                    <th colspan="7" style="padding: 8px; background-color: #f8f9fa;">
+                    <th colspan="8" style="padding: 8px; background-color: #f8f9fa;">
                         <?php
                         $tamanhoSetor = 5;
                         $qntSetores = ceil($totalPaginas / $tamanhoSetor);
@@ -94,26 +99,21 @@
                         $paginaFim = min($setorAtual * $tamanhoSetor, $totalPaginas);
 
                         $voltarAba = (($paginaInicio - 5) > 0) ? $paginaInicio - 5 : 1;
-                        echo '<a href="?pagina=' . $voltarAba . '" style="margin-right: 15px; font-size: 0.75rem;"><< Voltar Aba</a>';
+                        echo '<a href="' . linkPagina($voltarAba) . '" style="margin-right: 15px; font-size: 0.75rem;"><< Voltar Aba</a>';
 
-                        // --- BOTÃO VOLTAR PÁGINA ---
                         $voltarPagina = ($paginaAtual > 1) ? $paginaAtual - 1 : 1;
-                        echo '<a href="?pagina=' . $voltarPagina . '" style="margin-right: 10px;">← Voltar</a>';
+                        echo '<a href="' . linkPagina($voltarPagina) . '" style="margin-right: 10px;">← Voltar</a>';
 
-                        // --- NÚMEROS DAS PÁGINAS ---
                         for ($i = $paginaInicio; $i <= $paginaFim; $i++) {
                             $ativo = ($i == $paginaAtual) ? 'font-size: 1.2rem; text-decoration: underline; font-weight: bold;' : '';
-                            echo '<a href="?pagina=' . $i . '" style="margin: 0 8px; ' . $ativo . '">' . $i . '</a>';
+                            echo '<a href="' . linkPagina($i) . '" style="margin: 0 8px; ' . $ativo . '">' . $i . '</a>';
                         }
 
-                        // --- BOTÃO PRÓXIMA PÁGINA ---
                         $proximaPagina = ($paginaAtual < $totalPaginas) ? $paginaAtual + 1 : $totalPaginas;
-                        echo '<a href="?pagina=' . $proximaPagina . '" style="margin-left: 10px;">Próxima →</a>';
+                        echo '<a href="' . linkPagina($proximaPagina) . '" style="margin-left: 10px;">Próxima →</a>';
 
-                        // --- BOTÃO PRÓXIMA ABA ---
-                        // Calcula a primeira página do próximo setor. Se já estiver no último setor, trava na última página total.
                         $proximaAba = (($paginaFim + 1) <= $totalPaginas) ? $paginaFim + 1 : $totalPaginas;
-                        echo '<a href="?pagina=' . $proximaAba . '" style="margin-left: 15px; font-size: 0.75rem;">Próxima Aba >></a>';
+                        echo '<a href="' . linkPagina($proximaAba) . '" style="margin-left: 15px; font-size: 0.75rem;">Próxima Aba >></a>';
                         ?>
                     </th>
                 </tr>
@@ -127,9 +127,7 @@
                     <th>Ações</th>
                 </tr>
                 <tr>
-                    <th>
-
-                    </th>
+                    <th></th>
                     <th>
                         <select name="tipo" style="text-align: center;">
                             <option value="">~</option>
@@ -174,7 +172,6 @@
                     <th>
                         <input type="date" name="data_transacao" value="<?= $data_transacao ?>" style="text-align: center;">
                     </th>
-
                     <th>
                         <button type="submit">Filtrar</button>
                         <button type="button" onclick="window.location.href='index.php'">Resetar</button>
@@ -185,10 +182,10 @@
             <tbody>
                 <?php if (count($transacoesPaginadas) === 0): ?>
                     <tr>
-                        <td colspan="6" style="text-align: center;">Nenhuma transação encontrada.</td>
+                        <td colspan="7" style="text-align: center;">Nenhuma transação encontrada.</td>
                     </tr>
                 <?php else: ?>
-                    <?php $order = 0; foreach ($transacoesPaginadas as $transacao): ?>
+                    <?php $order = $offset; foreach ($transacoesPaginadas as $transacao): ?>
                         <tr>
                             <td><?php $order += 1; echo($order);?></td>
                             <td><?= sanitizeInput($transacao['tipo']) ?></td>
@@ -211,60 +208,56 @@
             </tbody>
         </table>
     </form>
-        <dialog id="modalTransacao">
-            <h2>Nova Transação</h2>
-            <form method="POST" action="salvar_transacao.php">
-                <p>
-                    <label for="tipo">Tipo:</label><br>
-                    <select id="tipo" name="tipo" required>
-                        <option value="" disabled selected>Selecione...</option>
-                        <option value="Entrada">Entrada</option>
-                        <option value="Saída">Saída</option>
-                    </select>
-                </p>
-                <p>
-                    <label for="descricao">Descrição:</label><br>
-                    <input type="text" id="descricao" name="descricao" maxlength="90" required placeholder="Ex: Compra de chocolate">
-                </p>
-                <p>
-                    <label for="valor">Valor (R$):</label><br>
-                    <input type="number" step="0.01" id="valor" name="valor" required placeholder="0.00">
-                </p>
-                <p>
-                    <label for="categoria">Categoria:</label><br>
-                    <select id="categoria" name="categoria" required onchange="mostrarCampoNovaCategoria()">
-                        <option value="" disabled selected>Selecione uma categoria</option>      
 
-                        <?php
-                        $transacoes = getTransactionsByUserId($pdo, $idUsuario);
-                        $categoriasRepetidas = [];
-
-                        foreach ($transacoes as $transacao) {
-                            $categoria = sanitizeInput($transacao['categoria']);
-                            if (!empty($categoria) && !in_array($categoria, $categoriasRepetidas)) {
-                                echo '<option value="' . htmlspecialchars($categoria) . '">'
-                                    . htmlspecialchars($categoria) . '</option>';
-                                $categoriasRepetidas[] = $categoria;
-                            }
+    <dialog id="modalTransacao">
+        <h2>Nova Transação</h2>
+        <form method="POST" action="salvar_transacao.php">
+            <p>
+                <label for="tipo">Tipo:</label><br>
+                <select id="tipo" name="tipo" required>
+                    <option value="" disabled selected>Selecione...</option>
+                    <option value="Entrada">Entrada</option>
+                    <option value="Saída">Saída</option>
+                </select>
+            </p>
+            <p>
+                <label for="descricao">Descrição:</label><br>
+                <input type="text" id="descricao" name="descricao" maxlength="90" required placeholder="Ex: Compra de chocolate">
+            </p>
+            <p>
+                <label for="valor">Valor (R$):</label><br>
+                <input type="number" step="0.01" id="valor" name="valor" required placeholder="0.00">
+            </p>
+            <p>
+                <label for="categoria">Categoria:</label><br>
+                <select id="categoria" name="categoria" required onchange="mostrarCampoNovaCategoria()">
+                    <option value="" disabled selected>Selecione uma categoria</option>      
+                    <?php
+                    $transacoes = getTransactionsByUserId($pdo, $idUsuario);
+                    $categoriasRepetidas = [];
+                    foreach ($transacoes as $transacao) {
+                        $categoria = sanitizeInput($transacao['categoria']);
+                        if (!empty($categoria) && !in_array($categoria, $categoriasRepetidas)) {
+                            echo '<option value="' . htmlspecialchars($categoria) . '">'
+                                . htmlspecialchars($categoria) . '</option>';
+                            $categoriasRepetidas[] = $categoria;
                         }
-                        ?>
-
-                        <option value="nova_categoria">+ Adicionar nova categoria..</option>
-                    </select>
-
-                    <!-- Campo para digitar nova categoria (fica escondido no início) -->
-                    <input type="text" id="nova_categoria" name="nova_categoria" 
-                        placeholder="Digite a nova categoria" style="display: none; margin-top: 5px;">
-                </p>
-                <p>
-                    <label for="data_transacao">Data da Transação:</label><br>
-                    <input type="date" id="data_transacao" name="data_transacao" required value="<?= date('Y-m-d') ?>">
-                </p>
-                <p>
-                    <button type="button" onclick="document.getElementById('modalTransacao').close()">Cancelar</button>
-                    <button type="submit">Salvar</button>
-                </p>
-            </form>
-        </dialog>
+                    }
+                    ?>
+                    <option value="nova_categoria">+ Adicionar nova categoria..</option>
+                </select>
+                <input type="text" id="nova_categoria" name="nova_categoria" 
+                    placeholder="Digite a nova categoria" style="display: none; margin-top: 5px;">
+            </p>
+            <p>
+                <label for="data_transacao">Data da Transação:</label><br>
+                <input type="date" id="data_transacao" name="data_transacao" required value="<?= date('Y-m-d') ?>">
+            </p>
+            <p>
+                <button type="button" onclick="document.getElementById('modalTransacao').close()">Cancelar</button>
+                <button type="submit">Salvar</button>
+            </p>
+        </form>
+    </dialog>
 </body>
 </html>

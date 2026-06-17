@@ -220,4 +220,10 @@ function deleteTransactionByUserIdAndId($pdo, $idUsuario, $idTransacao) {
     return $stmt->execute();
 }
 
+function linkPagina($numPagina) {
+    $params = $_GET;
+    $params['pagina'] = $numPagina;
+    return '?' . http_build_query($params);
+}
+
 ?>
