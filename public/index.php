@@ -12,6 +12,8 @@
     $operador_valor  = $_POST['operador_valor']  ?? '';
     $valor           = $_POST['valor']           ?? '';
     $data_transacao  = $_POST['data_transacao']  ?? '';
+    $limite = 10;
+    $paginaAtual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
 
     $transacoes = getTransactionsByUserIdAndParams(
         $pdo,
@@ -24,6 +26,27 @@
         $operador_valor,
         $valor,
         $data_transacao
+    );
+
+    $totalPaginas = (int) ceil(count($transacoes) / $limite);
+    if ($paginaAtual < 1 || $paginaAtual > $totalPaginas) {
+        redirect("?pagina=1");
+    }
+    $offset = ($paginaAtual - 1) * $limite;
+
+    $transacoesPaginadas = getTransactionsByUserIdAndParamsAndPagination(
+        $pdo,
+        $idUsuario,
+        $data_inicial,
+        $data_final,
+        $tipo,
+        $descricao,
+        $categoria,
+        $operador_valor,
+        $valor,
+        $data_transacao,
+        $limite,
+        $offset
     );
     
 ?>
@@ -58,6 +81,28 @@
         <table border="1" cellpadding="8" cellspacing="0">
             <thead>
                 <tr>
+                    <th colspan="7" style="padding: 8px; background-color: #f8f9fa;">
+                        <?php
+                        $inicio = max(1, $paginaAtual - 2);
+                        $fim = min($totalPaginas, $inicio + 4);
+
+                        if ($paginaAtual > 1) {
+                            echo '<a href="?pagina=' . ($paginaAtual - 1) . '" style="margin-right: 10px;">← Voltar</a>';
+                        }
+
+                        for ($i = $inicio; $i <= $fim; $i++) {
+                            $ativo = ($i == $paginaAtual) ? 'background:#007bff; color:white; padding:4px 10px; border-radius:4px;' : '';
+                            echo '<a href="?pagina=' . $i . '" style="margin: 0 4px; ' . $ativo . '">' . $i . '</a>';
+                        }
+
+                        if ($paginaAtual < $totalPaginas) {
+                            echo '<a href="?pagina=' . ($paginaAtual + 1) . '" style="margin-left: 10px;">Próxima →</a>';
+                        }
+                        ?>
+                    </th>
+                </tr>
+                <tr>
+                    <th>Ordem</th>
                     <th>Tipo</th>
                     <th>Descrição</th>
                     <th>Categoria</th>
@@ -66,6 +111,9 @@
                     <th>Ações</th>
                 </tr>
                 <tr>
+                    <th>
+
+                    </th>
                     <th>
                         <select name="tipo" style="text-align: center;">
                             <option value="">~</option>
@@ -119,13 +167,14 @@
             </thead>
 
             <tbody>
-                <?php if (count($transacoes) === 0): ?>
+                <?php if (count($transacoesPaginadas) === 0): ?>
                     <tr>
                         <td colspan="6" style="text-align: center;">Nenhuma transação encontrada.</td>
                     </tr>
                 <?php else: ?>
-                    <?php foreach ($transacoes as $transacao): ?>
+                    <?php $order = 0; foreach ($transacoesPaginadas as $transacao): ?>
                         <tr>
+                            <td><?php $order += 1; echo($order);?></td>
                             <td><?= sanitizeInput($transacao['tipo']) ?></td>
                             <td><?= sanitizeInput($transacao['descricao']) ?></td>
                             <td><?= sanitizeInput($transacao['categoria']) ?></td>

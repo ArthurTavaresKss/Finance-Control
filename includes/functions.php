@@ -39,7 +39,73 @@ function insertUser($pdo, $username, $email, $senha) {
     return $stmt->execute();
 }
 
-function getTransactionsByUserIdAndParams($pdo, $idUsuario, $dataInicial, $dataFinal, $tipo, $descricao, $categoria, $operadorValor, $valor, $dataTransacao) {
+function getTransactionsByUserIdAndParamsAndPagination($pdo, $idUsuario, $dataInicial, $dataFinal, $tipo, $descricao,
+ $categoria, $operadorValor, $valor, $dataTransacao, $limite, $offset) {
+    
+    $sql = "SELECT * FROM transacoes WHERE id_usuario = :idUsuario";
+    $conditions = [];
+    $params = [':idUsuario' => $idUsuario];
+
+    if (!empty($dataInicial) && !empty($dataFinal)) {
+        $conditions[] = "data_transacao BETWEEN :data_inicial AND :data_final";
+        $params[':data_inicial'] = $dataInicial;
+        $params[':data_final'] = $dataFinal;
+    }
+
+    if (!empty($tipo)) {
+        $conditions[] = "tipo = :tipo";
+        $params[':tipo'] = $tipo;
+    }
+
+    if (!empty($descricao)) {
+        $conditions[] = "descricao LIKE :descricao";
+        $params[':descricao'] = "%$descricao%";
+    }
+
+    if (!empty($categoria)) {
+        $conditions[] = "categoria = :categoria";
+        $params[':categoria'] = $categoria;
+    }
+
+    if (!empty($valor) && !empty($operadorValor)) {
+        if ($operadorValor === 'igual_a') {
+            $conditions[] = "valor = :valor";
+        } elseif ($operadorValor === 'maior_que') {
+            $conditions[] = "valor > :valor";
+        } elseif ($operadorValor === 'menor_que') {
+            $conditions[] = "valor < :valor";
+        }
+        $params[':valor'] = $valor;
+    }
+
+    if (!empty($dataTransacao)) {
+        $conditions[] = "data_transacao = :data_transacao";
+        $params[':data_transacao'] = $dataTransacao;
+    }
+
+    if (!empty($conditions)) {
+        $sql .= " AND " . implode(" AND ", $conditions);
+    }
+
+    $sql .= " ORDER BY data_transacao DESC, id DESC";
+
+    $sql .= " LIMIT :limite OFFSET :offset";
+
+    $params[':limite']  = (int)$limite;
+    $params[':offset'] = (int)$offset;
+
+    $stmt = $pdo->prepare($sql);
+
+    $stmt->bindParam(':limite',  $params[':limite'],  PDO::PARAM_INT);
+    $stmt->bindParam(':offset', $params[':offset'], PDO::PARAM_INT);
+
+    $stmt->execute($params);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getTransactionsByUserIdAndParams($pdo, $idUsuario, $dataInicial, $dataFinal, $tipo, $descricao,
+ $categoria, $operadorValor, $valor, $dataTransacao) {
     
     $sql = "SELECT * FROM transacoes WHERE id_usuario = :idUsuario";
     $conditions = [];
@@ -89,6 +155,7 @@ function getTransactionsByUserIdAndParams($pdo, $idUsuario, $dataInicial, $dataF
     $sql .= " ORDER BY data_transacao DESC, id DESC";
 
     $stmt = $pdo->prepare($sql);
+
     $stmt->execute($params);
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
