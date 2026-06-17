@@ -89,32 +89,40 @@
         <table border="1" cellpadding="8" cellspacing="0">
             <thead>
                 <tr>
-                    <th colspan="8" style="padding: 8px; background-color: #f8f9fa;">
-                        <?php
-                        $tamanhoSetor = 5;
-                        $qntSetores = ceil($totalPaginas / $tamanhoSetor);
-                        $setorAtual = ceil($paginaAtual / $tamanhoSetor);
+                    <th colspan="8" style="padding: 8px; background-color: #f8f9fa; position: relative; font-weight: normal;">            
+                        <div style="display: flex; justify-content: center; align-items: center; width: 100%;">                  
+                            <div style="display: inline-block;">
+                                <?php
+                                $tamanhoSetor = 5;
+                                $qntSetores = ceil($totalPaginas / $tamanhoSetor);
+                                $setorAtual = ceil($paginaAtual / $tamanhoSetor);
 
-                        $paginaInicio = (($setorAtual - 1) * $tamanhoSetor) + 1;
-                        $paginaFim = min($setorAtual * $tamanhoSetor, $totalPaginas);
+                                $paginaInicio = (($setorAtual - 1) * $tamanhoSetor) + 1;
+                                $paginaFim = min($setorAtual * $tamanhoSetor, $totalPaginas);
 
-                        $voltarAba = (($paginaInicio - 5) > 0) ? $paginaInicio - 5 : 1;
-                        echo '<a href="' . linkPagina($voltarAba) . '" style="margin-right: 15px; font-size: 0.75rem;"><< Voltar Aba</a>';
+                                $voltarAba = (($paginaInicio - 5) > 0) ? $paginaInicio - 5 : 1;
+                                echo '<a href="' . linkPagina($voltarAba) . '" style="margin-right: 15px; font-size: 0.75rem;"><< Voltar Aba</a>';
 
-                        $voltarPagina = ($paginaAtual > 1) ? $paginaAtual - 1 : 1;
-                        echo '<a href="' . linkPagina($voltarPagina) . '" style="margin-right: 10px;">← Voltar</a>';
+                                $voltarPagina = ($paginaAtual > 1) ? $paginaAtual - 1 : 1;
+                                echo '<a href="' . linkPagina($voltarPagina) . '" style="margin-right: 10px;">← Voltar</a>';
 
-                        for ($i = $paginaInicio; $i <= $paginaFim; $i++) {
-                            $ativo = ($i == $paginaAtual) ? 'font-size: 1.2rem; text-decoration: underline; font-weight: bold;' : '';
-                            echo '<a href="' . linkPagina($i) . '" style="margin: 0 8px; ' . $ativo . '">' . $i . '</a>';
-                        }
+                                for ($i = $paginaInicio; $i <= $paginaFim; $i++) {
+                                    $ativo = ($i == $paginaAtual) ? 'font-size: 1.2rem; text-decoration: underline; font-weight: bold;' : '';
+                                    echo '<a href="' . linkPagina($i) . '" style="margin: 0 8px; ' . $ativo . '">' . $i . '</a>';
+                                }
 
-                        $proximaPagina = ($paginaAtual < $totalPaginas) ? $paginaAtual + 1 : $totalPaginas;
-                        echo '<a href="' . linkPagina($proximaPagina) . '" style="margin-left: 10px;">Próxima →</a>';
+                                $proximaPagina = ($paginaAtual < $totalPaginas) ? $paginaAtual + 1 : $totalPaginas;
+                                echo '<a href="' . linkPagina($proximaPagina) . '" style="margin-left: 10px;">Próxima →</a>';
 
-                        $proximaAba = (($paginaFim + 1) <= $totalPaginas) ? $paginaFim + 1 : $totalPaginas;
-                        echo '<a href="' . linkPagina($proximaAba) . '" style="margin-left: 15px; font-size: 0.75rem;">Próxima Aba >></a>';
-                        ?>
+                                $proximaAba = (($paginaFim + 1) <= $totalPaginas) ? $paginaFim + 1 : $totalPaginas;
+                                echo '<a href="' . linkPagina($proximaAba) . '" style="margin-left: 15px; font-size: 0.75rem;">Próxima Aba >></a>';
+                                ?>
+                            </div>
+
+                            <span style="position: absolute; right: 15px; font-weight: normal; font-size: 0.9rem; color: #6c757d;">
+                                <?= $paginaAtual . '/' . $totalPaginas ?>
+                            </span>
+                        </div>
                     </th>
                 </tr>
                 <tr>
