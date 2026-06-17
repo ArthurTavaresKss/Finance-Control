@@ -29,6 +29,14 @@ function getUserByUsername($pdo, $username) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function getUserById($pdo, $id) {
+    $sql = "SELECT * FROM usuarios WHERE id = :id AND ativo = 1";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':id', $id);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
 function insertUser($pdo, $username, $email, $senha) {
     $sql = "INSERT INTO usuarios (username, email, senha) VALUES
     (:username, :email, :senha)";

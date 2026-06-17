@@ -70,7 +70,7 @@
     <nav>
         <a href="index.php">Transações</a> | 
         <a href="dashboards.php">Dashboards</a> | 
-        <a href="logout.php">Perfil</a> | 
+        <a href="perfil.php">Perfil</a> | 
         <a href="logout.php">Sair</a>
     </nav>
     <br>
