@@ -29,8 +29,10 @@
     );
 
     $totalPaginas = (int) ceil(count($transacoes) / $limite);
-    if ($paginaAtual < 1 || $paginaAtual > $totalPaginas) {
-        redirect("?pagina=1");
+    if (!isset($paginaAtual)) {
+        if ($paginaAtual < 1 || $paginaAtual > $totalPaginas) {
+            redirect("?pagina=1");
+        }
     }
     $offset = ($paginaAtual - 1) * $limite;
 
@@ -77,27 +79,41 @@
             <input type="date" name="data_inicial" value="<?= $data_inicial ?>" required>
             até
             <input type="date" name="data_final" value="<?= $data_final ?>" required>
+             : 
         </p>
         <table border="1" cellpadding="8" cellspacing="0">
             <thead>
                 <tr>
                     <th colspan="7" style="padding: 8px; background-color: #f8f9fa;">
                         <?php
-                        $inicio = max(1, $paginaAtual - 2);
-                        $fim = min($totalPaginas, $inicio + 4);
+                        $tamanhoSetor = 5;
+                        $qntSetores = ceil($totalPaginas / $tamanhoSetor);
+                        $setorAtual = ceil($paginaAtual / $tamanhoSetor);
 
-                        if ($paginaAtual > 1) {
-                            echo '<a href="?pagina=' . ($paginaAtual - 1) . '" style="margin-right: 10px;">← Voltar</a>';
+                        $paginaInicio = (($setorAtual - 1) * $tamanhoSetor) + 1;
+                        $paginaFim = min($setorAtual * $tamanhoSetor, $totalPaginas);
+
+                        $voltarAba = (($paginaInicio - 5) > 0) ? $paginaInicio - 5 : 1;
+                        echo '<a href="?pagina=' . $voltarAba . '" style="margin-right: 15px; font-size: 0.75rem;"><< Voltar Aba</a>';
+
+                        // --- BOTÃO VOLTAR PÁGINA ---
+                        $voltarPagina = ($paginaAtual > 1) ? $paginaAtual - 1 : 1;
+                        echo '<a href="?pagina=' . $voltarPagina . '" style="margin-right: 10px;">← Voltar</a>';
+
+                        // --- NÚMEROS DAS PÁGINAS ---
+                        for ($i = $paginaInicio; $i <= $paginaFim; $i++) {
+                            $ativo = ($i == $paginaAtual) ? 'font-size: 1.2rem; text-decoration: underline; font-weight: bold;' : '';
+                            echo '<a href="?pagina=' . $i . '" style="margin: 0 8px; ' . $ativo . '">' . $i . '</a>';
                         }
 
-                        for ($i = $inicio; $i <= $fim; $i++) {
-                            $ativo = ($i == $paginaAtual) ? 'background:#007bff; color:white; padding:4px 10px; border-radius:4px;' : '';
-                            echo '<a href="?pagina=' . $i . '" style="margin: 0 4px; ' . $ativo . '">' . $i . '</a>';
-                        }
+                        // --- BOTÃO PRÓXIMA PÁGINA ---
+                        $proximaPagina = ($paginaAtual < $totalPaginas) ? $paginaAtual + 1 : $totalPaginas;
+                        echo '<a href="?pagina=' . $proximaPagina . '" style="margin-left: 10px;">Próxima →</a>';
 
-                        if ($paginaAtual < $totalPaginas) {
-                            echo '<a href="?pagina=' . ($paginaAtual + 1) . '" style="margin-left: 10px;">Próxima →</a>';
-                        }
+                        // --- BOTÃO PRÓXIMA ABA ---
+                        // Calcula a primeira página do próximo setor. Se já estiver no último setor, trava na última página total.
+                        $proximaAba = (($paginaFim + 1) <= $totalPaginas) ? $paginaFim + 1 : $totalPaginas;
+                        echo '<a href="?pagina=' . $proximaAba . '" style="margin-left: 15px; font-size: 0.75rem;">Próxima Aba >></a>';
                         ?>
                     </th>
                 </tr>
