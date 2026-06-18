@@ -1,6 +1,342 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Archivo:wght@600;700;800&display=swap');
+
 a img {
     vertical-align: middle;
 }
+
 a {
     text-decoration: none;
+}
+
+:root {
+    /* Paleta: navy institucional + esmeralda como único accent */
+    --navy-deep: #0a1628;
+    --navy-mid: #122238;
+    --navy-line: #1f3a56;
+    --paper: #f4f6f8;
+    --paper-card: #ffffff;
+
+    --emerald: #16a05f;
+    --emerald-dark: #0d7d49;
+    --emerald-darker: #0a6038;
+
+    --ink: #0e1b2c;
+    --ink-soft: #5b6b7c;
+    --ink-faint: #8b9aab;
+
+    --on-navy: #eef2f6;
+    --on-navy-soft: rgba(238, 242, 246, 0.58);
+
+    --input-border: #d7dde3;
+    --input-border-focus: #16a05f;
+
+    --error-bg: #fdf1f1;
+    --error-border: #f1c7c7;
+    --error-text: #b42323;
+
+    --radius-card: 4px;
+    --radius-field: 6px;
+    --radius-button: 6px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body#login-page {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    min-height: 100vh;
+    display: flex;
+    position: relative;
+}
+
+/* ============================================= */
+/* LAYOUT: split-screen — marca à esquerda, formulário à direita */
+/* ============================================= */
+
+#login-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+}
+
+/* ---------- Painel esquerdo: marca ---------- */
+
+.brand-panel {
+    position: relative;
+    background: linear-gradient(165deg, var(--navy-deep) 0%, var(--navy-mid) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 56px 64px;
+    overflow: hidden;
+}
+
+/* Linha de cotação financeira, sutil, estática — assinatura visual única da peça */
+.ticker-line {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.55;
+}
+
+.brand-panel-top {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.logo-mark {
+    width: 220px;
+    max-width: 60%;
+    height: auto;
+    display: block;
+}
+
+.brand-panel-mid {
+    position: relative;
+    z-index: 1;
+    max-width: 420px;
+}
+
+.brand-panel-mid h1 {
+    font-family: 'Archivo', 'Inter', sans-serif;
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.18;
+    color: var(--on-navy);
+}
+
+.brand-panel-mid p {
+    margin-top: 14px;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--on-navy-soft);
+    max-width: 360px;
+}
+
+.brand-panel-bottom {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(238, 242, 246, 0.12);
+}
+
+.brand-stat-eyebrow {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(238, 242, 246, 0.42);
+}
+
+.brand-stat-value {
+    margin-top: 6px;
+    font-family: 'Archivo', sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--emerald);
+    letter-spacing: -0.01em;
+}
+
+/* ---------- Painel direito: formulário ---------- */
+
+.form-panel {
+    background: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+}
+
+#login-container {
+    width: 100%;
+    max-width: 380px;
+}
+
+.form-heading {
+    margin-bottom: 30px;
+}
+
+.form-heading .eyebrow {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--emerald-dark);
+    margin-bottom: 10px;
+}
+
+.form-heading h2 {
+    font-family: 'Archivo', sans-serif;
+    font-size: 25px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+.login-form {
+    position: relative;
+}
+
+.login-form .input-group {
+    margin-bottom: 18px;
+}
+
+.login-form label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: 0.01em;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--input-border);
+    border-radius: var(--radius-field);
+    background: var(--paper-card);
+    color: var(--ink);
+    font-size: 14.5px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.login-form input::placeholder {
+    color: var(--ink-faint);
+}
+
+.login-form input:hover {
+    border-color: #b9c3cd;
+}
+
+.login-form input:focus {
+    border-color: var(--input-border-focus);
+    box-shadow: 0 0 0 3px rgba(22, 160, 95, 0.14);
+}
+
+/* Botão sólido esmeralda — único accent de cor saturada na peça inteira */
+.btn-submit {
+    width: 100%;
+    margin-top: 6px;
+    padding: 13px 18px;
+    border: none;
+    border-radius: var(--radius-button);
+    cursor: pointer;
+    font-size: 14.5px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: #ffffff;
+    background: var(--emerald-dark);
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.btn-submit:hover {
+    background: var(--emerald);
+}
+
+.btn-submit:active {
+    background: var(--emerald-darker);
+    transform: translateY(1px);
+}
+
+.form-footer {
+    margin-top: 22px;
+    text-align: center;
+}
+
+.form-footer a {
+    color: var(--ink-soft);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.form-footer a:hover {
+    color: var(--emerald-dark);
+    text-decoration: underline;
+}
+
+.error-message {
+    margin-bottom: 18px;
+    padding: 11px 14px;
+    border-radius: var(--radius-field);
+    border: 1px solid var(--error-border);
+    background: var(--error-bg);
+    color: var(--error-text);
+    font-size: 13.5px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* ============================================= */
+/* RESPONSIVO */
+/* ============================================= */
+
+@media (max-width: 900px) {
+    #login-wrapper {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+    }
+
+    .brand-panel {
+        padding: 40px 32px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .brand-panel-mid,
+    .brand-panel-bottom {
+        display: none;
+    }
+
+    .logo-mark {
+        width: 160px;
+        max-width: 50%;
+    }
+
+    .form-panel {
+        padding: 36px 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .brand-panel {
+        padding: 28px 24px;
+    }
+
+    .logo-mark {
+        width: 130px;
+    }
+
+    .form-heading h2 {
+        font-size: 22px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
 }
