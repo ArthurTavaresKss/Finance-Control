@@ -6,6 +6,43 @@
     $idUsuario = $_SESSION['idUsuario'];
 
     $usuario = getUserById($pdo, $idUsuario);
+
+    $status = $_GET['status'] ?? '';
+
+    $mostrarModal = false;
+    $modalTitulo = '';
+    $modalMensagem = '';
+
+    if (!empty($status)) {
+        $mostrarModal = true;
+
+        switch ($status) {
+            case 'username_existente':
+                $modalTitulo = 'Ops! Usuário já existe';
+                $modalMensagem = 'O nome de usuário escolhido já está em uso por outra pessoa. Por favor, tente outro.';
+                break;
+
+            case 'email_existente':
+                $modalTitulo = 'E-mail indisponível';
+                $modalMensagem = 'O endereço de e-mail informado já está cadastrado em outra conta.';
+                break;
+
+            case 'usuario_atualizado':
+                $modalTitulo = 'Sucesso!';
+                $modalMensagem = 'Seus dados de perfil foram atualizados com sucesso.';
+                break;
+
+            case 'erro_atualizacao':
+                $modalTitulo = 'Erro no servidor';
+                $modalMensagem = 'Não foi possível atualizar seus dados neste momento. Tente novamente mais tarde.';
+                break;
+                
+            default:
+                // Caso venha um status desconhecido, não mostra nada
+                $mostrarModal = false;
+                break;
+        }
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -32,7 +69,7 @@
         <form method="POST" action="editPerfil/editar_perfil.php">
             <p>
                 <label for="modal_usuario">Usuário:</label><br>
-                <input type="text" id="modal_usuario" name="usuario" required placeholder="Seu nome de usuário"
+                <input type="text" id="username" name="username" required placeholder="Seu nome de usuário"
                 value="<?= $usuario['username'] ?>">
             </p>
             
@@ -48,5 +85,28 @@
             </p>
         </form>
     </dialog>
+    <dialog id="modalStatus" style="padding: 20px; border-radius: 8px; border: 1px solid #ccc;">
+        <h2><?= htmlspecialchars($modalTitulo) ?></h2>
+        <p><?= htmlspecialchars($modalMensagem) ?></p>
+        <button type="button" onclick="document.getElementById('modalStatus').close()">Fechar</button>
+    </dialog>
+    <?php if ($mostrarModal): ?>
+        <script>
+            document.getElementById('modalStatus').showModal();
+            if (window.history.replaceState) {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('status');
+                window.history.replaceState({ path: url.href }, '', url.href);
+            }
+        </script>
+    <?php else: ?>
+        <script>
+            if (window.history.replaceState) {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('status');
+                window.history.replaceState({ path: url.href }, '', url.href);
+            }
+        </script>
+    <?php endif; ?>
 </body>
 </html>

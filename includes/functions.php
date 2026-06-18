@@ -220,6 +220,19 @@ function AlterTransactionById($pdo, $id, $idUsuario, $tipo, $descricao, $valor, 
     return $stmt->execute();
 }
 
+function UpdateUserUsernameAndEmailById($pdo, $idUsuario, $username, $email) {
+    $sql = "UPDATE usuarios 
+            SET 
+                username = :username,
+                email = :email,
+            WHERE id = :idUsuario";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':username', $username);
+    $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':idUsuario', $idUsuario, PDO::PARAM_INT);
+    return $stmt->execute();
+}
+
 function deleteTransactionByUserIdAndId($pdo, $idUsuario, $idTransacao) {
     $sql = "DELETE FROM transacoes WHERE id_usuario = :idUsuario AND id = :id";
     $stmt = $pdo->prepare($sql);
