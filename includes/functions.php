@@ -269,4 +269,73 @@ function linkPagina($numPagina) {
     return '?' . http_build_query($params);
 }
 
+function getGastosPorCategoria($pdo, $idUsuario) {
+    $sql = "SELECT categoria, SUM(valor) as total 
+            FROM transacoes 
+            WHERE id_usuario = :id_usuario 
+              AND tipo = 'Saída'
+              AND MONTH(data_transacao) = MONTH(CURRENT_DATE())
+              AND YEAR(data_transacao) = YEAR(CURRENT_DATE())
+            GROUP BY categoria";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['id_usuario' => $idUsuario]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getBalancoMensal($pdo, $idUsuario) {
+    $sql = "SELECT tipo, SUM(valor) as total 
+            FROM transacoes 
+            WHERE id_usuario = :id_usuario 
+              AND MONTH(data_transacao) = MONTH(CURRENT_DATE())
+              AND YEAR(data_transacao) = YEAR(CURRENT_DATE())
+            GROUP BY tipo";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['id_usuario' => $idUsuario]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getIndicadoresMensais($pdo, $idUsuario) {
+    $sql = "SELECT 
+                COUNT(CASE WHEN tipo = 'Entrada' THEN 1 END) as qtd_entradas,
+                COUNT(CASE WHEN tipo = 'Saída' THEN 1 END) as qtd_saidas,
+                COUNT(*) as qtd_totais,
+                IFNULL(SUM(CASE WHEN tipo = 'Entrada' THEN valor END), 0) as valor_entradas,
+                IFNULL(SUM(CASE WHEN tipo = 'Saída' THEN valor END), 0) as valor_saidas
+            FROM transacoes 
+            WHERE id_usuario = :id_usuario 
+              AND MONTH(data_transacao) = MONTH(CURRENT_DATE())
+              AND YEAR(data_transacao) = YEAR(CURRENT_DATE())";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['id_usuario' => $idUsuario]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function getEntradasPorCategoria($pdo, $idUsuario) {
+    $sql = "SELECT categoria, SUM(valor) as total 
+            FROM transacoes 
+            WHERE id_usuario = :id_usuario 
+              AND tipo = 'Entrada'
+              AND MONTH(data_transacao) = MONTH(CURRENT_DATE())
+              AND YEAR(data_transacao) = YEAR(CURRENT_DATE())
+            GROUP BY categoria";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['id_usuario' => $idUsuario]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getHistoricoAnual($pdo, $idUsuario) {
+    $sql = "SELECT 
+                MONTH(data_transacao) as mes,
+                IFNULL(SUM(CASE WHEN tipo = 'Entrada' THEN valor END), 0) as entradas,
+                IFNULL(SUM(CASE WHEN tipo = 'Saída' THEN valor END), 0) as saidas
+            FROM transacoes 
+            WHERE id_usuario = :id_usuario 
+              AND YEAR(data_transacao) = YEAR(CURRENT_DATE())
+            GROUP BY MONTH(data_transacao)
+            ORDER BY MONTH(data_transacao) ASC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['id_usuario' => $idUsuario]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 ?>
