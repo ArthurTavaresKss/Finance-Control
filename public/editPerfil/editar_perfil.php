@@ -7,11 +7,8 @@
     $params = $_GET;
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $username = $_POST['username'];
-        $email = $_POST['email'];
-
-        $userByUsername = getUserByUsername($pdo, $username);
-        $userByEmail = getUserByEmail($pdo, $email);
+        $username = $_POST['modal_username'];
+        $email = $_POST['modal_email'];
         $localUser = getUserById($pdo, $idUsuario);
 
         if ($username == $localUser['username'] && $email == $localUser['email']) {
@@ -27,7 +24,7 @@
             } elseif ($userByEmail && $userByEmail['id'] != $idUsuario) {
                 $params['status'] = 'email_existente';
             } else {
-                $sucesso = UpdateUserUsernameAndEmailById($pdo, $idUsuario, $username, $email);
+                $sucesso = updateUserUsernameAndEmailById($pdo, $idUsuario, $username, $email);
                 $params['status'] = $sucesso ? 'usuario_atualizado' : 'erro_atualizacao';
             }
         }

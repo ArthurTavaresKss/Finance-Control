@@ -199,7 +199,7 @@ function insertTransacao($pdo, $idUsuario, $tipo, $descricao, $valor, $categoria
     return $stmt->execute();
 }
 
-function AlterTransactionById($pdo, $id, $idUsuario, $tipo, $descricao, $valor, $categoria, $data_transacao) {
+function alterTransactionById($pdo, $id, $idUsuario, $tipo, $descricao, $valor, $categoria, $data_transacao) {
     $sql = "UPDATE transacoes 
             SET 
                 tipo = :tipo,
@@ -220,15 +220,37 @@ function AlterTransactionById($pdo, $id, $idUsuario, $tipo, $descricao, $valor, 
     return $stmt->execute();
 }
 
-function UpdateUserUsernameAndEmailById($pdo, $idUsuario, $username, $email) {
+function updateUserUsernameAndEmailById($pdo, $idUsuario, $username, $email) {
     $sql = "UPDATE usuarios 
             SET 
                 username = :username,
-                email = :email,
+                email = :email
             WHERE id = :idUsuario";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':username', $username);
     $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':idUsuario', $idUsuario, PDO::PARAM_INT);
+    return $stmt->execute();
+}
+
+function updateUserPasswordById($pdo, $idUsuario, $novaSenhaHash) {
+    $sql = "UPDATE usuarios 
+            SET 
+                senha = :senha
+            WHERE id = :idUsuario";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':senha', $novaSenhaHash);
+    $stmt->bindParam(':idUsuario', $idUsuario, PDO::PARAM_INT);
+    return $stmt->execute();
+}
+
+function updateUserActiveById($pdo, $idUsuario, $ativo) {
+    $sql = "UPDATE usuarios 
+            SET 
+                ativo = :ativo
+            WHERE id = :idUsuario";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':ativo', $ativo, PDO::PARAM_INT);
     $stmt->bindParam(':idUsuario', $idUsuario, PDO::PARAM_INT);
     return $stmt->execute();
 }

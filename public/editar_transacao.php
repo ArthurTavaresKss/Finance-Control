@@ -22,7 +22,7 @@
             $categoria = trim($_POST['nova_categoria']);
         }
 
-        $sucesso = AlterTransactionById(
+        $sucesso = alterTransactionById(
             $pdo,
             $id,
             $idUsuario,
