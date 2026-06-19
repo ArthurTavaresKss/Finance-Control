@@ -3,6 +3,9 @@ session_start();
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/functions.php';
 
+$error = isset($_SESSION['login_error']) ? $_SESSION['login_error'] : null;
+unset($_SESSION['login_error']); 
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = sanitizeInput($_POST['email']);
     $senha = $_POST['senha'];
@@ -16,7 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect("index.php");
         exit;
     } else {
-        $error = "Email ou senha inválidos.";
+        $_SESSION['login_error'] = "Email ou senha inválidos.";
+        redirect("login.php"); 
+        exit;
     }
 }
 ?>
@@ -33,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div id="login-wrapper">
 
-        <!-- Painel esquerdo: marca -->
         <div class="brand-panel">
 
             <svg class="ticker-line" viewBox="0 0 600 800" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -58,7 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         </div>
 
-        <!-- Painel direito: formulário -->
         <div class="form-panel">
             <div id="login-container">
 

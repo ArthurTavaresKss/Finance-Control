@@ -1,8 +1,16 @@
 <?php
+session_start();
 require_once __DIR__ . "/../config/db.php";
 require_once __DIR__ . "/../includes/functions.php";
 
-$sucesso = false;
+$error = isset($_SESSION['cadastro_error']) ? $_SESSION['cadastro_error'] : null;
+unset($_SESSION['cadastro_error']);
+
+$sucesso = isset($_SESSION['cadastro_sucesso']) ? $_SESSION['cadastro_sucesso'] : null;
+unset($_SESSION['cadastro_sucesso']);
+
+$old_inputs = isset($_SESSION['old_inputs']) ? $_SESSION['old_inputs'] : ['username' => '', 'email' => ''];
+unset($_SESSION['old_inputs']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = sanitizeInput($_POST['username']);
@@ -10,19 +18,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $senha = $_POST['senha'];
     $senha_confirmada = $_POST['senha_confirmada'];
 
+    $_SESSION['old_inputs'] = [
+        'username' => $username,
+        'email' => $email
+    ];
+
     $userByEmail = getUserByEmail($pdo, $email);
     $userByUsername = getUserByUsername($pdo, $username);
 
     if ($userByEmail) {
-        $error = "Email já cadastrado. Use outro Email.";
+        $_SESSION['cadastro_error'] = "Email já cadastrado. Use outro Email.";
+        redirect('cadastro.php');
     } elseif ($userByUsername) {
-        $error = "Nome de usuário já cadastrado. Crie outro nome.";
+        $_SESSION['cadastro_error'] = "Nome de usuário já cadastrado. Crie outro nome.";
+        redirect('cadastro.php');
     } elseif ($senha != $senha_confirmada) {
-        $error = "Senhas não coincidem. Tente novamente.";
+        $_SESSION['cadastro_error'] = "Senhas não coincidem. Tente novamente.";
+        redirect('cadastro.php');
     } else {
+        unset($_SESSION['old_inputs']);
         $senhaCriptografada = password_hash($senha, PASSWORD_DEFAULT);
         insertUser($pdo, $username, $email, $senhaCriptografada);
-        $sucesso = true;
+        
+        $_SESSION['cadastro_sucesso'] = true;
+        redirect('cadastro.php');
     }
 }
 ?>
@@ -65,12 +84,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <form method="POST" action="cadastro.php" class="login-form">
                         <div class="input-group">
                             <label for="username">Nome de usuário</label>
-                            <input type="text" id="username" name="username" required placeholder="seu.usuario" value="<?= sanitizeInput($username ?? '') ?>" autocomplete="username">
+                            <input type="text" id="username" name="username" required placeholder="seu.usuario" value="<?= sanitizeInput($old_inputs['username'] ?? '') ?>" autocomplete="username">
                         </div>
 
                         <div class="input-group">
                             <label for="email">E-mail</label>
-                            <input type="email" id="email" name="email" required placeholder="nome@exemplo.com" value="<?= sanitizeInput($email ?? '') ?>" autocomplete="email">
+                            <input type="email" id="email" name="email" required placeholder="nome@exemplo.com" value="<?= sanitizeInput($old_inputs['email'] ?? '') ?>" autocomplete="email">
                         </div>
 
                         <div class="input-group">
