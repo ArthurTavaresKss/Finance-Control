@@ -1,9 +1,10 @@
 <?php
-    require_once __DIR__ . '/../includes/auth.php';
-    require_once __DIR__ . '/../config/db.php';
-    require_once __DIR__ . '/../includes/functions.php';
+    require_once __DIR__ . '/../../includes/auth.php';
+    require_once __DIR__ . '/../../config/db.php';
+    require_once __DIR__ . '/../../includes/functions.php';
     
     $sucesso = false;
+    $params = [];
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $idTransacao = $_GET['id'];
@@ -32,7 +33,13 @@
             $categoria,
             $data_transacao
         );
-        redirect("index.php");
+        if ($sucesso) {
+            $params['status'] = 'transacao_alterada';
+        } else {
+            $params['status'] = 'erro_transacao_alterada';
+        }
+        $queryString = http_build_query($params);
+        redirect("../index.php?" . $queryString);
     }
 ?>
 <!DOCTYPE html>
@@ -46,10 +53,6 @@
 </head>
 <body>
     <h1>Editar Transação</h1>
-    <?php if ($sucesso): ?>
-        <p style="color:green;">Transação editada com sucesso!</p>
-        <a href="index.php">Voltar</a>
-    <?php elseif (!$sucesso): ?>
     <form method="POST" action="editar_transacao.php">
         <label for="tipo">Tipo:</label>
         <select id="tipo" name="tipo" required>
@@ -102,9 +105,8 @@
 
         <input type="hidden" name="id" value="<?= $transacao['id'] ?>">
 
-        <button type="button" onclick="window.location.href='index.php'">Cancelar</button>
+        <button type="button" onclick="window.location.href='../index.php'">Cancelar</button>
         <button type="submit">Salvar</button>
     </form>
-    <?php endif ?>
 </body>
 </html>

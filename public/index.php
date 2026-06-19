@@ -4,6 +4,7 @@
     require_once __DIR__ . '/../includes/functions.php';
 
     $idUsuario = $_SESSION['idUsuario'];
+    $usernameUsuario = $_SESSION['usernameUsuario'];
     
     $data_inicial    = $_GET['data_inicial']    ?? date('Y-m-01');
     $data_final      = $_GET['data_final']      ?? date('Y-m-t');
@@ -55,6 +56,41 @@
         $limite,
         $offset
     );
+
+    $status = $_GET['status'] ?? '';
+    $mostrarModal = false;
+    $modalTitulo = '';
+    $modalMensagem = '';
+
+    if (!empty($status)) {
+        $mostrarModal = true;
+
+        switch ($status) {
+            case 'transacao_alterada':
+                $modalTitulo = 'Transação Atualizada!';
+                $modalMensagem = 'Os dados da sua transação foram editados e salvos com sucesso.';
+                break;
+
+            case 'erro_transacao_alterada':
+                $modalTitulo = 'Erro ao Editar';
+                $modalMensagem = 'Não foi possível salvar as alterações da transação. Tente novamente.';
+                break;
+
+            case 'transacao_deletada':
+                $modalTitulo = 'Transação Removida';
+                $modalMensagem = 'A transação foi excluída permanentemente do seu histórico.';
+                break;
+
+            case 'erro_transacao_deletada':
+                $modalTitulo = 'Erro ao Excluir';
+                $modalMensagem = 'Houve uma falha ao tentar excluir a transação. Por favor, tente de novo.';
+                break;
+
+            default:
+                $mostrarModal = false;
+                break;
+        }
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -73,6 +109,8 @@
         <a href="perfil.php">Perfil</a> | 
         <a href="logout.php">Sair</a>
     </nav>
+    <br>
+    <h2>Olá, <?= $usernameUsuario ?></h2>
     <br>
     <button type="button" onclick="document.getElementById('modalTransacao').showModal()">
         + Adicionar transação
@@ -202,10 +240,10 @@
                             <td>R$ <?= sanitizeInput($transacao['valor']) ?></td>
                             <td><?= date('d/m/Y', strtotime(sanitizeInput($transacao['data_transacao']))) ?></td>
                             <td style="text-align: center;">
-                                <a href="editar_transacao.php?id=<?= $transacao['id'] ?>">
+                                <a href="editTransacao/editar_transacao.php?id=<?= $transacao['id'] ?>">
                                     <img src="assets/img/editar.png" alt="Editar" width="23" height="23">
                                 </a>
-                                <a href="excluir_transacao.php?id=<?= $transacao['id'] ?>"
+                                <a href="editTransacao/excluir_transacao.php?id=<?= $transacao['id'] ?>"
                                    onclick="return confirm('Tem certeza que deseja excluir esta transação?')">
                                     <img src="assets/img/excluir.png" alt="Excluir" width="23" height="23">
                                 </a>
@@ -267,5 +305,28 @@
             </p>
         </form>
     </dialog>
+    <dialog id="modalStatus" style="padding: 20px; border-radius: 8px; border: 1px solid #ccc; position: fixed; inset: 0; margin: auto; max-width: 400px; height: fit-content;">
+        <h2><?= sanitizeInput($modalTitulo) ?></h2>
+        <p><?= sanitizeInput($modalMensagem) ?></p>
+        <button type="button" onclick="document.getElementById('modalStatus').close()">Fechar</button>
+    </dialog>
+    <?php if ($mostrarModal): ?>
+        <script>
+            document.getElementById('modalStatus').showModal();
+            if (window.history.replaceState) {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('status');
+                window.history.replaceState({ path: url.href }, '', url.href);
+            }
+        </script>
+    <?php else: ?>
+        <script>
+            if (window.history.replaceState) {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('status');
+                window.history.replaceState({ path: url.href }, '', url.href);
+            }
+        </script>
+    <?php endif; ?>
 </body>
 </html>

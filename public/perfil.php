@@ -174,8 +174,8 @@
         </form>
     </dialog>
     <dialog id="modalStatus" style="padding: 20px; border-radius: 8px; border: 1px solid #ccc;">
-        <h2><?= htmlspecialchars($modalTitulo) ?></h2>
-        <p><?= htmlspecialchars($modalMensagem) ?></p>
+        <h2><?= sanitizeInput($modalTitulo) ?></h2>
+        <p><?= sanitizeInput($modalMensagem) ?></p>
         <button type="button" onclick="document.getElementById('modalStatus').close()">Fechar</button>
     </dialog>
     <?php if ($mostrarModal): ?>
