@@ -16,8 +16,8 @@
             $params['status'] = 'erro_transacao_deletada';
         }
         $queryString = http_build_query($params);
-        redirect("../index.php?" . $queryString);
+        redirect("../transacoes.php?" . $queryString);
     } else {
-        redirect("../index.php");
+        redirect("../transacoes.php");
     }
 ?>

@@ -16,7 +16,7 @@
 
         $sucesso = insertTransacao($pdo, $idUsuario, $tipo, $descricao, $valor, $categoria, $data_transacao);
     } else {
-        redirect("index.php");
+        redirect("transacoes.php");
     }
 ?>
 <!DOCTYPE html>
@@ -33,6 +33,6 @@
         <p style="color:red;">Erro no cadastro da transação. Tente novamente.</p>
     <?php endif; ?>
 
-<a href="index.php">Voltar</a>
+<a href="transacoes.php">Voltar</a>
 </body>
 </html>

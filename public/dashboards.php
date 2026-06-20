@@ -62,7 +62,9 @@
 <body>
     <h1>Finance Control</h1>
     <nav>
-        <a href="index.php">Transações</a> | 
+        <a href="transacoes.php">Transações</a> | 
+        <a href="assinaturas.php">Assinaturas</a> | 
+        <a href="investimentos.php">Investimentos</a> | 
         <a href="dashboards.php">Dashboards</a> | 
         <a href="perfil.php">Perfil</a> | 
         <a href="logout.php">Sair</a>

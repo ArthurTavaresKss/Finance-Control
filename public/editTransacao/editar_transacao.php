@@ -39,7 +39,7 @@
             $params['status'] = 'erro_transacao_alterada';
         }
         $queryString = http_build_query($params);
-        redirect("../index.php?" . $queryString);
+        redirect("../transacoes.php?" . $queryString);
     }
 ?>
 <!DOCTYPE html>
@@ -105,7 +105,7 @@
 
         <input type="hidden" name="id" value="<?= $transacao['id'] ?>">
 
-        <button type="button" onclick="window.location.href='../index.php'">Cancelar</button>
+        <button type="button" onclick="window.location.href='../transacoes.php'">Cancelar</button>
         <button type="submit">Salvar</button>
     </form>
 </body>

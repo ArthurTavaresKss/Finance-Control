@@ -104,7 +104,9 @@
 <body>
     <h1>Finance Control</h1>
     <nav>
-        <a href="index.php">Transações</a> | 
+        <a href="transacoes.php">Transações</a> | 
+        <a href="assinaturas.php">Assinaturas</a> | 
+        <a href="investimentos.php">Investimentos</a> | 
         <a href="dashboards.php">Dashboards</a> | 
         <a href="perfil.php">Perfil</a> | 
         <a href="logout.php">Sair</a>
@@ -116,7 +118,7 @@
         + Adicionar transação
     </button>
     
-    <form method="GET" action="index.php">
+    <form method="GET" action="transacoes.php">
         <p>
             Mostrando transações de
             <input type="date" name="data_inicial" value="<?= $data_inicial ?>" required>
@@ -220,7 +222,7 @@
                     </th>
                     <th>
                         <button type="submit">Filtrar</button>
-                        <button type="button" onclick="window.location.href='index.php'">Resetar</button>
+                        <button type="button" onclick="window.location.href='transacoes.php'">Resetar</button>
                     </th>
                 </tr>
             </thead>

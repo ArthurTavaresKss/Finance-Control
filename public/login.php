@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             session_regenerate_id(true);
             $_SESSION['idUsuario'] = $user['id'];
             $_SESSION['usernameUsuario'] = $user['username'];
-            redirect("index.php");
+            redirect("transacoes.php");
             exit;
         } else {
             $_SESSION['login_error'] = "Email ou senha inválidos.";
