@@ -338,4 +338,9 @@ function getHistoricoAnual($pdo, $idUsuario) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function handleDBException(PDOException $e, string $userMessage = "Ocorreu um erro no sistema. Tente novamente mais tarde.") {
+    error_log("Trace: " . $e->getTraceAsString());
+    throw new Exception($userMessage);
+}
+
 ?>

@@ -13,8 +13,8 @@ $old_inputs = isset($_SESSION['old_inputs']) ? $_SESSION['old_inputs'] : ['usern
 unset($_SESSION['old_inputs']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = sanitizeInput($_POST['username']);
-    $email = sanitizeInput($_POST['email']);
+    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
     $senha = $_POST['senha'];
     $senha_confirmada = $_POST['senha_confirmada'];
 
@@ -23,24 +23,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'email' => $email
     ];
 
-    $userByEmail = getUserByEmail($pdo, $email);
-    $userByUsername = getUserByUsername($pdo, $username);
+    try {
+        $userByEmail = getUserByEmail($pdo, $email);
+        $userByUsername = getUserByUsername($pdo, $username);
 
-    if ($userByEmail) {
-        $_SESSION['cadastro_error'] = "Email já cadastrado. Use outro Email.";
-        redirect('cadastro.php');
-    } elseif ($userByUsername) {
-        $_SESSION['cadastro_error'] = "Nome de usuário já cadastrado. Crie outro nome.";
-        redirect('cadastro.php');
-    } elseif ($senha != $senha_confirmada) {
-        $_SESSION['cadastro_error'] = "Senhas não coincidem. Tente novamente.";
-        redirect('cadastro.php');
-    } else {
-        unset($_SESSION['old_inputs']);
-        $senhaCriptografada = password_hash($senha, PASSWORD_DEFAULT);
-        insertUser($pdo, $username, $email, $senhaCriptografada);
-        
-        $_SESSION['cadastro_sucesso'] = true;
+        if ($userByEmail) {
+            $_SESSION['cadastro_error'] = "Email já cadastrado. Use outro Email.";
+            redirect('cadastro.php');
+        } elseif ($userByUsername) {
+            $_SESSION['cadastro_error'] = "Nome de usuário já cadastrado. Crie outro nome.";
+            redirect('cadastro.php');
+        } elseif ($senha != $senha_confirmada) {
+            $_SESSION['cadastro_error'] = "Senhas não coincidem. Tente novamente.";
+            redirect('cadastro.php');
+        } else {
+            unset($_SESSION['old_inputs']);
+            $senhaCriptografada = password_hash($senha, PASSWORD_DEFAULT);
+            insertUser($pdo, $username, $email, $senhaCriptografada);
+            
+            $_SESSION['cadastro_sucesso'] = true;
+            redirect('cadastro.php');
+        }
+    } catch (PDOException $e) {
+        handleDBException($e);
+    } catch (Exception $e) {
+        $_SESSION['cadastro_error'] = $e->getMessage();
         redirect('cadastro.php');
     }
 }

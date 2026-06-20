@@ -7,21 +7,35 @@ $error = isset($_SESSION['login_error']) ? $_SESSION['login_error'] : null;
 unset($_SESSION['login_error']); 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = sanitizeInput($_POST['email']);
+    $email = trim($_POST['email']);
     $senha = $_POST['senha'];
 
-    $user = getUserByEmail($pdo, $email);
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['login_error'] = "E-mail inválido.";
+        redirect("login.php");
+        exit;
+    }
 
-    if ($user && password_verify($senha, $user['senha']) && $user['ativo'] === 1) {
-        session_regenerate_id(true);
-        $_SESSION['idUsuario'] = $user['id'];
-        $_SESSION['usernameUsuario'] = $user['username'];
-        redirect("index.php");
-        exit;
-    } else {
-        $_SESSION['login_error'] = "Email ou senha inválidos.";
-        redirect("login.php"); 
-        exit;
+    try {
+        $user = getUserByEmail($pdo, $email);
+
+        if ($user && password_verify($senha, $user['senha']) && $user['ativo'] === 1) {
+            session_regenerate_id(true);
+            $_SESSION['idUsuario'] = $user['id'];
+            $_SESSION['usernameUsuario'] = $user['username'];
+            redirect("index.php");
+            exit;
+        } else {
+            $_SESSION['login_error'] = "Email ou senha inválidos.";
+            redirect("login.php");
+            exit;
+        }
+
+    } catch (PDOException $e) {
+        handleDBException($e);
+    } catch (Exception $e) {
+        $_SESSION['login_error'] = $e->getMessage();
+        redirect('login.php');
     }
 }
 ?>
