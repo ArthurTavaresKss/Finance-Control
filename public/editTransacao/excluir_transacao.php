@@ -3,7 +3,7 @@
     require_once __DIR__ . '/../../config/db.php';
     require_once __DIR__ . '/../../includes/functions.php';
 
-    $params = [];
+    $sucesso = false;
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $idTransacao = ($_GET['id']);
@@ -11,12 +11,11 @@
 
         $sucesso = deleteTransactionByUserIdAndId($pdo, $idUsuario, $idTransacao);
         if ($sucesso) {
-            $params['status'] = 'transacao_deletada';
+            $_SESSION['status_transacao'] = 'transacao_deletada';
         } else {
-            $params['status'] = 'erro_transacao_deletada';
+            $_SESSION['status_transacao'] = 'erro_transacao_deletada';
         }
-        $queryString = http_build_query($params);
-        redirect("../transacoes.php?" . $queryString);
+        redirect("../transacoes.php?");
     } else {
         redirect("../transacoes.php");
     }

@@ -57,7 +57,8 @@
         $offset
     );
 
-    $status = $_GET['status'] ?? '';
+    $status = $_SESSION['status_transacao'] ?? '';
+    unset($_SESSION['status_transacao']);
     $mostrarModal = false;
     $modalTitulo = '';
     $modalMensagem = '';
@@ -66,6 +67,16 @@
         $mostrarModal = true;
 
         switch ($status) {
+            case 'transacao_adicionada':
+                $modalTitulo = 'Transação Adicionada!';
+                $modalMensagem = 'Sua nova transação foi cadastrada com sucesso.';
+                break;
+
+            case 'erro_transacao_adicionada':
+                $modalTitulo = 'Erro ao Adicionar!';
+                $modalMensagem = 'Não foi possível cadastrar a transação. Por favor, verifique os dados e tente novamente.';
+                break;
+
             case 'transacao_alterada':
                 $modalTitulo = 'Transação Atualizada!';
                 $modalMensagem = 'Os dados da sua transação foram editados e salvos com sucesso.';
@@ -106,7 +117,6 @@
     <nav>
         <a href="transacoes.php">Transações</a> | 
         <a href="assinaturas.php">Assinaturas</a> | 
-        <a href="investimentos.php">Investimentos</a> | 
         <a href="dashboards.php">Dashboards</a> | 
         <a href="perfil.php">Perfil</a> | 
         <a href="logout.php">Sair</a>
@@ -259,7 +269,7 @@
 
     <dialog id="modalTransacao">
         <h2>Nova Transação</h2>
-        <form method="POST" action="salvar_transacao.php">
+        <form method="POST" action="editTransacao/salvar_transacao.php">
             <p>
                 <label for="tipo">Tipo:</label><br>
                 <select id="tipo" name="tipo" required>
@@ -315,19 +325,6 @@
     <?php if ($mostrarModal): ?>
         <script>
             document.getElementById('modalStatus').showModal();
-            if (window.history.replaceState) {
-                const url = new URL(window.location.href);
-                url.searchParams.delete('status');
-                window.history.replaceState({ path: url.href }, '', url.href);
-            }
-        </script>
-    <?php else: ?>
-        <script>
-            if (window.history.replaceState) {
-                const url = new URL(window.location.href);
-                url.searchParams.delete('status');
-                window.history.replaceState({ path: url.href }, '', url.href);
-            }
         </script>
     <?php endif; ?>
 </body>

@@ -4,7 +4,6 @@
     require_once __DIR__ . '/../../includes/functions.php';
     
     $sucesso = false;
-    $params = [];
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $idTransacao = $_GET['id'];
@@ -34,12 +33,11 @@
             $data_transacao
         );
         if ($sucesso) {
-            $params['status'] = 'transacao_alterada';
+            $_SESSION['status_transacao'] = 'transacao_alterada';
         } else {
-            $params['status'] = 'erro_transacao_alterada';
+            $_SESSION['status_transacao'] = 'erro_transacao_alterada';
         }
-        $queryString = http_build_query($params);
-        redirect("../transacoes.php?" . $queryString);
+        redirect("../transacoes.php?");
     }
 ?>
 <!DOCTYPE html>
