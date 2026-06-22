@@ -352,9 +352,9 @@ function getRecurringByUserIdAndParams($pdo, $idUsuario, $dataInicial, $dataFina
     $params = [':idUsuario' => $idUsuario];
 
     if (!empty($dataInicial) && !empty($dataFinal)) {
-        $conditions[] = "data_assinatura_inicio <= :data_final 
-                         AND (data_assinatura_termino IS NULL 
-                              OR DATE_ADD(data_assinatura_termino, INTERVAL 1 DAY) >= :data_inicial)";
+        $conditions[] = "data_transacao_inicio <= :data_final 
+                         AND (data_transacao_termino IS NULL 
+                              OR DATE_ADD(data_transacao_termino, INTERVAL 1 DAY) >= :data_inicial)";
         $params[':data_inicial'] = $dataInicial;
         $params[':data_final'] = $dataFinal;
     }
@@ -391,12 +391,12 @@ function getRecurringByUserIdAndParams($pdo, $idUsuario, $dataInicial, $dataFina
     }
 
     if (!empty($data_inicio_transacao)) {
-        $conditions[] = "data_assinatura_inicio = :data_inicio";
+        $conditions[] = "data_transacao_inicio = :data_inicio";
         $params[':data_inicio'] = $data_inicio_transacao;
     }
 
     if (!empty($data_termino_transacao)) {
-        $conditions[] = "data_assinatura_termino = :data_termino";
+        $conditions[] = "data_transacao_termino = :data_termino";
         $params[':data_termino'] = $data_termino_transacao;
     }
 
@@ -420,9 +420,9 @@ function getRecurringByUserIdAndParamsAndPagination($pdo, $idUsuario, $dataInici
     $params = [':idUsuario' => $idUsuario];
 
     if (!empty($dataInicial) && !empty($dataFinal)) {
-        $conditions[] = "data_assinatura_inicio <= :data_final 
-                         AND (data_assinatura_termino IS NULL 
-                              OR DATE_ADD(data_assinatura_termino, INTERVAL 1 DAY) >= :data_inicial)";
+        $conditions[] = "data_transacao_inicio <= :data_final 
+                         AND (data_transacao_termino IS NULL 
+                              OR DATE_ADD(data_transacao_termino, INTERVAL 1 DAY) >= :data_inicial)";
         $params[':data_inicial'] = $dataInicial;
         $params[':data_final'] = $dataFinal;
     }
@@ -459,12 +459,12 @@ function getRecurringByUserIdAndParamsAndPagination($pdo, $idUsuario, $dataInici
     }
 
     if (!empty($data_inicio_transacao)) {
-        $conditions[] = "data_assinatura_inicio = :data_inicio";
+        $conditions[] = "data_transacao_inicio = :data_inicio";
         $params[':data_inicio'] = $data_inicio_transacao;
     }
 
     if (!empty($data_termino_transacao)) {
-        $conditions[] = "data_assinatura_termino = :data_termino";
+        $conditions[] = "data_transacao_termino = :data_termino";
         $params[':data_termino'] = $data_termino_transacao;
     }
 
@@ -489,6 +489,74 @@ function getRecurringByUserIdAndParamsAndPagination($pdo, $idUsuario, $dataInici
     $stmt->execute();
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function insertRecurring($pdo, $idUsuario, $tipo, $descricao, $valor, $categoria, $diaTransacao, $dataInicio, $dataTermino) {
+    $sql = "INSERT INTO transacoes_recorrentes (id_usuario, tipo, descricao, valor, categoria, dia_transacao, data_transacao_inicio, data_transacao_termino) 
+            VALUES (:id_usuario, :tipo, :descricao, :valor, :categoria, :dia_transacao, :data_inicio, :data_termino)";
+            
+    $stmt = $pdo->prepare($sql);
+    
+    $stmt->bindValue(':id_usuario', $idUsuario, PDO::PARAM_INT);
+    $stmt->bindValue(':tipo', $tipo);
+    $stmt->bindValue(':descricao', $descricao);
+    $stmt->bindValue(':valor', $valor); 
+    $stmt->bindValue(':categoria', $categoria);
+    $stmt->bindValue(':dia_transacao', $diaTransacao, PDO::PARAM_INT);
+    $stmt->bindValue(':data_inicio', $dataInicio);
+    
+    // Envia NULL propriamente dito se a variável for nula
+    $stmt->bindValue(':data_termino', $dataTermino, $dataTermino === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
+    
+    return $stmt->execute();
+}
+
+function deleteRecurringByUserIdAndId($pdo, $idUsuario, $idRecorrente) {
+    $sql = "DELETE FROM transacoes_recorrentes WHERE id = :id AND id_usuario = :id_usuario";
+    $stmt = $pdo->prepare($sql);
+    
+    $stmt->bindValue(':id', $idRecorrente, PDO::PARAM_INT);
+    $stmt->bindValue(':id_usuario', $idUsuario, PDO::PARAM_INT);
+    
+    return $stmt->execute();
+}
+
+function alterRecurringById($pdo, $id, $idUsuario, $tipo, $descricao, $valor, $categoria, $diaTransacao, $dataInicio, $dataTermino) {
+    $sql = "UPDATE transacoes_recorrentes 
+            SET tipo = :tipo, descricao = :descricao, valor = :valor, categoria = :categoria, 
+                dia_transacao = :dia_transacao, data_transacao_inicio = :data_inicio, data_transacao_termino = :data_termino
+            WHERE id = :id AND id_usuario = :id_usuario";
+            
+    $stmt = $pdo->prepare($sql);
+    
+    $stmt->bindValue(':tipo', $tipo);
+    $stmt->bindValue(':descricao', $descricao);
+    $stmt->bindValue(':valor', $valor);
+    $stmt->bindValue(':categoria', $categoria);
+    $stmt->bindValue(':dia_transacao', $diaTransacao, PDO::PARAM_INT);
+    $stmt->bindValue(':data_inicio', $dataInicio);
+    $stmt->bindValue(':data_termino', $dataTermino, $dataTermino === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
+    $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+    $stmt->bindValue(':id_usuario', $idUsuario, PDO::PARAM_INT);
+    
+    return $stmt->execute();
+}
+
+function getRecurringByUserIdAndId($pdo, $idUsuario, $idRecorrente) {
+    $sql = "SELECT id, tipo, descricao, valor, categoria, dia_transacao, data_transacao_inicio, data_transacao_termino 
+            FROM transacoes_recorrentes 
+            WHERE id = :id AND id_usuario = :id_usuario 
+            LIMIT 1";
+            
+    $stmt = $pdo->prepare($sql);
+    
+    $stmt->bindValue(':id', $idRecorrente, PDO::PARAM_INT);
+    $stmt->bindValue(':id_usuario', $idUsuario, PDO::PARAM_INT);
+    
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+
 }
 
 ?>

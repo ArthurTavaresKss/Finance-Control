@@ -73,9 +73,39 @@
         $mostrarModal = true;
 
         switch ($status) {
-            case '':
-                $modalTitulo = '';
-                $modalMensagem = '';
+            case 'recorrente_adicionada':
+                $modalTitulo = 'Sucesso!';
+                $modalMensagem = 'Sua nova transação recorrente foi cadastrada com sucesso.';
+                break;
+
+            case 'erro_recorrente_adicionada':
+                $modalTitulo = 'Erro ao cadastrar';
+                $modalMensagem = 'Não foi possível salvar a transação recorrente. Por favor, tente novamente.';
+                break;
+
+            case 'recorrente_deletada':
+                $modalTitulo = 'Excluído!';
+                $modalMensagem = 'A transação recorrente foi removida com sucesso.';
+                break;
+
+            case 'erro_recorrente_deletada':
+                $modalTitulo = 'Erro ao excluir';
+                $modalMensagem = 'Houve um problema ao tentar excluir a transação recorrente.';
+                break;
+
+            case 'recorrente_editada':
+                $modalTitulo = 'Atualizado!';
+                $modalMensagem = 'As alterações da transação recorrente foram salvas com sucesso.';
+                break;
+
+            case 'erro_recorrente_editada':
+                $modalTitulo = 'Erro ao editar';
+                $modalMensagem = 'Não foi possível atualizar os dados desta transação recorrente.';
+                break;
+
+            default:
+                $modalTitulo = 'Aviso';
+                $modalMensagem = 'Ação concluída.';
                 break;
         }
     }
@@ -244,8 +274,9 @@
                             <td><?= sanitizeInput($recorrente['categoria']) ?></td>
                             <td>R$ <?= sanitizeInput($recorrente['valor']) ?></td>
                             <td><?= sanitizeInput($recorrente['dia_transacao']) ?></td>
-                            <td><?= date('d/m/Y', strtotime(sanitizeInput($recorrente['data_inicio_transacao']))) ?></td>
-                            <td><?= date('d/m/Y', strtotime(sanitizeInput($recorrente['data_termino_transacao']))) ?></td>
+                            <td><?= date('d/m/Y', strtotime(sanitizeInput($recorrente['data_transacao_inicio']))) ?></td>
+                            <td><?= !empty($recorrente['data_transacao_termino']) ? 
+                            date('d/m/Y', strtotime(sanitizeInput($recorrente['data_transacao_termino']))) : 'N/A' ?></td>
                             <td style="text-align: center;">
                                 <a href="editRecorrente/editar_recorrente.php?id=<?= $recorrente['id'] ?>">
                                     <img src="assets/img/editar.png" alt="Editar" width="23" height="23">
@@ -261,7 +292,6 @@
             </tbody>
         </table>
     </form>
-
     <dialog id="modalRecorrente">
         <h2>Nova Transação Recorrente</h2>
         <form method="POST" action="editRecorrente/salvar_recorrente.php">
@@ -310,13 +340,13 @@
             </p>
 
             <p>
-                <label for="data_assinatura_inicio">Data de Início:</label><br>
-                <input type="date" id="data_assinatura_inicio" name="data_assinatura_inicio" required value="<?= date('Y-m-d') ?>">
+                <label for="data_transacao_inicio">Data de Início:</label><br>
+                <input type="date" id="data_transacao_inicio" name="data_transacao_inicio" required value="<?= date('Y-m-d') ?>">
             </p>
 
             <p>
-                <label for="data_assinatura_termino">Data de Término (Opcional):</label><br>
-                <input type="date" id="data_assinatura_termino" name="data_assinatura_termino">
+                <label for="data_transacao_termino">Data de Término (Opcional):</label><br>
+                <input type="date" id="data_transacao_termino" name="data_transacao_termino">
                 <small style="color: #6c757d; display: block; margin-top: 2px;">Deixe em branco se for por tempo indeterminado.</small>
             </p>
 
