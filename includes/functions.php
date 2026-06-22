@@ -343,4 +343,152 @@ function handleDBException(PDOException $e, string $userMessage = "Ocorreu um er
     throw new Exception($userMessage);
 }
 
+function getRecurringByUserIdAndParams($pdo, $idUsuario, $dataInicial, $dataFinal, $tipo, $descricao,
+ $categoria, $operadorValor, $valor, $diaTransacao, $data_inicio_transacao, $data_termino_transacao) {
+    
+    $sql = "SELECT * FROM transacoes_recorrentes WHERE id_usuario = :idUsuario";
+
+    $conditions = [];
+    $params = [':idUsuario' => $idUsuario];
+
+    if (!empty($dataInicial) && !empty($dataFinal)) {
+        $conditions[] = "data_assinatura_inicio <= :data_final 
+                         AND (data_assinatura_termino IS NULL 
+                              OR DATE_ADD(data_assinatura_termino, INTERVAL 1 DAY) >= :data_inicial)";
+        $params[':data_inicial'] = $dataInicial;
+        $params[':data_final'] = $dataFinal;
+    }
+
+    if (!empty($tipo)) {
+        $conditions[] = "tipo = :tipo";
+        $params[':tipo'] = $tipo;
+    }
+
+    if (!empty($descricao)) {
+        $conditions[] = "descricao LIKE :descricao";
+        $params[':descricao'] = "%$descricao%";
+    }
+
+    if (!empty($categoria)) {
+        $conditions[] = "categoria = :categoria";
+        $params[':categoria'] = $categoria;
+    }
+
+    if (!empty($valor) && !empty($operadorValor)) {
+        if ($operadorValor === 'igual_a') {
+            $conditions[] = "valor = :valor";
+        } elseif ($operadorValor === 'maior_que') {
+            $conditions[] = "valor > :valor";
+        } elseif ($operadorValor === 'menor_que') {
+            $conditions[] = "valor < :valor";
+        }
+        $params[':valor'] = $valor;
+    }
+
+    if (isset($diaTransacao) && is_numeric($diaTransacao) && $diaTransacao > 0) {
+        $conditions[] = "dia_transacao = :dia";
+        $params[':dia'] = (int)$diaTransacao;
+    }
+
+    if (!empty($data_inicio_transacao)) {
+        $conditions[] = "data_assinatura_inicio = :data_inicio";
+        $params[':data_inicio'] = $data_inicio_transacao;
+    }
+
+    if (!empty($data_termino_transacao)) {
+        $conditions[] = "data_assinatura_termino = :data_termino";
+        $params[':data_termino'] = $data_termino_transacao;
+    }
+
+    if (!empty($conditions)) {
+        $sql .= " AND " . implode(" AND ", $conditions);
+    }
+
+    $sql .= " ORDER BY dia_transacao DESC, id DESC";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getRecurringByUserIdAndParamsAndPagination($pdo, $idUsuario, $dataInicial, $dataFinal, $tipo, $descricao,
+ $categoria, $operadorValor, $valor, $diaTransacao, $data_inicio_transacao, $data_termino_transacao, $limite, $offset) {
+    
+    $sql = "SELECT * FROM transacoes_recorrentes WHERE id_usuario = :idUsuario";
+    $conditions = [];
+    $params = [':idUsuario' => $idUsuario];
+
+    if (!empty($dataInicial) && !empty($dataFinal)) {
+        $conditions[] = "data_assinatura_inicio <= :data_final 
+                         AND (data_assinatura_termino IS NULL 
+                              OR DATE_ADD(data_assinatura_termino, INTERVAL 1 DAY) >= :data_inicial)";
+        $params[':data_inicial'] = $dataInicial;
+        $params[':data_final'] = $dataFinal;
+    }
+
+    if (!empty($tipo)) {
+        $conditions[] = "tipo = :tipo";
+        $params[':tipo'] = $tipo;
+    }
+
+    if (!empty($descricao)) {
+        $conditions[] = "descricao LIKE :descricao";
+        $params[':descricao'] = "%$descricao%";
+    }
+
+    if (!empty($categoria)) {
+        $conditions[] = "categoria = :categoria";
+        $params[':categoria'] = $categoria;
+    }
+
+    if (!empty($valor) && !empty($operadorValor)) {
+        if ($operadorValor === 'igual_a') {
+            $conditions[] = "valor = :valor";
+        } elseif ($operadorValor === 'maior_que') {
+            $conditions[] = "valor > :valor";
+        } elseif ($operadorValor === 'menor_que') {
+            $conditions[] = "valor < :valor";
+        }
+        $params[':valor'] = $valor;
+    }
+
+    if (isset($diaTransacao) && is_numeric($diaTransacao) && $diaTransacao > 0) {
+        $conditions[] = "dia_transacao = :dia";
+        $params[':dia'] = (int)$diaTransacao;
+    }
+
+    if (!empty($data_inicio_transacao)) {
+        $conditions[] = "data_assinatura_inicio = :data_inicio";
+        $params[':data_inicio'] = $data_inicio_transacao;
+    }
+
+    if (!empty($data_termino_transacao)) {
+        $conditions[] = "data_assinatura_termino = :data_termino";
+        $params[':data_termino'] = $data_termino_transacao;
+    }
+
+    if (!empty($conditions)) {
+        $sql .= " AND " . implode(" AND ", $conditions);
+    }
+
+    $sql .= " ORDER BY dia_transacao DESC, id DESC";
+
+    $sql .= " LIMIT :limite OFFSET :offset";
+
+    $stmt = $pdo->prepare($sql);
+
+    foreach ($params as $key => $val) {
+        $stmt->bindValue($key, $val);
+    }
+
+    // Força explicitamente o tipo INTEIRO para a paginação funcionar de forma segura
+    $stmt->bindValue(':limite', (int)$limite, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 ?>

@@ -6,19 +6,21 @@
     $idUsuario = $_SESSION['idUsuario'];
     $usernameUsuario = $_SESSION['usernameUsuario'];
     
-    $data_inicial    = $_GET['data_inicial']    ?? date('Y-m-01');
-    $data_final      = $_GET['data_final']      ?? date('Y-m-t');
-    $tipo            = $_GET['tipo']            ?? '';
-    $descricao       = $_GET['descricao']       ?? '';
-    $categoria       = $_GET['categoria']       ?? '';
-    $operador_valor  = $_GET['operador_valor']  ?? '';
-    $valor           = $_GET['valor']           ?? '';
-    $data_transacao  = $_GET['data_transacao']  ?? '';
-    $limite          = $_GET['tamanho_paginas'] ?? 10;
+    $data_inicial           = $_GET['data_inicial']           ?? date('Y-m-01');
+    $data_final             = $_GET['data_final']             ?? date('Y-m-t');
+    $tipo                   = $_GET['tipo']                   ?? '';
+    $descricao              = $_GET['descricao']              ?? '';
+    $categoria              = $_GET['categoria']              ?? '';
+    $operador_valor         = $_GET['operador_valor']         ?? '';
+    $valor                  = $_GET['valor']                  ?? '';
+    $dia_transacao          = $_GET['dia_transacao']          ?? '';
+    $data_inicio_transacao  = $_GET['data_inicio_transacao']  ?? '';
+    $data_termino_transacao = $_GET['data_termino_transacao'] ?? '';
+    $limite          = $_GET['tamanho_paginas']               ?? 10;
     
     $paginaAtual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
 
-    $transacoes = getTransactionsByUserIdAndParams(
+    $recorrentes = getRecurringByUserIdAndParams(
         $pdo,
         $idUsuario,
         $data_inicial,
@@ -28,10 +30,12 @@
         $categoria,
         $operador_valor,
         $valor,
-        $data_transacao
+        $dia_transacao,
+        $data_inicio_transacao,
+        $data_termino_transacao
     );
 
-    $totalPaginas = (int) ceil(count($transacoes) / $limite);
+    $totalPaginas = (int) ceil(count($recorrentes) / $limite);
     
     if ($paginaAtual < 1 || ($totalPaginas > 0 && $paginaAtual > $totalPaginas)) {
         $query_params = $_GET;
@@ -42,7 +46,7 @@
     
     $offset = ($paginaAtual - 1) * $limite;
 
-    $transacoesPaginadas = getTransactionsByUserIdAndParamsAndPagination(
+    $recorrentesPaginadas = getRecurringByUserIdAndParamsAndPagination(
         $pdo,
         $idUsuario,
         $data_inicial,
@@ -52,13 +56,15 @@
         $categoria,
         $operador_valor,
         $valor,
-        $data_transacao,
+        $dia_transacao,
+        $data_inicio_transacao,
+        $data_termino_transacao,
         $limite,
         $offset
     );
 
-    $status = $_SESSION['status_transacao'] ?? '';
-    unset($_SESSION['status_transacao']);
+    $status = $_SESSION['status_recorrente'] ?? '';
+    unset($_SESSION['status_recorrente']);
     $mostrarModal = false;
     $modalTitulo = '';
     $modalMensagem = '';
@@ -67,38 +73,9 @@
         $mostrarModal = true;
 
         switch ($status) {
-            case 'transacao_adicionada':
-                $modalTitulo = 'Transação Adicionada!';
-                $modalMensagem = 'Sua nova transação foi cadastrada com sucesso.';
-                break;
-
-            case 'erro_transacao_adicionada':
-                $modalTitulo = 'Erro ao Adicionar!';
-                $modalMensagem = 'Não foi possível cadastrar a transação. Por favor, verifique os dados e tente novamente.';
-                break;
-
-            case 'transacao_alterada':
-                $modalTitulo = 'Transação Atualizada!';
-                $modalMensagem = 'Os dados da sua transação foram editados e salvos com sucesso.';
-                break;
-
-            case 'erro_transacao_alterada':
-                $modalTitulo = 'Erro ao Editar';
-                $modalMensagem = 'Não foi possível salvar as alterações da transação. Tente novamente.';
-                break;
-
-            case 'transacao_deletada':
-                $modalTitulo = 'Transação Removida';
-                $modalMensagem = 'A transação foi excluída permanentemente do seu histórico.';
-                break;
-
-            case 'erro_transacao_deletada':
-                $modalTitulo = 'Erro ao Excluir';
-                $modalMensagem = 'Houve uma falha ao tentar excluir a transação. Por favor, tente de novo.';
-                break;
-
-            default:
-                $mostrarModal = false;
+            case '':
+                $modalTitulo = '';
+                $modalMensagem = '';
                 break;
         }
     }
@@ -124,13 +101,13 @@
     <br>
     <h2>Olá, <?= $usernameUsuario ?></h2>
     <br>
-    <button type="button" onclick="document.getElementById('modalTransacao').showModal()">
-        + Adicionar transação
+    <button type="button" onclick="document.getElementById('modalRecorrente').showModal()">
+        + Adicionar transação recorrente
     </button>
     
-    <form method="GET" action="transacoes.php">
+    <form method="GET" action="recorrentes.php">
         <p>
-            Mostrando transações de
+            Mostrando transações recorrentes ativas no período de
             <input type="date" name="data_inicial" value="<?= $data_inicial ?>" required>
             até
             <input type="date" name="data_final" value="<?= $data_final ?>" required>
@@ -140,7 +117,7 @@
             <thead>
                 <tr>
 
-                    <th colspan="8" style="padding: 8px; background-color: #f8f9fa; position: relative; font-weight: normal;">            
+                    <th colspan="9" style="padding: 8px; background-color: #f8f9fa; position: relative; font-weight: normal;">            
                         <div style="display: flex; justify-content: center; align-items: center; width: 100%;">                  
                             <div style="display: inline-block;">
                                 <span style="position: absolute; left: 15px; font-weight: normal; font-size: 0.9rem; color: #6c757d;">
@@ -188,7 +165,9 @@
                     <th>Descrição</th>
                     <th>Categoria</th>
                     <th>Valor</th>
-                    <th>Data</th>
+                    <th>Dia da Transação</th>
+                    <th>Data de Início</th>
+                    <th>Data de Término</th>
                     <th>Ações</th>
                 </tr>
                 <tr>
@@ -235,34 +214,43 @@
                                value="<?= sanitizeInput($valor) ?>" style="text-align: center;">
                     </th>
                     <th>
-                        <input type="date" name="data_transacao" value="<?= $data_transacao ?>" style="text-align: center;">
+                        <input type="number" id="dia_transacao" name="dia_transacao" min="1" max="28" step="1" placeholder="Dia (1 a 28)"
+                        value="<?= $dia_transacao ?>">
+                    </th>
+                    <th>
+                        <input type="date" name="data_inicio_transacao" value="<?= $data_inicio_transacao ?>" style="text-align: center;">
+                    </th>
+                    <th>
+                        <input type="date" name="data_termino_transacao" value="<?= $data_termino_transacao ?>" style="text-align: center;">
                     </th>
                     <th>
                         <button type="submit">Filtrar</button>
-                        <button type="button" onclick="window.location.href='transacoes.php'">Resetar</button>
+                        <button type="button" onclick="window.location.href='recorrentes.php'">Resetar</button>
                     </th>
                 </tr>
             </thead>
 
             <tbody>
-                <?php if (count($transacoesPaginadas) === 0): ?>
+                <?php if (count($recorrentesPaginadas) === 0): ?>
                     <tr>
-                        <td colspan="7" style="text-align: center;">Nenhuma transação encontrada.</td>
+                        <td colspan="9" style="text-align: center;">Nenhuma transação encontrada.</td>
                     </tr>
                 <?php else: ?>
-                    <?php $order = $offset; foreach ($transacoesPaginadas as $transacao): ?>
+                    <?php $order = $offset; foreach ($recorrentesPaginadas as $recorrente): ?>
                         <tr>
                             <td><?php $order += 1; echo($order);?></td>
-                            <td><?= sanitizeInput($transacao['tipo']) ?></td>
-                            <td><?= sanitizeInput($transacao['descricao']) ?></td>
-                            <td><?= sanitizeInput($transacao['categoria']) ?></td>
-                            <td>R$ <?= sanitizeInput($transacao['valor']) ?></td>
-                            <td><?= date('d/m/Y', strtotime(sanitizeInput($transacao['data_transacao']))) ?></td>
+                            <td><?= sanitizeInput($recorrente['tipo']) ?></td>
+                            <td><?= sanitizeInput($recorrente['descricao']) ?></td>
+                            <td><?= sanitizeInput($recorrente['categoria']) ?></td>
+                            <td>R$ <?= sanitizeInput($recorrente['valor']) ?></td>
+                            <td><?= sanitizeInput($recorrente['dia_transacao']) ?></td>
+                            <td><?= date('d/m/Y', strtotime(sanitizeInput($recorrente['data_inicio_transacao']))) ?></td>
+                            <td><?= date('d/m/Y', strtotime(sanitizeInput($recorrente['data_termino_transacao']))) ?></td>
                             <td style="text-align: center;">
-                                <a href="editTransacao/editar_transacao.php?id=<?= $transacao['id'] ?>">
+                                <a href="editRecorrente/editar_recorrente.php?id=<?= $recorrente['id'] ?>">
                                     <img src="assets/img/editar.png" alt="Editar" width="23" height="23">
                                 </a>
-                                <a href="editTransacao/excluir_transacao.php?id=<?= $transacao['id'] ?>"
+                                <a href="editRecorrente/excluir_recorrente.php?id=<?= $recorrente['id'] ?>"
                                    onclick="return confirm('Tem certeza que deseja excluir esta transação?')">
                                     <img src="assets/img/excluir.png" alt="Excluir" width="23" height="23">
                                 </a>
@@ -274,9 +262,9 @@
         </table>
     </form>
 
-    <dialog id="modalTransacao">
-        <h2>Nova Transação</h2>
-        <form method="POST" action="editTransacao/salvar_transacao.php">
+    <dialog id="modalRecorrente">
+        <h2>Nova Transação Recorrente</h2>
+        <form method="POST" action="editRecorrente/salvar_recorrente.php">
             <p>
                 <label for="tipo">Tipo:</label><br>
                 <select id="tipo" name="tipo" required>
@@ -287,7 +275,7 @@
             </p>
             <p>
                 <label for="descricao">Descrição:</label><br>
-                <input type="text" id="descricao" name="descricao" maxlength="90" required placeholder="Ex: Compra de chocolate">
+                <input type="text" id="descricao" name="descricao" maxlength="90" required placeholder="Ex: Assinatura Netflix">
             </p>
             <p>
                 <label for="valor">Valor (R$):</label><br>
@@ -314,12 +302,26 @@
                 <input type="text" id="nova_categoria" name="nova_categoria" 
                     placeholder="Digite a nova categoria" style="display: none; margin-top: 5px;">
             </p>
+
             <p>
-                <label for="data_transacao">Data da Transação:</label><br>
-                <input type="date" id="data_transacao" name="data_transacao" required value="<?= date('Y-m-d') ?>">
+                <label for="dia_transacao">Dia da Transação:</label><br>
+                <input type="number" id="dia_transacao" name="dia_transacao" min="1" max="28" step="1" placeholder="Dia da transação (1 a 28)"
+                        value="<?= $dia_transacao ?>">
             </p>
+
             <p>
-                <button type="button" onclick="document.getElementById('modalTransacao').close()">Cancelar</button>
+                <label for="data_assinatura_inicio">Data de Início:</label><br>
+                <input type="date" id="data_assinatura_inicio" name="data_assinatura_inicio" required value="<?= date('Y-m-d') ?>">
+            </p>
+
+            <p>
+                <label for="data_assinatura_termino">Data de Término (Opcional):</label><br>
+                <input type="date" id="data_assinatura_termino" name="data_assinatura_termino">
+                <small style="color: #6c757d; display: block; margin-top: 2px;">Deixe em branco se for por tempo indeterminado.</small>
+            </p>
+
+            <p>
+                <button type="button" onclick="document.getElementById('modalRecorrente').close()">Cancelar</button>
                 <button type="submit">Salvar</button>
             </p>
         </form>
