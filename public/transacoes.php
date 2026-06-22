@@ -14,8 +14,8 @@
     $operador_valor  = $_GET['operador_valor']  ?? '';
     $valor           = $_GET['valor']           ?? '';
     $data_transacao  = $_GET['data_transacao']  ?? '';
+    $limite          = $_GET['tamanho_paginas'] ?? 10;
     
-    $limite = 10;
     $paginaAtual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
 
     $transacoes = getTransactionsByUserIdAndParams(
@@ -139,9 +139,16 @@
         <table border="1" cellpadding="8" cellspacing="0">
             <thead>
                 <tr>
+
                     <th colspan="8" style="padding: 8px; background-color: #f8f9fa; position: relative; font-weight: normal;">            
                         <div style="display: flex; justify-content: center; align-items: center; width: 100%;">                  
                             <div style="display: inline-block;">
+                                <span style="position: absolute; left: 15px; font-weight: normal; font-size: 0.9rem; color: #6c757d;">
+                                    <p>Filtrar por:  
+                                        <input type="number" name="tamanho_paginas" placeholder="10" maxlength="90" step="1" style="text-align: center; width: 40px;"
+                                        value="<?= sanitizeInput($limite) ?>">
+                                    </p>
+                                </span>
                                 <?php
                                 $tamanhoSetor = 5;
                                 $qntSetores = ceil($totalPaginas / $tamanhoSetor);
@@ -170,7 +177,7 @@
                             </div>
 
                             <span style="position: absolute; right: 15px; font-weight: normal; font-size: 0.9rem; color: #6c757d;">
-                                <?= $paginaAtual . '/' . $totalPaginas ?>
+                                <p><?= $paginaAtual . '/' . $totalPaginas ?></p>
                             </span>
                         </div>
                     </th>
@@ -195,7 +202,7 @@
                     </th>
                     <th>
                         <input type="text" name="descricao" placeholder="~" maxlength="90" 
-                               value="<?= htmlspecialchars($descricao) ?>" style="text-align: center;">
+                               value="<?= sanitizeInput($descricao) ?>" style="text-align: center;">
                     </th>
                     <th>
                         <select name="categoria" style="text-align: center;">
@@ -225,7 +232,7 @@
                             <option value="menor_que" <?= $operador_valor == 'menor_que' ? 'selected' : '' ?>>Menor que</option>
                         </select>
                         <input type="number" step="0.01" name="valor" placeholder="0.00" 
-                               value="<?= htmlspecialchars($valor) ?>" style="text-align: center;">
+                               value="<?= sanitizeInput($valor) ?>" style="text-align: center;">
                     </th>
                     <th>
                         <input type="date" name="data_transacao" value="<?= $data_transacao ?>" style="text-align: center;">
