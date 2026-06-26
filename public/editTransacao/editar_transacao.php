@@ -41,70 +41,81 @@
     }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Transação</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <script src="assets/js/script.js"></script>
+    <title>Finance Control - Editar Transação</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/script.js"></script>
 </head>
-<body>
-    <h1>Editar Transação</h1>
-    <form method="POST" action="editar_transacao.php">
-        <label for="tipo">Tipo:</label>
-        <select id="tipo" name="tipo" required>
-            <option value="Entrada" <?= ($transacao['tipo'] == 'Entrada') ? 'selected' : '' ?>>
-                Entrada
-            </option>
-            <option value="Saída" <?= ($transacao['tipo'] == 'Saída') ? 'selected' : '' ?>>
-                Saída
-            </option>
-        </select><br><br>
+<body id="app-page">
 
-        <label for="descricao">Descrição:</label>
-        <input type="text" id="descricao" name="descricao" maxlength="90" required 
-        placeholder="Ex: Compra de chocolate" value="<?= sanitizeInput($transacao['descricao']) ?>"><br><br>
+    <div class="modal-page-wrap">
+        <div class="dialog-inner">
+            <h2>Editar Transação</h2>
 
-        <label for="valor">Valor (R$):</label>
-        <input type="number" step="0.01" id="valor" name="valor" required 
-        placeholder="0.00" value="<?= $transacao['valor'] ?>"><br><br>
+            <form method="POST" action="editar_transacao.php">
+                <div class="input-group">
+                    <label for="tipo">Tipo</label>
+                    <select id="tipo" name="tipo" required>
+                        <option value="Entrada" <?= ($transacao['tipo'] == 'Entrada') ? 'selected' : '' ?>>Entrada</option>
+                        <option value="Saída" <?= ($transacao['tipo'] == 'Saída') ? 'selected' : '' ?>>Saída</option>
+                    </select>
+                </div>
 
-        <label for="categoria">Categoria:</label>
-        <select id="categoria" name="categoria" required onchange="mostrarCampoNovaCategoria()">
-            <option value="" disabled>Selecione uma categoria</option>
-            <?php
-            $todasTransacoes = getTransactionsByUserId($pdo, $idUsuario);
-            $categoriasUnicas = [];
-            foreach ($todasTransacoes as $t) {
-                $cat = sanitizeInput($t['categoria']);
-                if (!empty($cat) && !in_array($cat, $categoriasUnicas)) {
-                    $categoriasUnicas[] = $cat;
-                }
-            }
-            foreach ($categoriasUnicas as $cat) {
-                $selected = ($cat === $transacao['categoria']) ? 'selected' : '';
-                echo '<option value="' . sanitizeInput($cat) . '" ' . $selected . '>'
-                    . sanitizeInput($cat) . '</option>';
-            }
-            ?>
+                <div class="input-group">
+                    <label for="descricao">Descrição</label>
+                    <input type="text" id="descricao" name="descricao" maxlength="90" required
+                           placeholder="Ex: Compra de chocolate" value="<?= sanitizeInput($transacao['descricao']) ?>">
+                </div>
 
-            <option value="nova_categoria">+ Adicionar nova categoria...</option>
-        </select>
+                <div class="input-group">
+                    <label for="valor">Valor (R$)</label>
+                    <input type="number" step="0.01" id="valor" name="valor" required
+                           placeholder="0.00" value="<?= sanitizeInput($transacao['valor']) ?>">
+                </div>
 
-        <input type="text" id="nova_categoria" name="nova_categoria" 
-            placeholder="Digite a nova categoria" style="display: none; margin-top: 5px;">
-        
-        <br><br>
-        
-        <label for="data_transacao">Data da Transação:</label>
-        <input type="date" id="data_transacao" name="data_transacao" 
-        required value="<?= $transacao['data_transacao'] ?>"><br><br>
+                <div class="input-group">
+                    <label for="categoria">Categoria</label>
+                    <select id="categoria" name="categoria" required onchange="mostrarCampoNovaCategoria()">
+                        <option value="" disabled>Selecione uma categoria</option>
+                        <?php
+                        $todasTransacoes = getTransactionsByUserId($pdo, $idUsuario);
+                        $categoriasUnicas = [];
+                        foreach ($todasTransacoes as $t) {
+                            $cat = sanitizeInput($t['categoria']);
+                            if (!empty($cat) && !in_array($cat, $categoriasUnicas)) {
+                                $categoriasUnicas[] = $cat;
+                            }
+                        }
+                        foreach ($categoriasUnicas as $cat) {
+                            $selected = ($cat === $transacao['categoria']) ? 'selected' : '';
+                            echo '<option value="' . sanitizeInput($cat) . '" ' . $selected . '>'
+                                . sanitizeInput($cat) . '</option>';
+                        }
+                        ?>
+                        <option value="nova_categoria">+ Adicionar nova categoria...</option>
+                    </select>
+                    <input type="text" id="nova_categoria" name="nova_categoria"
+                           placeholder="Digite a nova categoria" style="display: none; margin-top: 8px;">
+                </div>
 
-        <input type="hidden" name="id" value="<?= $transacao['id'] ?>">
+                <div class="input-group">
+                    <label for="data_transacao">Data da Transação</label>
+                    <input type="date" id="data_transacao" name="data_transacao" required
+                           value="<?= sanitizeInput($transacao['data_transacao']) ?>">
+                </div>
 
-        <button type="button" onclick="window.location.href='../transacoes.php'">Cancelar</button>
-        <button type="submit">Salvar</button>
-    </form>
+                <input type="hidden" name="id" value="<?= $transacao['id'] ?>">
+
+                <div class="dialog-actions">
+                    <button type="button" class="btn-secondary" onclick="window.location.href='../transacoes.php'">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </body>
 </html>

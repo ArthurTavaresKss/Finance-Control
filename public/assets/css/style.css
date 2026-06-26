@@ -390,6 +390,578 @@ body#login-page {
     }
 }
 
+/* =================================================================== */
+/* PÁGINAS INTERNAS DO APP (transações, recorrentes, dashboards, etc.) */
+/* Mesma paleta/tipografia do login, layout de topbar + conteúdo       */
+/* =================================================================== */
+
+body#app-page {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    min-height: 100vh;
+}
+
+/* ---------- Topbar ---------- */
+
+.app-topbar {
+    position: relative;
+    background: linear-gradient(165deg, var(--navy-deep) 0%, var(--navy-mid) 100%);
+    padding: 0 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+    overflow: hidden;
+}
+
+.app-topbar .ticker-line {
+    opacity: 0.35;
+}
+
+.app-brand {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.app-brand .logo-mark {
+    width: 124px;
+    max-width: none;
+    animation: none;
+}
+
+.app-nav {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.app-nav a {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--on-navy-soft);
+    padding: 6px 2px;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.app-nav a:hover,
+.app-nav a.active {
+    color: var(--on-navy);
+    border-bottom-color: var(--emerald);
+}
+
+.app-nav a.logout {
+    color: rgba(238, 242, 246, 0.45);
+}
+
+.app-nav a.logout:hover {
+    color: #e58a8a;
+    border-bottom-color: #e58a8a;
+}
+
+.app-nav-divider {
+    width: 1px;
+    height: 22px;
+    background: rgba(238, 242, 246, 0.16);
+}
+
+/* ---------- Conteúdo ---------- */
+
+.app-content {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 36px 36px 60px;
+}
+
+.app-page-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 26px;
+}
+
+.app-page-header .eyebrow {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--emerald-dark);
+    margin-bottom: 6px;
+}
+
+.app-page-header h2 {
+    font-family: 'Archivo', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+/* Cartão "vidro claro" reaproveitando a mesma linguagem do login,
+   mas com fundo majoritariamente sólido (sem precisar de backdrop escuro atrás) */
+.app-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(14, 27, 44, 0.07);
+    border-radius: 14px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 18px 36px -24px rgba(14, 27, 44, 0.18);
+    animation: riseIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.app-card + .app-card {
+    margin-top: 24px;
+}
+
+/* ---------- Botão primário/secundário reutilizáveis fora do login ---------- */
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border: none;
+    border-radius: var(--radius-button);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: #ffffff;
+    background: var(--emerald-dark);
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.btn-primary:hover {
+    background: var(--emerald);
+}
+
+.btn-primary:active {
+    background: var(--emerald-darker);
+    transform: translateY(1px);
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border: 1.5px solid var(--input-border);
+    border-radius: var(--radius-button);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    background: #ffffff;
+    transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-secondary:hover {
+    border-color: var(--ink-faint);
+    color: var(--ink);
+}
+
+/* ---------- Filtro de período / barra de filtros ---------- */
+
+.filter-bar {
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+}
+
+.filter-bar strong {
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.filter-bar input[type="date"],
+.filter-bar input[type="number"],
+.filter-bar input[type="text"],
+.filter-bar select {
+    padding: 9px 11px;
+    border: 1.5px solid var(--input-border);
+    border-radius: var(--radius-field);
+    background: #ffffff;
+    color: var(--ink);
+    font-size: 13.5px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.filter-bar input:focus,
+.filter-bar select:focus {
+    border-color: var(--input-border-focus);
+    box-shadow: 0 0 0 3px rgba(22, 160, 95, 0.14);
+}
+
+/* ---------- Tabela ---------- */
+
+.app-table-wrap {
+    overflow-x: auto;
+}
+
+table.app-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+table.app-table thead th {
+    text-align: left;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 12px 16px;
+    border-bottom: 1.5px solid var(--input-border);
+    background: rgba(14, 27, 44, 0.02);
+}
+
+table.app-table tbody td {
+    padding: 13px 16px;
+    border-bottom: 1px solid rgba(14, 27, 44, 0.06);
+    color: var(--ink);
+    vertical-align: middle;
+}
+
+table.app-table tbody tr:hover td {
+    background: rgba(22, 160, 95, 0.04);
+}
+
+table.app-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.app-table .filter-row th {
+    padding: 10px 14px;
+    background: #ffffff;
+    border-bottom: 1.5px solid var(--input-border);
+}
+
+.app-table .filter-row select,
+.app-table .filter-row input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1.5px solid var(--input-border);
+    border-radius: var(--radius-field);
+    font-size: 13px;
+    color: var(--ink);
+    background: #fff;
+    outline: none;
+}
+
+.app-table .filter-row select:focus,
+.app-table .filter-row input:focus {
+    border-color: var(--input-border-focus);
+    box-shadow: 0 0 0 3px rgba(22, 160, 95, 0.14);
+}
+
+.empty-row td {
+    text-align: center;
+    padding: 40px 16px;
+    color: var(--ink-faint);
+    font-size: 14px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.badge.entrada {
+    background: rgba(22, 160, 95, 0.12);
+    color: var(--emerald-dark);
+}
+
+.badge.saida {
+    background: rgba(180, 35, 35, 0.10);
+    color: var(--error-text);
+}
+
+.row-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.row-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-button);
+    border: 1.5px solid var(--input-border);
+    background: #ffffff;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+}
+
+.row-action-btn img {
+    width: 20px;
+    height: 20px;
+    opacity: 0.85;
+}
+
+.row-action-btn.edit:hover {
+    border-color: var(--emerald);
+    background: rgba(22, 160, 95, 0.06);
+}
+
+.row-action-btn.delete:hover {
+    border-color: #d98c8c;
+    background: rgba(180, 35, 35, 0.06);
+}
+
+.row-action-btn:active {
+    transform: translateY(1px);
+}
+
+/* ---------- Paginação ---------- */
+
+.pagination-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid rgba(14, 27, 44, 0.06);
+    font-size: 13px;
+}
+
+.pagination-bar .page-size {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink-soft);
+}
+
+.pagination-bar .page-size input {
+    width: 52px;
+    padding: 7px 8px;
+    text-align: center;
+    border: 1.5px solid var(--input-border);
+    border-radius: var(--radius-field);
+}
+
+.pagination-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.pagination-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 8px;
+    border-radius: var(--radius-field);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.pagination-links a:hover {
+    background: rgba(14, 27, 44, 0.05);
+    color: var(--ink);
+}
+
+.pagination-links a.active {
+    background: var(--emerald-dark);
+    color: #ffffff;
+}
+
+.pagination-links a.jump {
+    font-size: 11.5px;
+    color: var(--ink-faint);
+}
+
+.pagination-status {
+    color: var(--ink-faint);
+    font-size: 12.5px;
+}
+
+/* ---------- Página-modal (ex: editar transação) ----------
+   Página própria que se comporta visualmente como um modal:
+   card centralizado na tela, sobre o fundo padrão do app. */
+
+.modal-page-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+}
+
+.modal-page-wrap .dialog-inner {
+    width: 100%;
+    max-width: 460px;
+}
+
+/* ---------- Dialogs (modal nova transação / status) ---------- */
+
+dialog.app-dialog {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: 100%;
+    max-width: 460px;
+    max-height: calc(100vh - 64px);
+    padding: 0;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 30px 60px -24px rgba(4, 19, 31, 0.45);
+    background: transparent;
+    overflow: visible;
+}
+
+dialog.app-dialog::backdrop {
+    background: rgba(8, 16, 28, 0.45);
+    backdrop-filter: blur(2px);
+}
+
+.dialog-inner {
+    position: relative;
+    background:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.80' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E"),
+        #ffffff;
+    border-radius: 16px;
+    padding: 32px 32px 26px;
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+}
+
+.dialog-inner h2 {
+    font-family: 'Archivo', sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 20px;
+    letter-spacing: -0.01em;
+}
+
+.dialog-inner .input-group {
+    margin-bottom: 16px;
+}
+
+.dialog-inner label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+}
+
+.dialog-inner input,
+.dialog-inner select {
+    width: 100%;
+    padding: 11px 13px;
+    border: 1.5px solid var(--input-border);
+    border-radius: var(--radius-field);
+    background: var(--paper-card);
+    color: var(--ink);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dialog-inner input:focus,
+.dialog-inner select:focus {
+    border-color: var(--input-border-focus);
+    box-shadow: 0 0 0 3px rgba(22, 160, 95, 0.14);
+}
+
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+/* Modal de status: usa o mesmo dialog-inner, com ícone de feedback */
+.status-dialog-body {
+    text-align: center;
+    padding: 10px 6px 4px;
+}
+
+.status-dialog-body h2 {
+    font-size: 24px;
+    margin-bottom: 14px;
+}
+
+.status-dialog-body p {
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    line-height: 1.65;
+    margin-bottom: 26px;
+}
+
+.dialog-inner:has(.status-dialog-body) {
+    padding: 40px 38px 34px;
+}
+
+/* ---------- Responsivo ---------- */
+
+@media (max-width: 900px) {
+    .app-topbar {
+        padding: 0 20px;
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 64px;
+        gap: 10px;
+    }
+
+    .app-nav {
+        gap: 16px;
+        flex-wrap: wrap;
+        padding: 10px 0 12px;
+    }
+
+    .app-content {
+        padding: 24px 18px 48px;
+    }
+
+    .filter-bar {
+        padding: 16px 18px;
+    }
+
+    .pagination-bar {
+        padding: 14px 18px;
+    }
+}
+
+@media (max-width: 560px) {
+    .app-nav-divider {
+        display: none;
+    }
+
+    table.app-table {
+        font-size: 13px;
+    }
+}
+
 @keyframes riseIn {
     from {
         opacity: 0;
