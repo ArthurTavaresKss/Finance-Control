@@ -24,10 +24,30 @@
         
         $dia_transacao          = (int)$_POST['dia_transacao'];
         $dia_formatado          = str_pad($dia_transacao, 2, "0", STR_PAD_LEFT);
-        $data_transacao_inicio  = $_POST['data_transacao_inicio'] . '-' . $dia_formatado;
+
+        if (empty($_POST['data_transacao_inicio']) || !preg_match('/^(0[1-9]|1[0-2])\/[0-9]{4}$/', $_POST['data_transacao_inicio'])) {
+            $_SESSION['status_recorrente'] = 'data_termino_maior';
+            redirect("../recorrentes.php");
+            exit;
+        }
+
+        $partes_inicio = explode('/', $_POST['data_transacao_inicio']);
+        $mes_inicio = $partes_inicio[0];
+        $ano_inicio = $partes_inicio[1];
+        $data_transacao_inicio = $ano_inicio . '-' . $mes_inicio . '-' . $dia_formatado;
 
         if (!empty($_POST['data_transacao_termino'])) {
-            $data_transacao_termino = $_POST['data_transacao_termino'] . '-' . $dia_formatado;
+            
+            if (!preg_match('/^(0[1-9]|1[0-2])\/[0-9]{4}$/', $_POST['data_transacao_termino'])) {
+                $_SESSION['status_recorrente'] = 'data_termino_maior';
+                redirect("../recorrentes.php");
+                exit;
+            }
+
+            $partes_termino = explode('/', $_POST['data_transacao_termino']);
+            $mes_termino = $partes_termino[0];
+            $ano_termino = $partes_termino[1];
+            $data_transacao_termino = $ano_termino . '-' . $mes_termino . '-' . $dia_formatado;
             
             if (strtotime($data_transacao_termino) <= strtotime($data_transacao_inicio)) {
                 $_SESSION['status_recorrente'] = 'data_termino_maior';
@@ -125,17 +145,35 @@
         value="<?= $recorrente['dia_transacao'] ?>"><br><br>
 
         <label for="data_transacao_inicio">Data de Início:</label>
-        <input type="month" id="data_transacao_inicio" name="data_transacao_inicio" required 
-        value="<?= date('Y-m', strtotime($recorrente['data_transacao_inicio'])) ?>"><br><br>
+        <input type="text" 
+               id="data_transacao_inicio" 
+               name="data_transacao_inicio" 
+               required 
+               placeholder="MM/AAAA"
+               maxlength="7"
+               style="text-align: center; width: 100px;"
+               value="<?= date('m/Y', strtotime($recorrente['data_transacao_inicio'])) ?>"><br><br>
 
         <label for="data_transacao_termino">Data de Término (Opcional):</label>
-        <input type="month" id="data_transacao_termino" name="data_transacao_termino"
-        value="<?= !empty($recorrente['data_transacao_termino']) ? date('Y-m', strtotime($recorrente['data_transacao_termino'])) : '' ?>"><br><br>
+        <input type="text" 
+               id="data_transacao_termino" 
+               name="data_transacao_termino"
+               placeholder="MM/AAAA"
+               maxlength="7"
+               style="text-align: center; width: 100px;"
+               value="<?= !empty($recorrente['data_transacao_termino']) ? date('m/Y', strtotime($recorrente['data_transacao_termino'])) : '' ?>"><br><br>
 
         <input type="hidden" name="id" value="<?= $recorrente['id'] ?>">
 
         <button type="button" onclick="window.location.href='../recorrentes.php'">Cancelar</button>
         <button type="submit">Salvar</button>
     </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            aplicarMascaraMesAno('data_transacao_inicio');
+            aplicarMascaraMesAno('data_transacao_termino');
+        });
+    </script>
 </body>
 </html>

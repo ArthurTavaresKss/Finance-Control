@@ -19,10 +19,32 @@
         
         $dia_transacao = (int)$_POST['dia_transacao'];
         $dia_formatado = str_pad($dia_transacao, 2, "0", STR_PAD_LEFT);
-        $data_transacao_inicio = $_POST['data_transacao_inicio'] . '-' . $dia_formatado;
+        
+        // --- VALIDAÇÃO DA DATA DE INÍCIO VERÍDICA ---
+        if (empty($_POST['data_transacao_inicio']) || !preg_match('/^(0[1-9]|1[0-2])\/[0-9]{4}$/', $_POST['data_transacao_inicio'])) {
+            $_SESSION['status_recorrente'] = 'data_termino_maior'; // Dispara o modal de erro de data
+            redirect("../recorrentes.php");
+            exit;
+        }
+
+        $partes_inicio = explode('/', $_POST['data_transacao_inicio']);
+        $mes_inicio = $partes_inicio[0];
+        $ano_inicio = $partes_inicio[1];
+        $data_transacao_inicio = $ano_inicio . '-' . $mes_inicio . '-' . $dia_formatado;
 
         if (!empty($_POST['data_transacao_termino'])) {
-            $data_transacao_termino = $_POST['data_transacao_termino'] . '-' . $dia_formatado;
+            
+            if (!preg_match('/^(0[1-9]|1[0-2])\/[0-9]{4}$/', $_POST['data_transacao_termino'])) {
+                $_SESSION['status_recorrente'] = 'data_termino_maior';
+                redirect("../recorrentes.php");
+                exit;
+            }
+
+            $partes_termino = explode('/', $_POST['data_transacao_termino']);
+            $mes_termino = $partes_termino[0];
+            $ano_termino = $partes_termino[1];
+            $data_transacao_termino = $ano_termino . '-' . $mes_termino . '-' . $dia_formatado;
+            
             if (strtotime($data_transacao_termino) <= strtotime($data_transacao_inicio)) {
                 $_SESSION['status_recorrente'] = 'data_termino_maior';
                 redirect("../recorrentes.php");

@@ -80,7 +80,7 @@
             
             case 'data_termino_maior':
                 $modalTitulo = 'Data Incorreta.';
-                $modalMensagem = 'Você tentou inserir a data de término anterior ou igual à data de inicio.';
+                $modalMensagem = 'Você inseriu a data incorretamente, ou tentou inserir a data de término anterior ou igual à data de inicio.';
                 break;
 
             case 'erro_recorrente_adicionada':
@@ -352,18 +352,24 @@
 
             <p>
                 <label for="data_transacao_inicio">Data de Início:</label><br>
-                <input type="month" 
-                id="data_transacao_inicio" 
-                name="data_transacao_inicio" 
-                required 
-                value="<?= date('Y-m') ?>">
+                <input type="text" 
+                    id="data_transacao_inicio" 
+                    name="data_transacao_inicio" 
+                    required 
+                    placeholder="MM/AAAA"
+                    maxlength="7"
+                    style="text-align: center; width: 100px;"
+                    value="<?= date('m/Y') ?>">
             </p>
 
             <p>
                 <label for="data_transacao_termino">Data de Término (Opcional):</label><br>
-                <input type="month" 
+                <input type="text" 
                 id="data_transacao_termino" 
-                name="data_transacao_termino">
+                name="data_transacao_termino"
+                placeholder="MM/AAAA"
+                maxlength="7"
+                style="text-align: center; width: 100px;">
                 <small style="color: #6c757d; display: block; margin-top: 2px;">Deixe em branco se for por tempo indeterminado.</small>
             </p>
 
@@ -383,5 +389,11 @@
             document.getElementById('modalStatus').showModal();
         </script>
     <?php endif; ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            aplicarMascaraMesAno('data_transacao_inicio');
+            aplicarMascaraMesAno('data_transacao_termino');
+        });
+    </script>
 </body>
 </html>
