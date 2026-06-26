@@ -9,7 +9,6 @@
         $idRecorrente = $_GET['id'];
         $idUsuario = $_SESSION['idUsuario'];
 
-        // Busca os dados atuais da transação recorrente para preencher o formulário
         $recorrente = getRecurringByUserIdAndId($pdo, $idUsuario, $idRecorrente);
         
         if (!$recorrente) {
@@ -21,18 +20,28 @@
         $descricao              = trim($_POST['descricao']);
         $valor                  = $_POST['valor'];
         $categoria              = $_POST['categoria'];
-        $dia_transacao          = (int)$_POST['dia_transacao'];
-        $data_transacao_inicio = $_POST['data_transacao_inicio'];
         $idUsuario              = $_SESSION['idUsuario'];
         
-        // Se a data de término vier vazia, define como NULL para o banco
-        $data_transacao_termino = !empty($_POST['data_transacao_termino']) ? $_POST['data_transacao_termino'] : null;
+        $dia_transacao          = (int)$_POST['dia_transacao'];
+        $dia_formatado          = str_pad($dia_transacao, 2, "0", STR_PAD_LEFT);
+        $data_transacao_inicio  = $_POST['data_transacao_inicio'] . '-' . $dia_formatado;
+
+        if (!empty($_POST['data_transacao_termino'])) {
+            $data_transacao_termino = $_POST['data_transacao_termino'] . '-' . $dia_formatado;
+            
+            if (strtotime($data_transacao_termino) <= strtotime($data_transacao_inicio)) {
+                $_SESSION['status_recorrente'] = 'data_termino_maior';
+                redirect("../recorrentes.php");
+                exit;
+            }
+        } else {
+            $data_transacao_termino = null;
+        }
 
         if ($categoria === 'nova_categoria') {
             $categoria = trim($_POST['nova_categoria']);
         }
 
-        // Chama a função para atualizar os dados recorrentes
         $sucesso = alterRecurringById(
             $pdo,
             $id,
@@ -116,12 +125,12 @@
         value="<?= $recorrente['dia_transacao'] ?>"><br><br>
 
         <label for="data_transacao_inicio">Data de Início:</label>
-        <input type="date" id="data_transacao_inicio" name="data_transacao_inicio" 
-        required value="<?= $recorrente['data_transacao_inicio'] ?>"><br><br>
+        <input type="month" id="data_transacao_inicio" name="data_transacao_inicio" required 
+        value="<?= date('Y-m', strtotime($recorrente['data_transacao_inicio'])) ?>"><br><br>
 
         <label for="data_transacao_termino">Data de Término (Opcional):</label>
-        <input type="date" id="data_transacao_termino" name="data_transacao_termino"
-        value="<?= $recorrente['data_transacao_termino'] ?? '' ?>"><br><br>
+        <input type="month" id="data_transacao_termino" name="data_transacao_termino"
+        value="<?= !empty($recorrente['data_transacao_termino']) ? date('Y-m', strtotime($recorrente['data_transacao_termino'])) : '' ?>"><br><br>
 
         <input type="hidden" name="id" value="<?= $recorrente['id'] ?>">
 

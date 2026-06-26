@@ -141,9 +141,17 @@
                 <span class="eyebrow">Olá, <?= sanitizeInput($usernameUsuario) ?></span>
                 <h2>Transações</h2>
             </div>
-            <button type="button" class="btn-primary" onclick="document.getElementById('modalTransacao').showModal()">
-                + Adicionar transação
-            </button>
+            <div class="app-header-actions">
+                <button type="button" class="btn-primary" onclick="document.getElementById('modalTransacao').showModal()">
+                    + Adicionar transação
+                </button>
+                <button type="button" class="btn-secondary" onclick="window.location.href='importCSV/importar_transacoes.php'">
+                   Importar CSV
+                </button>
+                <button type="button" class="btn-secondary" onclick="window.location.href='exportCSV/exportar_transacoes.php'">
+                   Exportar CSV
+                </button>
+            </div>
         </div>
 
         <form method="GET" action="transacoes.php">
@@ -204,8 +212,8 @@
                                     </select>
                                 </th>
                                 <th>
-                                    <div style="display:flex; gap:6px;">
-                                        <select name="operador_valor" style="flex: 0 0 auto;">
+                                    <div class="value-filter-group">
+                                        <select name="operador_valor" class="op-select">
                                             <option value="">~</option>
                                             <option value="igual_a"   <?= $operador_valor == 'igual_a'   ? 'selected' : '' ?>>=</option>
                                             <option value="maior_que" <?= $operador_valor == 'maior_que' ? 'selected' : '' ?>>&gt;</option>

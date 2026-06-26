@@ -18,9 +18,19 @@
         }
         
         $dia_transacao = (int)$_POST['dia_transacao'];
-        $data_transacao_inicio = $_POST['data_transacao_inicio'];
+        $dia_formatado = str_pad($dia_transacao, 2, "0", STR_PAD_LEFT);
+        $data_transacao_inicio = $_POST['data_transacao_inicio'] . '-' . $dia_formatado;
 
-        $data_transacao_termino = !empty($_POST['data_transacao_termino']) ? $_POST['data_transacao_termino'] : null;
+        if (!empty($_POST['data_transacao_termino'])) {
+            $data_transacao_termino = $_POST['data_transacao_termino'] . '-' . $dia_formatado;
+            if (strtotime($data_transacao_termino) <= strtotime($data_transacao_inicio)) {
+                $_SESSION['status_recorrente'] = 'data_termino_maior';
+                redirect("../recorrentes.php");
+                exit;
+            }
+        } else {
+            $data_transacao_termino = null;
+        }
 
         $sucesso = insertRecurring($pdo, $idUsuario, $tipo, $descricao, $valor, $categoria, $dia_transacao, $data_transacao_inicio, $data_transacao_termino);
         

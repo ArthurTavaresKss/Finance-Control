@@ -77,6 +77,11 @@
                 $modalTitulo = 'Sucesso!';
                 $modalMensagem = 'Sua nova transação recorrente foi cadastrada com sucesso.';
                 break;
+            
+            case 'data_termino_maior':
+                $modalTitulo = 'Data Incorreta.';
+                $modalMensagem = 'Você tentou inserir a data de término anterior ou igual à data de inicio.';
+                break;
 
             case 'erro_recorrente_adicionada':
                 $modalTitulo = 'Erro ao cadastrar';
@@ -133,6 +138,12 @@
     <br>
     <button type="button" onclick="document.getElementById('modalRecorrente').showModal()">
         + Adicionar transação recorrente
+    </button>
+    <button type="button" onclick="window.location.href='importCSV/importar_recorrentes.php'">
+        Importar CSV
+    </button>
+    <button type="button" onclick="window.location.href='exportCSV/exportar_recorrentes.php'">
+        Exportar CSV
     </button>
     
     <form method="GET" action="recorrentes.php">
@@ -341,12 +352,18 @@
 
             <p>
                 <label for="data_transacao_inicio">Data de Início:</label><br>
-                <input type="date" id="data_transacao_inicio" name="data_transacao_inicio" required value="<?= date('Y-m-d') ?>">
+                <input type="month" 
+                id="data_transacao_inicio" 
+                name="data_transacao_inicio" 
+                required 
+                value="<?= date('Y-m') ?>">
             </p>
 
             <p>
                 <label for="data_transacao_termino">Data de Término (Opcional):</label><br>
-                <input type="date" id="data_transacao_termino" name="data_transacao_termino">
+                <input type="month" 
+                id="data_transacao_termino" 
+                name="data_transacao_termino">
                 <small style="color: #6c757d; display: block; margin-top: 2px;">Deixe em branco se for por tempo indeterminado.</small>
             </p>
 
