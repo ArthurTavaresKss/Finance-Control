@@ -14,9 +14,21 @@
     $operador_valor         = $_GET['operador_valor']         ?? '';
     $valor                  = $_GET['valor']                  ?? '';
     $dia_transacao          = $_GET['dia_transacao']          ?? '';
-    $data_inicio_transacao  = $_GET['data_inicio_transacao']  ?? '';
-    $data_termino_transacao = $_GET['data_termino_transacao'] ?? '';
+    $data_inicio_filtro     = $_GET['data_inicio_transacao']  ?? '';
+    $data_termino_filtro    = $_GET['data_termino_transacao'] ?? '';
     $limite          = $_GET['tamanho_paginas']               ?? 10;
+
+    $data_inicio_transacao = '';
+    if (!empty($data_inicio_filtro) && preg_match('/^(0[1-9]|1[0-2])\/[0-9]{4}$/', $data_inicio_filtro)) {
+        $partesInicio = explode('/', $data_inicio_filtro);
+        $data_inicio_transacao = $partesInicio[1] . '-' . $partesInicio[0] . '-01';
+    }
+
+    $data_termino_transacao = '';
+    if (!empty($data_termino_filtro) && preg_match('/^(0[1-9]|1[0-2])\/[0-9]{4}$/', $data_termino_filtro)) {
+        $partesTermino = explode('/', $data_termino_filtro);
+        $data_termino_transacao = $partesTermino[1] . '-' . $partesTermino[0] . '-01';
+    }
     
     $paginaAtual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
 
@@ -207,8 +219,8 @@
                     <th>Categoria</th>
                     <th>Valor</th>
                     <th>Dia da Transação</th>
-                    <th>Data de Início</th>
-                    <th>Data de Término</th>
+                    <th>Mês de Início</th>
+                    <th>Mês de Término</th>
                     <th>Ações</th>
                 </tr>
                 <tr>
@@ -259,10 +271,22 @@
                         value="<?= $dia_transacao ?>">
                     </th>
                     <th>
-                        <input type="date" name="data_inicio_transacao" value="<?= $data_inicio_transacao ?>" style="text-align: center;">
+                        <input type="text" 
+                               id="filtra_data_inicio"
+                               name="data_inicio_transacao" 
+                               placeholder="MM/AAAA"
+                               maxlength="7"
+                               value="<?= sanitizeInput($data_inicio_filtro) ?>" 
+                               style="text-align: center; width: 90px;">
                     </th>
                     <th>
-                        <input type="date" name="data_termino_transacao" value="<?= $data_termino_transacao ?>" style="text-align: center;">
+                        <input type="text" 
+                               id="filtra_data_termino"
+                               name="data_termino_transacao" 
+                               placeholder="MM/AAAA"
+                               maxlength="7"
+                               value="<?= sanitizeInput($data_termino_filtro) ?>" 
+                               style="text-align: center; width: 90px;">
                     </th>
                     <th>
                         <button type="submit">Filtrar</button>
@@ -285,9 +309,9 @@
                             <td><?= sanitizeInput($recorrente['categoria']) ?></td>
                             <td>R$ <?= sanitizeInput($recorrente['valor']) ?></td>
                             <td><?= sanitizeInput($recorrente['dia_transacao']) ?></td>
-                            <td><?= date('d/m/Y', strtotime(sanitizeInput($recorrente['data_transacao_inicio']))) ?></td>
+                            <td><?= date('m/Y', strtotime(sanitizeInput($recorrente['data_transacao_inicio']))) ?></td>
                             <td><?= !empty($recorrente['data_transacao_termino']) ? 
-                            date('d/m/Y', strtotime(sanitizeInput($recorrente['data_transacao_termino']))) : 'N/A' ?></td>
+                            date('m/Y', strtotime(sanitizeInput($recorrente['data_transacao_termino']))) : 'N/A' ?></td>
                             <td style="text-align: center;">
                                 <a href="editRecorrente/editar_recorrente.php?id=<?= $recorrente['id'] ?>">
                                     <img src="assets/img/editar.png" alt="Editar" width="23" height="23">
@@ -393,6 +417,8 @@
         document.addEventListener("DOMContentLoaded", function() {
             aplicarMascaraMesAno('data_transacao_inicio');
             aplicarMascaraMesAno('data_transacao_termino');
+            aplicarMascaraMesAno('filtra_data_inicio');
+            aplicarMascaraMesAno('filtra_data_termino');
         });
     </script>
 </body>
