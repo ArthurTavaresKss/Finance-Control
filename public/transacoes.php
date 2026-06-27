@@ -146,10 +146,10 @@
                     + Adicionar transação
                 </button>
                 <button type="button" class="btn-secondary" onclick="window.location.href='importCSV/importar_transacoes.php'">
-                   Importar CSV
+                    Importar CSV
                 </button>
                 <button type="button" class="btn-secondary" onclick="window.location.href='exportCSV/exportar_transacoes.php'">
-                   Exportar CSV
+                    Exportar CSV
                 </button>
             </div>
         </div>
@@ -211,7 +211,7 @@
                                         ?>
                                     </select>
                                 </th>
-                                <th>
+                                <th style="min-width: 170px;">
                                     <div class="value-filter-group">
                                         <select name="operador_valor" class="op-select">
                                             <option value="">~</option>
