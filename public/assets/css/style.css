@@ -849,6 +849,86 @@ table.app-table tbody tr:last-child td {
     max-width: 460px;
 }
 
+/* Variante mais larga, para páginas-modal com mais conteúdo
+   (ex: importação de arquivo, com lista de requisitos) */
+.modal-page-wrap.wide .dialog-inner {
+    max-width: 620px;
+}
+
+/* Card de aviso/requisitos — reaproveita a paleta de erro/atenção */
+.notice-box {
+    position: relative;
+    z-index: 1;
+    background: var(--error-bg);
+    border: 1px solid var(--error-border);
+    border-radius: var(--radius-field);
+    padding: 18px 20px;
+    margin-bottom: 26px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink);
+}
+
+.notice-box strong.notice-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--error-text);
+    margin-bottom: 10px;
+}
+
+.notice-box ul {
+    margin: 6px 0 0;
+    padding-left: 20px;
+}
+
+.notice-box li {
+    margin-bottom: 4px;
+}
+
+.notice-box code {
+    display: block;
+    background: #ffffff;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin: 8px 0;
+    font-size: 13px;
+    color: var(--ink);
+}
+
+.notice-box .notice-footnote {
+    display: block;
+    margin-top: 12px;
+    color: var(--ink-soft);
+    font-size: 13px;
+}
+
+/* ---------- Upload de arquivo ---------- */
+
+.file-drop {
+    display: block;
+    border: 1.5px dashed var(--input-border);
+    border-radius: var(--radius-field);
+    padding: 20px;
+    text-align: center;
+    background: rgba(14, 27, 44, 0.015);
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.file-drop:hover {
+    border-color: var(--emerald);
+    background: rgba(22, 160, 95, 0.04);
+}
+
+.file-drop input[type="file"] {
+    width: 100%;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+}
+
 /* ---------- Dialogs (modal nova transação / status) ---------- */
 
 dialog.app-dialog {

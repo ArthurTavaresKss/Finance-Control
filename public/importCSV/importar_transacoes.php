@@ -26,39 +26,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Importar Transações</title>
+    <title>Finance Control - Importar Transações</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/script.js"></script>
 </head>
-<body>
-    <h1>Importar Transações via CSV</h1>
-    
-    <form method="POST" action="processar_importacao_transacoes.php" enctype="multipart/form-data">
-        <p style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; border: 1px solid #f5c6cb; line-height: 1.6; max-width: 600px;">
-            <strong>⚠️ ATENÇÃO AOS REQUISITOS DO ARQUIVO:</strong><br>
-            • O arquivo deve estar obrigatoriamente no formato <strong>.CSV</strong> separado por ponto e vírgula (<strong>;</strong>).<br>
-            • A primeira linha do arquivo deve ser rigorosamente o cabeçalho:<br>
-            <code style="background: #fff; padding: 2px 5px; border: 1px solid #ccc; display: block; margin: 5px 0;">Tipo;Descrição;Valor;Categoria;Data da Transação</code>
-            • <strong>Campos aceitos:</strong><br>
-            - <em>Tipo:</em> Deve ser exatamente "Entrada" ou "Saída".<br>
-            - <em>Valor:</em> Formato brasileiro decimal (Ex: 1250,50 ou 45,00).<br>
-            - <em>Data da Transação:</em> Formato brasileiro estrito (Ex: DD/MM/AAAA).<br><br>
-            <span style="text-decoration: underline;">Nota:</span> Se <strong>qualquer uma das linhas</strong> contiver uma data inválida, valor incorreto ou campo em branco, <strong>toda a importação será cancelada</strong> e nenhum dado será salvo no sistema.
-        </p>
-        <p>
-            <label for="arquivo_csv">Selecione o arquivo CSV:</label><br><br>
-            <input type="file" id="arquivo_csv" name="arquivo_csv" accept=".csv" required>
-        </p>
-        
-        <p>
-            <button type="button" onclick="window.location.href='../transacoes.php'">Voltar</button>
-            <button type="submit">Importar Dados</button>
-        </p>
-    </form>
+<body id="app-page">
 
-    <dialog id="modalStatus" style="padding: 20px; border-radius: 8px; border: 1px solid #ccc; position: fixed; inset: 0; margin: auto; max-width: 400px; height: fit-content;">
-        <h2><?= sanitizeInput($modalTitulo) ?></h2>
-        <p><?= sanitizeInput($modalMensagem) ?></p>
-        <button type="button" onclick="document.getElementById('modalStatus').close()">Fechar</button>
+    <div class="modal-page-wrap wide">
+        <div class="dialog-inner">
+            <h2>Importar Transações via CSV</h2>
+
+            <form method="POST" action="processar_importacao_transacoes.php" enctype="multipart/form-data">
+                <div class="notice-box">
+                    <strong class="notice-title">⚠️ Atenção aos requisitos do arquivo</strong>
+                    <ul>
+                        <li>O arquivo deve estar obrigatoriamente no formato <strong>.CSV</strong> separado por ponto e vírgula (<strong>;</strong>).</li>
+                        <li>A primeira linha do arquivo deve ser rigorosamente o cabeçalho:</li>
+                    </ul>
+                    <code>Tipo;Descrição;Valor;Categoria;Data da Transação</code>
+                    <ul>
+                        <li><strong>Campos aceitos:</strong></li>
+                        <li><em>Tipo:</em> deve ser exatamente "Entrada" ou "Saída".</li>
+                        <li><em>Valor:</em> formato brasileiro decimal (ex: 1250,50 ou 45,00).</li>
+                        <li><em>Data da Transação:</em> formato brasileiro estrito (ex: DD/MM/AAAA).</li>
+                    </ul>
+                    <span class="notice-footnote">
+                        <span style="text-decoration: underline;">Nota:</span> se qualquer uma das linhas contiver uma data inválida, valor incorreto ou campo em branco, toda a importação será cancelada e nenhum dado será salvo no sistema.
+                    </span>
+                </div>
+
+                <div class="input-group">
+                    <label for="arquivo_csv">Selecione o arquivo CSV</label>
+                    <div class="file-drop">
+                        <input type="file" id="arquivo_csv" name="arquivo_csv" accept=".csv" required>
+                    </div>
+                </div>
+
+                <div class="dialog-actions">
+                    <button type="button" class="btn-secondary" onclick="window.location.href='../transacoes.php'">Voltar</button>
+                    <button type="submit" class="btn-primary">Importar dados</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <dialog id="modalStatus" class="app-dialog">
+        <div class="dialog-inner status-dialog-body">
+            <h2><?= sanitizeInput($modalTitulo) ?></h2>
+            <p><?= sanitizeInput($modalMensagem) ?></p>
+            <div class="dialog-actions" style="justify-content: center;">
+                <button type="button" class="btn-primary" onclick="document.getElementById('modalStatus').close()">Fechar</button>
+            </div>
+        </div>
     </dialog>
 
     <?php if ($mostrarModal): ?>
@@ -66,5 +85,6 @@
             document.getElementById('modalStatus').showModal();
         </script>
     <?php endif; ?>
+
 </body>
 </html>
