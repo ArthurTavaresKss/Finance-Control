@@ -343,6 +343,15 @@ function handleDBException(PDOException $e, string $userMessage = "Ocorreu um er
     throw new Exception($userMessage);
 }
 
+function getRecurringByUserId($pdo, $idUsuario) {
+    $sql = "SELECT * FROM transacoes_recorrentes WHERE id_usuario = :idUsuario";
+    $sql .= " ORDER BY dia_transacao DESC, id DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':idUsuario', $idUsuario);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 function getRecurringByUserIdAndParams($pdo, $idUsuario, $dataInicial, $dataFinal, $tipo, $descricao,
  $categoria, $operadorValor, $valor, $diaTransacao, $data_inicio_transacao, $data_termino_transacao) {
     
