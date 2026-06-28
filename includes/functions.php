@@ -699,5 +699,3 @@ function getRecurringByUserIdAndId($pdo, $idUsuario, $idRecorrente) {
     return $stmt->fetch(PDO::FETCH_ASSOC);
 
 }
-
-?>
