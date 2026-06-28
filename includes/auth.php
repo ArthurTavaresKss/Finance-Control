@@ -5,7 +5,7 @@ session_start();
 define('TEMPO_LIMITE_INATIVIDADE', 60 * 60); // 1 hora
  
 if (!isset($_SESSION['idUsuario'])) {
-    redirect("/Finance-Control/public/login.php");
+    redirect("login");
     exit;
 }
 
@@ -21,5 +21,3 @@ if (isset($_SESSION['ultimo_acesso'])) {
 }
 
 $_SESSION['ultimo_acesso'] = time();
-?>
- 
