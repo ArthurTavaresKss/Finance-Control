@@ -19,4 +19,4 @@ try {
     echo("ERRO DE CONEXÃO: " . $e->getMessage() . "<br>");
     die("Acho que algo está errado com o banco..");
 }
-?>
+?> 
