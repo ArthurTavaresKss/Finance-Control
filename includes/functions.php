@@ -269,73 +269,208 @@ function linkPagina($numPagina) {
     return '?' . http_build_query($params);
 }
 
-function getGastosPorCategoria($pdo, $idUsuario) {
-    $sql = "SELECT categoria, SUM(valor) as total 
-            FROM transacoes 
-            WHERE id_usuario = :id_usuario 
-              AND tipo = 'Saída'
-              AND MONTH(data_transacao) = MONTH(CURRENT_DATE())
-              AND YEAR(data_transacao) = YEAR(CURRENT_DATE())
-            GROUP BY categoria";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(['id_usuario' => $idUsuario]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+function getIndicadoresMensais($pdo, $idUsuario, $ano, $mes) {
+    $dataInicial = sprintf('%04d-%02d-01', $ano, $mes);
+    $dataFinal   = date('Y-m-t', strtotime($dataInicial));
+ 
+    $sql = "SELECT
+                IFNULL(SUM(qtd_entradas), 0) AS qtd_entradas,
+                IFNULL(SUM(qtd_saidas), 0) AS qtd_saidas,
+                IFNULL(SUM(qtd_entradas) + SUM(qtd_saidas), 0) AS qtd_totais,
+                IFNULL(SUM(valor_entradas), 0) AS valor_entradas,
+                IFNULL(SUM(valor_saidas), 0) AS valor_saidas
+            FROM (
+                SELECT
+                    COUNT(CASE WHEN tipo = 'Entrada' THEN 1 END) AS qtd_entradas,
+                    COUNT(CASE WHEN tipo = 'Saída' THEN 1 END) AS qtd_saidas,
+                    IFNULL(SUM(CASE WHEN tipo = 'Entrada' THEN valor END), 0) AS valor_entradas,
+                    IFNULL(SUM(CASE WHEN tipo = 'Saída' THEN valor END), 0) AS valor_saidas
+                FROM transacoes
+                WHERE id_usuario = :id_usuario1
+                  AND data_transacao BETWEEN :data_inicial1 AND :data_final1
+ 
+                UNION ALL
 
-function getBalancoMensal($pdo, $idUsuario) {
-    $sql = "SELECT tipo, SUM(valor) as total 
-            FROM transacoes 
-            WHERE id_usuario = :id_usuario 
-              AND MONTH(data_transacao) = MONTH(CURRENT_DATE())
-              AND YEAR(data_transacao) = YEAR(CURRENT_DATE())
-            GROUP BY tipo";
+                SELECT
+                    COUNT(CASE WHEN tipo = 'Entrada' THEN 1 END) AS qtd_entradas,
+                    COUNT(CASE WHEN tipo = 'Saída' THEN 1 END) AS qtd_saidas,
+                    IFNULL(SUM(CASE WHEN tipo = 'Entrada' THEN valor END), 0) AS valor_entradas,
+                    IFNULL(SUM(CASE WHEN tipo = 'Saída' THEN valor END), 0) AS valor_saidas
+                FROM transacoes_recorrentes
+                WHERE id_usuario = :id_usuario2
+                  AND data_transacao_inicio <= :data_final2
+                  AND (data_transacao_termino IS NULL
+                       OR DATE_ADD(data_transacao_termino, INTERVAL 1 DAY) >= :data_inicial2)
+            ) AS combinado";
+ 
     $stmt = $pdo->prepare($sql);
-    $stmt->execute(['id_usuario' => $idUsuario]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-function getIndicadoresMensais($pdo, $idUsuario) {
-    $sql = "SELECT 
-                COUNT(CASE WHEN tipo = 'Entrada' THEN 1 END) as qtd_entradas,
-                COUNT(CASE WHEN tipo = 'Saída' THEN 1 END) as qtd_saidas,
-                COUNT(*) as qtd_totais,
-                IFNULL(SUM(CASE WHEN tipo = 'Entrada' THEN valor END), 0) as valor_entradas,
-                IFNULL(SUM(CASE WHEN tipo = 'Saída' THEN valor END), 0) as valor_saidas
-            FROM transacoes 
-            WHERE id_usuario = :id_usuario 
-              AND MONTH(data_transacao) = MONTH(CURRENT_DATE())
-              AND YEAR(data_transacao) = YEAR(CURRENT_DATE())";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(['id_usuario' => $idUsuario]);
+    $stmt->execute([
+        ':id_usuario1'   => $idUsuario,
+        ':data_inicial1' => $dataInicial,
+        ':data_final1'   => $dataFinal,
+        ':id_usuario2'   => $idUsuario,
+        ':data_final2'   => $dataFinal,
+        ':data_inicial2' => $dataInicial,
+    ]);
+ 
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-function getEntradasPorCategoria($pdo, $idUsuario) {
-    $sql = "SELECT categoria, SUM(valor) as total 
-            FROM transacoes 
-            WHERE id_usuario = :id_usuario 
-              AND tipo = 'Entrada'
-              AND MONTH(data_transacao) = MONTH(CURRENT_DATE())
-              AND YEAR(data_transacao) = YEAR(CURRENT_DATE())
+function getGastosPorCategoria($pdo, $idUsuario, $ano, $mes) {
+    return getMovimentoPorCategoria($pdo, $idUsuario, $ano, $mes, 'Saída');
+}
+ 
+function getEntradasPorCategoria($pdo, $idUsuario, $ano, $mes) {
+    return getMovimentoPorCategoria($pdo, $idUsuario, $ano, $mes, 'Entrada');
+}
+
+function getMovimentoPorCategoria($pdo, $idUsuario, $ano, $mes, $tipo) {
+    $dataInicial = sprintf('%04d-%02d-01', $ano, $mes);
+    $dataFinal   = date('Y-m-t', strtotime($dataInicial));
+ 
+    $sql = "SELECT categoria, SUM(total) AS total
+            FROM (
+                SELECT categoria, SUM(valor) AS total
+                FROM transacoes
+                WHERE id_usuario = :id_usuario1
+                  AND tipo = :tipo1
+                  AND data_transacao BETWEEN :data_inicial1 AND :data_final1
+                GROUP BY categoria
+ 
+                UNION ALL
+ 
+                SELECT categoria, SUM(valor) AS total
+                FROM transacoes_recorrentes
+                WHERE id_usuario = :id_usuario2
+                  AND tipo = :tipo2
+                  AND data_transacao_inicio <= :data_final2
+                  AND (data_transacao_termino IS NULL
+                       OR DATE_ADD(data_transacao_termino, INTERVAL 1 DAY) >= :data_inicial2)
+                GROUP BY categoria
+            ) AS combinado
             GROUP BY categoria";
+ 
     $stmt = $pdo->prepare($sql);
-    $stmt->execute(['id_usuario' => $idUsuario]);
+    $stmt->execute([
+        ':id_usuario1'   => $idUsuario,
+        ':tipo1'         => $tipo,
+        ':data_inicial1' => $dataInicial,
+        ':data_final1'   => $dataFinal,
+        ':id_usuario2'   => $idUsuario,
+        ':tipo2'         => $tipo,
+        ':data_final2'   => $dataFinal,
+        ':data_inicial2' => $dataInicial,
+    ]);
+ 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function getHistoricoAnual($pdo, $idUsuario) {
-    $sql = "SELECT 
-                MONTH(data_transacao) as mes,
-                IFNULL(SUM(CASE WHEN tipo = 'Entrada' THEN valor END), 0) as entradas,
-                IFNULL(SUM(CASE WHEN tipo = 'Saída' THEN valor END), 0) as saidas
-            FROM transacoes 
-            WHERE id_usuario = :id_usuario 
-              AND YEAR(data_transacao) = YEAR(CURRENT_DATE())
-            GROUP BY MONTH(data_transacao)
-            ORDER BY MONTH(data_transacao) ASC";
+function getHistoricoAnual($pdo, $idUsuario, $ano) {
+    $resultado = [];
+ 
+    for ($mes = 1; $mes <= 12; $mes++) {
+        $dataInicial = sprintf('%04d-%02d-01', $ano, $mes);
+        $dataFinal   = date('Y-m-t', strtotime($dataInicial));
+ 
+        $sql = "SELECT
+                    IFNULL(SUM(entradas), 0) AS entradas,
+                    IFNULL(SUM(saidas), 0) AS saidas
+                FROM (
+                    SELECT
+                        IFNULL(SUM(CASE WHEN tipo = 'Entrada' THEN valor END), 0) AS entradas,
+                        IFNULL(SUM(CASE WHEN tipo = 'Saída' THEN valor END), 0) AS saidas
+                    FROM transacoes
+                    WHERE id_usuario = :id_usuario1
+                      AND data_transacao BETWEEN :data_inicial1 AND :data_final1
+ 
+                    UNION ALL
+ 
+                    SELECT
+                        IFNULL(SUM(CASE WHEN tipo = 'Entrada' THEN valor END), 0) AS entradas,
+                        IFNULL(SUM(CASE WHEN tipo = 'Saída' THEN valor END), 0) AS saidas
+                    FROM transacoes_recorrentes
+                    WHERE id_usuario = :id_usuario2
+                      AND data_transacao_inicio <= :data_final2
+                      AND (data_transacao_termino IS NULL
+                           OR DATE_ADD(data_transacao_termino, INTERVAL 1 DAY) >= :data_inicial2)
+                ) AS combinado";
+ 
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':id_usuario1'   => $idUsuario,
+            ':data_inicial1' => $dataInicial,
+            ':data_final1'   => $dataFinal,
+            ':id_usuario2'   => $idUsuario,
+            ':data_final2'   => $dataFinal,
+            ':data_inicial2' => $dataInicial,
+        ]);
+ 
+        $linha = $stmt->fetch(PDO::FETCH_ASSOC);
+ 
+        $resultado[] = [
+            'mes'      => $mes,
+            'entradas' => (float)$linha['entradas'],
+            'saidas'   => (float)$linha['saidas'],
+        ];
+    }
+ 
+    return $resultado;
+}
+
+function getAnosDisponiveisFiltro($pdo, $idUsuario) {
+    $anoAtual = (int)date('Y');
+
+    $sql = "SELECT DISTINCT ano FROM (
+                SELECT DISTINCT YEAR(data_transacao) AS ano 
+                FROM transacoes 
+                WHERE id_usuario = :id_usuario1
+                
+                UNION
+                
+                SELECT DISTINCT YEAR(data_transacao_inicio) AS ano 
+                FROM transacoes_recorrentes 
+                WHERE id_usuario = :id_usuario2
+            ) AS anos_combinados 
+            WHERE ano IS NOT NULL
+            ORDER BY ano DESC";
+            
     $stmt = $pdo->prepare($sql);
-    $stmt->execute(['id_usuario' => $idUsuario]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->execute([
+        ':id_usuario1' => $idUsuario,
+        ':id_usuario2' => $idUsuario
+    ]);
+    
+    $anos = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+    if (empty($anos)) {
+        return [$anoAtual];
+    }
+    
+    return array_map('intval', $anos);
+}
+
+function getMesesDisponiveisFiltro($pdo, $idUsuario) {
+    $sql = "SELECT DISTINCT mes FROM (
+                SELECT DISTINCT MONTH(data_transacao) AS mes FROM transacoes WHERE id_usuario = :id_usuario1
+                UNION
+                SELECT DISTINCT MONTH(data_transacao_inicio) AS mes FROM transacoes_recorrentes WHERE id_usuario = :id_usuario2
+            ) AS meses_reais 
+            WHERE mes IS NOT NULL
+            ORDER BY mes ASC";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':id_usuario1' => $idUsuario,
+        ':id_usuario2' => $idUsuario
+    ]);
+    
+    $mesesLogados = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+    if (empty($mesesLogados)) {
+        return [(int)date('n')];
+    }
+
+    return array_map('intval', $mesesLogados);
 }
 
 function handleDBException(PDOException $e, string $userMessage = "Ocorreu um erro no sistema. Tente novamente mais tarde.") {
@@ -491,7 +626,6 @@ function getRecurringByUserIdAndParamsAndPagination($pdo, $idUsuario, $dataInici
         $stmt->bindValue($key, $val);
     }
 
-    // Força explicitamente o tipo INTEIRO para a paginação funcionar de forma segura
     $stmt->bindValue(':limite', (int)$limite, PDO::PARAM_INT);
     $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
 
@@ -513,8 +647,6 @@ function insertRecurring($pdo, $idUsuario, $tipo, $descricao, $valor, $categoria
     $stmt->bindValue(':categoria', $categoria);
     $stmt->bindValue(':dia_transacao', $diaTransacao, PDO::PARAM_INT);
     $stmt->bindValue(':data_inicio', $dataInicio);
-    
-    // Envia NULL propriamente dito se a variável for nula
     $stmt->bindValue(':data_termino', $dataTermino, $dataTermino === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
     
     return $stmt->execute();

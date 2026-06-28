@@ -5,11 +5,21 @@
 
     $idUsuario = $_SESSION['idUsuario'];
 
-    $indicadores = getIndicadoresMensais($pdo, $idUsuario);
+    $mesAtual = isset($_GET['mes']) ? (int)$_GET['mes'] : (int)date('n');
+    $anoAtual = isset($_GET['ano']) ? (int)$_GET['ano'] : (int)date('Y');
+
+    if ($mesAtual < 1 || $mesAtual > 12) {
+        $mesAtual = (int)date('n');
+    }
+    if ($anoAtual < 2000 || $anoAtual > 2100) {
+        $anoAtual = (int)date('Y');
+    }
+
+    $indicadores = getIndicadoresMensais($pdo, $idUsuario, $anoAtual, $mesAtual);
     $saldoMes = $indicadores['valor_entradas'] - $indicadores['valor_saidas'];
 
-    $dadosGastosCat = getGastosPorCategoria($pdo, $idUsuario);
-    $dadosEntradasCat = getEntradasPorCategoria($pdo, $idUsuario);
+    $dadosGastosCat = getGastosPorCategoria($pdo, $idUsuario, $anoAtual, $mesAtual);
+    $dadosEntradasCat = getEntradasPorCategoria($pdo, $idUsuario, $anoAtual, $mesAtual);
 
     usort($dadosGastosCat, function($a, $b) {
         return $b['total'] <=> $a['total'];
@@ -19,7 +29,7 @@
         return $b['total'] <=> $a['total'];
     });
 
-    $historicoAnual = getHistoricoAnual($pdo, $idUsuario);
+    $historicoAnual = getHistoricoAnual($pdo, $idUsuario, $anoAtual);
 
     $gCatLabels = []; $gCatValores = [];
     foreach ($dadosGastosCat as $item) { $gCatLabels[] = $item['categoria']; $gCatValores[] = (float)$item['total']; }
@@ -38,26 +48,36 @@
         $anualSaidas[$idx] = (float)$dados['saidas'];
         $anualSaldos[$idx] = (float)($dados['entradas'] - $dados['saidas']);
     }
+
+    $listaNomesMeses = [
+        1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'Março', 4 => 'Abril',
+        5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto',
+        9 => 'Setembro', 10 => 'Outubro', 11 => 'Novembro', 12 => 'Dezembro'
+    ];
+
+    $mesesValidosNoBanco = getMesesDisponiveisFiltro($pdo, $idUsuario);
+    $anosDisponiveis = getAnosDisponiveisFiltro($pdo, $idUsuario);
+
+    if (!in_array($mesAtual, $mesesValidosNoBanco)) {
+        $mesesValidosNoBanco[] = $mesAtual;
+        sort($mesesValidosNoBanco);
+    }
+    if (!in_array($anoAtual, $anosDisponiveis)) {
+        $anosDisponiveis[] = $anoAtual;
+        rsort($anosDisponiveis);
+    }
+
+    $mesesNomesCompletos = $listaNomesMeses;
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboards - Finance Control</title>
+    <title>Finance Control - Dashboards</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <script src="assets/js/script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f6f9; }
-        .dashboard-row { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; width: 100%; }
-        .card { flex: 1; min-width: 180px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid #34495e; }
-        .card h4 { margin: 0 0 5px 0; color: #7f8c8d; font-size: 13px; text-transform: uppercase; }
-        .card p { margin: 0; font-size: 20px; font-weight: bold; color: #2c3e50; }
-        .card.positivo { border-left-color: #2ecc71; }
-        .card.negativo { border-left-color: #e74c3c; }
-        .chart-box { flex: 1; min-width: 45%; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .chart-box h3 { margin-top: 0; color: #34495e; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-    </style>
 </head>
 <body>
     <h1>Finance Control</h1>
@@ -69,8 +89,29 @@
         <a href="logout.php">Sair</a>
     </nav>
     <br>
+    <form method="GET" action="dashboards.php" id="filtro-periodo">
+        <label for="mes">Mês:</label>
+        <select name="mes" id="mes">
+            <?php foreach ($mesesValidosNoBanco as $numMes): ?>
+                <option value="<?= $numMes ?>" <?= $numMes == $mesAtual ? 'selected' : '' ?>>
+                    <?= $listaNomesMeses[$numMes] ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
 
-    <h2>Dados Mensais</h2>
+        <label for="ano">Ano:</label>
+        <select name="ano" id="ano">
+            <?php foreach ($anosDisponiveis as $anoOpcao): ?>
+                <option value="<?= $anoOpcao ?>" <?= $anoOpcao == $anoAtual ? 'selected' : '' ?>>
+                    <?= $anoOpcao ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+
+        <button type="submit">Filtrar</button>
+        <a href="dashboards.php" style="margin-left: 10px;"><button type="button">Resetar Filtros</button></a>
+    </form>
+    <h2>Dados Mensais — <?= sanitizeInput($mesesNomesCompletos[$mesAtual]) ?> de <?= $anoAtual ?></h2>
     <div class="dashboard-row">
         <div class="card">
             <h4>Qtd. Entradas</h4>
@@ -97,20 +138,18 @@
             <p>R$ <?= number_format($saldoMes, 2, ',', '.') ?></p>
         </div>
     </div>
-
-    <h2>Dados por Categoria</h2>
+    <h2>Dados por Categoria — <?= sanitizeInput($mesesNomesCompletos[$mesAtual]) ?> de <?= $anoAtual ?></h2>
     <div class="dashboard-row">
         <div class="chart-box">
-            <h3>Gastos por Categoria (Colunas - Mês Atual)</h3>
+            <h3>Gastos por Categoria (Colunas)</h3>
             <canvas id="chartGastosCat"></canvas>
         </div>
         <div class="chart-box">
-            <h3>Total de Entradas por Categoria (Colunas - Mês Atual)</h3>
+            <h3>Total de Entradas por Categoria (Colunas)</h3>
             <canvas id="chartEntradasCat"></canvas>
         </div>
     </div>
-
-    <h2>Dados por Saldos</h2>
+    <h2>Dados por Saldos — Ano de <?= $anoAtual ?></h2>
     <div class="dashboard-row">
         <div class="chart-box">
             <h3>Evolução Anual (Entradas, Saídas e Saldo)</h3>
