@@ -1,7 +1,7 @@
 <?php
 $host = 'localhost';
 $db = 'financecontrol';
-$user = 'financeAdmin';
+$user = 'root';
 $pass = '';
 $charset = 'utf8mb4';
 
