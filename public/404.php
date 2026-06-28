@@ -28,7 +28,7 @@ if (isLoggedIn()) {
             <p>Ops! O endereço que você acessou não existe ou foi movido. Verifique o link ou volte para o início.</p>
 
             <div class="error-404-actions">
-                <button type="button" class="btn-primary" onclick="window.location.href='/Finance-Control/<?php echo htmlspecialchars($redirect); ?>'">Voltar</button>
+                <button type="button" class="btn-primary" onclick="window.location.href='/<?php echo sanitizeInput($redirect); ?>'">Voltar</button>
             </div>
 
         </div>
