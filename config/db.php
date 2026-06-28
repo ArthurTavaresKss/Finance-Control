@@ -1,8 +1,8 @@
 <?php
-$host = 'localhost';
+$host = getenv('DB_HOST' ?: 'localhost');
 $db = 'financecontrol';
-$user = 'root';
-$pass = '';
+$user = getenv('DB_USER') ?: 'root';
+$pass = getenv('DB_PASSWORD') ?: '';
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
@@ -19,5 +19,4 @@ try {
     echo("ERRO DE CONEXÃO: " . $e->getMessage() . "<br>");
     die("Acho que algo está errado com o banco..");
 }
-
 ?>
