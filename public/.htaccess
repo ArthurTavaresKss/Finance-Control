@@ -1,23 +1,23 @@
-# Define a página personalizada para o erro 404
-ErrorDocument 404 /Finance-Control/public/404.php
+# Página de erro 404
+ErrorDocument 404 /public/404.php
 
 RewriteEngine On
-RewriteBase /Finance-Control/public/
+RewriteBase /public/
 
-# 1. Se o usuário digitar explicitamente .php na URL, redireciona para a versão limpa
+# Remove .php da URL (opcional, pode manter)
 RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s([^.]+)\.php [NC]
 RewriteRule ^ %1 [R=301,L]
 
-# 2. Se o arquivo ou pasta existir fisicamente (ex: CSS, imagens em assets), acessa direto
+# Se o arquivo/pasta existir, acessa direto
 RewriteCond %{REQUEST_FILENAME} -d [OR]
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^ - [L]
 
-# 3. Permite acessar subpastas se elas tiverem um index.php interno
+# Permite subpastas com index.php
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteCond %{REQUEST_FILENAME}/index.php -f
 RewriteRule ^(.*)$ $1/index.php [L]
 
-# 4. Faz o servidor ler o arquivo .php em qualquer nível de subpasta
+# Executa .php automaticamente
 RewriteCond %{REQUEST_FILENAME}.php -f
 RewriteRule ^(.*)$ $1.php [L]
