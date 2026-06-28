@@ -481,7 +481,7 @@ body#app-page {
 
 .app-page-header {
     display: flex;
-    align-items: baseline;
+    align-items: flex-end;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 16px;
@@ -574,6 +574,52 @@ body#app-page {
 .btn-secondary:hover {
     border-color: var(--ink-faint);
     color: var(--ink);
+}
+
+.btn-danger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border: none;
+    border-radius: var(--radius-button);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: #ffffff;
+    background: var(--error-text);
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.btn-danger:hover {
+    background: #971d1d;
+}
+
+.btn-danger:active {
+    background: #7a1717;
+    transform: translateY(1px);
+}
+
+/* Versão apenas-texto, usada para abrir ações destrutivas sem chamar
+   tanta atenção quanto um botão sólido vermelho na tela de perfil */
+.btn-text-danger {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--error-text);
+    transition: color 0.15s ease;
+}
+
+.btn-text-danger:hover {
+    color: #7a1717;
+    text-decoration: underline;
 }
 
 /* ---------- Filtro de período / barra de filtros ---------- */
@@ -1041,6 +1087,203 @@ dialog.app-dialog::backdrop {
 
 .dialog-inner:has(.status-dialog-body) {
     padding: 40px 38px 34px;
+}
+
+/* =================================================================== */
+/* DASHBOARDS                                                          */
+/* =================================================================== */
+
+.dashboard-section-title {
+    margin: 36px 0 16px;
+    font-family: 'Archivo', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+.dashboard-section-title:first-of-type {
+    margin-top: 28px;
+}
+
+/* Linha de cards/gráficos lado a lado */
+.dashboard-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 8px;
+}
+
+/* Cards de indicador (Qtd. Entradas, Valor Saídas, Saldo, etc.) */
+.dashboard-row .card {
+    flex: 1;
+    min-width: 170px;
+    background: #fcfdfe;
+    border: 1px solid rgba(14, 27, 44, 0.07);
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: 0 12px 24px -18px rgba(14, 27, 44, 0.14);
+    border-left: 4px solid var(--navy-line);
+    animation: riseIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.dashboard-row .card h4 {
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+.dashboard-row .card p {
+    margin: 0;
+    font-family: 'Archivo', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+.dashboard-row .card.positivo {
+    border-left-color: var(--emerald);
+}
+
+.dashboard-row .card.positivo p {
+    color: var(--emerald-dark);
+}
+
+.dashboard-row .card.negativo {
+    border-left-color: var(--error-text);
+}
+
+.dashboard-row .card.negativo p {
+    color: var(--error-text);
+}
+
+/* Caixas de gráfico, lado a lado */
+.dashboard-row .chart-box {
+    flex: 1;
+    min-width: 320px;
+    background: #fcfdfe;
+    border: 1px solid rgba(14, 27, 44, 0.07);
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: 0 18px 36px -24px rgba(14, 27, 44, 0.16);
+    animation: riseIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.dashboard-row .chart-box h3 {
+    margin: 0 0 16px;
+    font-family: 'Archivo', sans-serif;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(14, 27, 44, 0.07);
+}
+
+.dashboard-row .chart-box canvas {
+    max-height: 320px;
+}
+
+/* Formulário de filtro de mês/ano */
+#filtro-periodo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+#filtro-periodo label {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+}
+
+#filtro-periodo select {
+    padding: 9px 12px;
+    border: 1.5px solid var(--input-border);
+    border-radius: var(--radius-field);
+    background: #ffffff;
+    color: var(--ink);
+    font-size: 13.5px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#filtro-periodo select:focus {
+    border-color: var(--input-border-focus);
+    box-shadow: 0 0 0 3px rgba(22, 160, 95, 0.14);
+}
+
+#filtro-periodo button {
+    height: 38px;
+}
+
+/* =================================================================== */
+/* PERFIL                                                              */
+/* =================================================================== */
+
+.profile-header-card {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 28px 32px;
+    flex-wrap: wrap;
+}
+
+.profile-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #ffffff;
+    box-shadow: 0 8px 20px -8px rgba(14, 27, 44, 0.25);
+    flex-shrink: 0;
+}
+
+.profile-header-info {
+    flex: 1;
+    min-width: 200px;
+}
+
+.profile-header-info h2 {
+    font-family: 'Archivo', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+}
+
+.profile-header-info p {
+    font-size: 14px;
+    color: var(--ink-soft);
+}
+
+.profile-header-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.profile-danger-zone {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(14, 27, 44, 0.07);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.profile-danger-zone span {
+    font-size: 13px;
+    color: var(--ink-faint);
 }
 
 /* ---------- Responsivo ---------- */

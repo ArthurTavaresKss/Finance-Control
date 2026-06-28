@@ -79,87 +79,117 @@
     <script src="assets/js/script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
-    <h1>Finance Control</h1>
-    <nav>
-        <a href="transacoes.php">Transações</a> | 
-        <a href="recorrentes.php">Transações Recorrentes</a> | 
-        <a href="dashboards.php">Dashboards</a> | 
-        <a href="perfil.php">Perfil</a> | 
-        <a href="logout.php">Sair</a>
-    </nav>
-    <br>
-    <form method="GET" action="dashboards.php" id="filtro-periodo">
-        <label for="mes">Mês:</label>
-        <select name="mes" id="mes">
-            <?php foreach ($mesesValidosNoBanco as $numMes): ?>
-                <option value="<?= $numMes ?>" <?= $numMes == $mesAtual ? 'selected' : '' ?>>
-                    <?= $listaNomesMeses[$numMes] ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
+<body id="app-page">
 
-        <label for="ano">Ano:</label>
-        <select name="ano" id="ano">
-            <?php foreach ($anosDisponiveis as $anoOpcao): ?>
-                <option value="<?= $anoOpcao ?>" <?= $anoOpcao == $anoAtual ? 'selected' : '' ?>>
-                    <?= $anoOpcao ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
+    <header class="app-topbar">
+        <svg class="ticker-line" viewBox="0 0 600 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <polyline points="0,150 60,140 120,160 180,120 240,135 300,90 360,110 420,70 480,85 540,55 600,65"
+                fill="none" stroke="#16a05f" stroke-width="1.5" opacity="0.35" />
+        </svg>
 
-        <button type="submit">Filtrar</button>
-        <a href="dashboards.php" style="margin-left: 10px;"><button type="button">Resetar Filtros</button></a>
-    </form>
-    <h2>Dados Mensais — <?= sanitizeInput($mesesNomesCompletos[$mesAtual]) ?> de <?= $anoAtual ?></h2>
-    <div class="dashboard-row">
-        <div class="card">
-            <h4>Qtd. Entradas</h4>
-            <p><?= $indicadores['qtd_entradas'] ?></p>
+        <div class="app-brand">
+            <img src="assets/img/logo.png" alt="Finance Control" class="logo-mark">
         </div>
-        <div class="card">
-            <h4>Qtd. Saídas</h4>
-            <p><?= $indicadores['qtd_saidas'] ?></p>
+
+        <nav class="app-nav">
+            <a href="transacoes.php">Transações</a>
+            <a href="recorrentes.php">Transações Recorrentes</a>
+            <a href="dashboards.php" class="active">Dashboards</a>
+            <a href="perfil.php">Perfil</a>
+            <span class="app-nav-divider"></span>
+            <a href="logout.php" class="logout">Sair</a>
+        </nav>
+    </header>
+
+    <main class="app-content">
+
+        <div class="app-page-header">
+            <div>
+                <span class="eyebrow">Visão geral</span>
+                <h2>Dashboards</h2>
+            </div>
         </div>
-        <div class="card">
-            <h4>Transações Totais</h4>
-            <p><?= $indicadores['qtd_totais'] ?></p>
+
+        <div class="app-card">
+            <div class="filter-bar">
+                <form method="GET" action="dashboards.php" id="filtro-periodo">
+                    <label for="mes">Mês:</label>
+                    <select name="mes" id="mes">
+                        <?php foreach ($mesesValidosNoBanco as $numMes): ?>
+                            <option value="<?= $numMes ?>" <?= $numMes == $mesAtual ? 'selected' : '' ?>>
+                                <?= $listaNomesMeses[$numMes] ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+
+                    <label for="ano">Ano:</label>
+                    <select name="ano" id="ano">
+                        <?php foreach ($anosDisponiveis as $anoOpcao): ?>
+                            <option value="<?= $anoOpcao ?>" <?= $anoOpcao == $anoAtual ? 'selected' : '' ?>>
+                                <?= $anoOpcao ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+
+                    <button type="submit" class="btn-primary">Filtrar</button>
+                    <a href="dashboards.php"><button type="button" class="btn-secondary">Resetar filtros</button></a>
+                </form>
+            </div>
         </div>
-        <div class="card positivo">
-            <h4>Valor Entradas</h4>
-            <p>R$ <?= number_format($indicadores['valor_entradas'], 2, ',', '.') ?></p>
+
+        <h3 class="dashboard-section-title">Dados mensais — <?= sanitizeInput($mesesNomesCompletos[$mesAtual]) ?> de <?= $anoAtual ?></h3>
+        <div class="dashboard-row">
+            <div class="card">
+                <h4>Qtd. Entradas</h4>
+                <p><?= $indicadores['qtd_entradas'] ?></p>
+            </div>
+            <div class="card">
+                <h4>Qtd. Saídas</h4>
+                <p><?= $indicadores['qtd_saidas'] ?></p>
+            </div>
+            <div class="card">
+                <h4>Transações Totais</h4>
+                <p><?= $indicadores['qtd_totais'] ?></p>
+            </div>
+            <div class="card positivo">
+                <h4>Valor Entradas</h4>
+                <p>R$ <?= number_format($indicadores['valor_entradas'], 2, ',', '.') ?></p>
+            </div>
+            <div class="card negativo">
+                <h4>Valor Saídas</h4>
+                <p>R$ <?= number_format($indicadores['valor_saidas'], 2, ',', '.') ?></p>
+            </div>
+            <div class="card <?= $saldoMes >= 0 ? 'positivo' : 'negativo' ?>">
+                <h4>Saldo Total</h4>
+                <p>R$ <?= number_format($saldoMes, 2, ',', '.') ?></p>
+            </div>
         </div>
-        <div class="card negativo">
-            <h4>Valor Saídas</h4>
-            <p>R$ <?= number_format($indicadores['valor_saidas'], 2, ',', '.') ?></p>
+
+        <h3 class="dashboard-section-title">Dados por categoria — <?= sanitizeInput($mesesNomesCompletos[$mesAtual]) ?> de <?= $anoAtual ?></h3>
+        <div class="dashboard-row">
+            <div class="chart-box">
+                <h3>Gastos por Categoria</h3>
+                <canvas id="chartGastosCat"></canvas>
+            </div>
+            <div class="chart-box">
+                <h3>Total de Entradas por Categoria</h3>
+                <canvas id="chartEntradasCat"></canvas>
+            </div>
         </div>
-        <div class="card <?= $saldoMes >= 0 ? 'positivo' : 'negativo' ?>">
-            <h4>Saldo Total</h4>
-            <p>R$ <?= number_format($saldoMes, 2, ',', '.') ?></p>
+
+        <h3 class="dashboard-section-title">Dados por saldos — Ano de <?= $anoAtual ?></h3>
+        <div class="dashboard-row">
+            <div class="chart-box">
+                <h3>Evolução Anual (Entradas, Saídas e Saldo)</h3>
+                <canvas id="chartEvolucaoAnual"></canvas>
+            </div>
+            <div class="chart-box">
+                <h3>Saldo Total por Mês</h3>
+                <canvas id="chartSaldoAnualBarra"></canvas>
+            </div>
         </div>
-    </div>
-    <h2>Dados por Categoria — <?= sanitizeInput($mesesNomesCompletos[$mesAtual]) ?> de <?= $anoAtual ?></h2>
-    <div class="dashboard-row">
-        <div class="chart-box">
-            <h3>Gastos por Categoria (Colunas)</h3>
-            <canvas id="chartGastosCat"></canvas>
-        </div>
-        <div class="chart-box">
-            <h3>Total de Entradas por Categoria (Colunas)</h3>
-            <canvas id="chartEntradasCat"></canvas>
-        </div>
-    </div>
-    <h2>Dados por Saldos — Ano de <?= $anoAtual ?></h2>
-    <div class="dashboard-row">
-        <div class="chart-box">
-            <h3>Evolução Anual (Entradas, Saídas e Saldo)</h3>
-            <canvas id="chartEvolucaoAnual"></canvas>
-        </div>
-        <div class="chart-box">
-            <h3>Saldo Total por Mês</h3>
-            <canvas id="chartSaldoAnualBarra"></canvas>
-        </div>
-    </div>
+
+    </main>
 
     <script>
         new Chart(document.getElementById('chartGastosCat'), {
@@ -169,7 +199,8 @@
                 datasets: [{
                     label: 'Gastos (R$)',
                     data: <?= json_encode($gCatValores) ?>,
-                    backgroundColor: '#e74c3c'
+                    backgroundColor: '#b42323',
+                    borderRadius: 4
                 }]
             },
             options: { responsive: true, scales: { y: { beginAtZero: true } } }
@@ -182,7 +213,8 @@
                 datasets: [{
                     label: 'Entradas (R$)',
                     data: <?= json_encode($eCatValores) ?>,
-                    backgroundColor: '#2ecc71'
+                    backgroundColor: '#16a05f',
+                    borderRadius: 4
                 }]
             },
             options: { responsive: true, scales: { y: { beginAtZero: true } } }
@@ -193,9 +225,9 @@
             data: {
                 labels: <?= json_encode($mesesNomes) ?>,
                 datasets: [
-                    { label: 'Entradas', data: <?= json_encode($anualEntradas) ?>, borderColor: '#2ecc71', tension: 0.2, fill: false },
-                    { label: 'Saídas', data: <?= json_encode($anualSaidas) ?>, borderColor: '#e74c3c', tension: 0.2, fill: false },
-                    { label: 'Saldo', data: <?= json_encode($anualSaldos) ?>, borderColor: '#3498db', tension: 0.2, fill: false }
+                    { label: 'Entradas', data: <?= json_encode($anualEntradas) ?>, borderColor: '#16a05f', backgroundColor: '#16a05f', tension: 0.3, fill: false },
+                    { label: 'Saídas', data: <?= json_encode($anualSaidas) ?>, borderColor: '#b42323', backgroundColor: '#b42323', tension: 0.3, fill: false },
+                    { label: 'Saldo', data: <?= json_encode($anualSaldos) ?>, borderColor: '#0a1628', backgroundColor: '#0a1628', tension: 0.3, fill: false }
                 ]
             },
             options: { responsive: true }
@@ -208,11 +240,13 @@
                 datasets: [{
                     label: 'Saldo Mensal (R$)',
                     data: <?= json_encode($anualSaldos) ?>,
-                    backgroundColor: <?= json_encode(array_map(fn($v) => $v >= 0 ? '#2ecc71' : '#e74c3c', $anualSaldos)) ?>
+                    backgroundColor: <?= json_encode(array_map(fn($v) => $v >= 0 ? '#16a05f' : '#b42323', $anualSaldos)) ?>,
+                    borderRadius: 4
                 }]
             },
             options: { responsive: true, scales: { y: { beginAtZero: true } } }
         });
     </script>
+
 </body>
 </html>
