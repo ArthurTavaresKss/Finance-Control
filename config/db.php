@@ -1,6 +1,6 @@
 <?php
-$host = getenv('DB_HOST' ?: 'localhost');
-$db = 'financecontrol';
+$host = getenv('DB_HOST') ?: 'localhost'; 
+$db   = 'financecontrol'; 
 $user = getenv('DB_USER') ?: 'root';
 $pass = getenv('DB_PASSWORD') ?: '';
 $charset = 'utf8mb4';
