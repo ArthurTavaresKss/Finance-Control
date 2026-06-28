@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../includes/functions.php';
 session_start();
 
-define('TEMPO_LIMITE_INATIVIDADE', 10 * 1); // 1 hora
+define('TEMPO_LIMITE_INATIVIDADE', 60 * 60); // 1 hora
  
 if (!isset($_SESSION['idUsuario'])) {
     redirect("/Finance-Control/public/login.php");
