@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
 
-        <!-- Painel da marca: agora a direita -->
+        <!-- Painel da marca: agora à direita -->
         <div class="brand-panel">
 
             <svg class="ticker-line" viewBox="0 0 600 800" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
