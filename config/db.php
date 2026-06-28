@@ -1,8 +1,8 @@
 <?php
 $host = 'localhost';
 $db = 'financecontrol';
-$user = 'root';
-$pass = '';
+$user = 'financeAdmin';
+$pass = '80IcFFS7XfytrxNsoSxXVsNl';
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
