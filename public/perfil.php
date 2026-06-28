@@ -95,12 +95,12 @@
         </div>
 
         <nav class="app-nav">
-            <a href="transacoes.php">Transações</a>
-            <a href="recorrentes.php">Transações Recorrentes</a>
-            <a href="dashboards.php">Dashboards</a>
-            <a href="perfil.php" class="active">Perfil</a>
+            <a href="transacoes">Transações</a>
+            <a href="recorrentes">Transações Recorrentes</a>
+            <a href="dashboards">Dashboards</a>
+            <a href="perfil" class="active">Perfil</a>
             <span class="app-nav-divider"></span>
-            <a href="logout.php" class="logout">Sair</a>
+            <a href="logout" class="logout">Sair</a>
         </nav>
     </header>
 
@@ -146,7 +146,7 @@
         <div class="dialog-inner">
             <h2>Editar Informações</h2>
 
-            <form method="POST" action="editPerfil/editar_perfil.php">
+            <form method="POST" action="editPerfil/editar_perfil">
                 <div class="input-group">
                     <label for="modal_username">Usuário</label>
                     <input type="text" id="modal_username" name="modal_username" required placeholder="Seu nome de usuário"
@@ -171,7 +171,7 @@
         <div class="dialog-inner">
             <h2>Editar Senha</h2>
 
-            <form method="POST" action="editPerfil/editar_senha.php">
+            <form method="POST" action="editPerfil/editar_senha">
                 <input type="text" name="username_dummy" value="<?= sanitizeInput($usuario['email']) ?>" autocomplete="username" style="display:none;">
 
                 <div class="input-group">
@@ -201,7 +201,7 @@
         <div class="dialog-inner">
             <h2>Confirmar Exclusão de Conta</h2>
 
-            <form method="POST" action="editPerfil/excluir_conta.php">
+            <form method="POST" action="editPerfil/excluir_conta">
                 <p style="font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; margin-bottom: 18px; position: relative; z-index: 1;">
                     Tem certeza que deseja excluir sua conta? Essa ação é permanente e não pode ser desfeita.
                 </p>

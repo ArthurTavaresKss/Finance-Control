@@ -23,7 +23,7 @@
         // --- VALIDAÇÃO DA DATA DE INÍCIO VERÍDICA ---
         if (empty($_POST['data_transacao_inicio']) || !preg_match('/^(0[1-9]|1[0-2])\/[0-9]{4}$/', $_POST['data_transacao_inicio'])) {
             $_SESSION['status_recorrente'] = 'data_termino_maior'; // Dispara o modal de erro de data
-            redirect("../recorrentes.php");
+            redirect("../recorrentes");
             exit;
         }
 
@@ -36,7 +36,7 @@
             
             if (!preg_match('/^(0[1-9]|1[0-2])\/[0-9]{4}$/', $_POST['data_transacao_termino'])) {
                 $_SESSION['status_recorrente'] = 'data_termino_maior';
-                redirect("../recorrentes.php");
+                redirect("../recorrentes");
                 exit;
             }
 
@@ -47,7 +47,7 @@
             
             if (strtotime($data_transacao_termino) <= strtotime($data_transacao_inicio)) {
                 $_SESSION['status_recorrente'] = 'data_termino_maior';
-                redirect("../recorrentes.php");
+                redirect("../recorrentes");
                 exit;
             }
         } else {
@@ -62,8 +62,8 @@
             $_SESSION['status_recorrente'] = 'erro_recorrente_adicionada';
         }
         
-        redirect("../recorrentes.php");
+        redirect("../recorrentes");
     } else {
-        redirect("../recorrentes.php");
+        redirect("../recorrentes");
     }
 ?>

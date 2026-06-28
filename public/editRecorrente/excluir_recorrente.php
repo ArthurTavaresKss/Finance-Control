@@ -17,8 +17,8 @@
             $_SESSION['status_recorrente'] = 'erro_recorrente_deletada';
         }
         
-        redirect("../recorrentes.php");
+        redirect("../recorrentes");
     } else {
-        redirect("../recorrentes.php");
+        redirect("../recorrentes");
     }
 ?>

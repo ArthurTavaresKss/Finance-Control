@@ -92,12 +92,12 @@
         </div>
 
         <nav class="app-nav">
-            <a href="transacoes.php">Transações</a>
-            <a href="recorrentes.php">Transações Recorrentes</a>
-            <a href="dashboards.php" class="active">Dashboards</a>
-            <a href="perfil.php">Perfil</a>
+            <a href="transacoes">Transações</a>
+            <a href="recorrentes">Transações Recorrentes</a>
+            <a href="dashboards" class="active">Dashboards</a>
+            <a href="perfil">Perfil</a>
             <span class="app-nav-divider"></span>
-            <a href="logout.php" class="logout">Sair</a>
+            <a href="logout" class="logout">Sair</a>
         </nav>
     </header>
 
@@ -112,7 +112,7 @@
 
         <div class="app-card">
             <div class="filter-bar">
-                <form method="GET" action="dashboards.php" id="filtro-periodo">
+                <form method="GET" action="dashboards" id="filtro-periodo">
                     <label for="mes">Mês:</label>
                     <select name="mes" id="mes">
                         <?php foreach ($mesesValidosNoBanco as $numMes): ?>
@@ -132,7 +132,7 @@
                     </select>
 
                     <button type="submit" class="btn-primary">Filtrar</button>
-                    <a href="dashboards.php"><button type="button" class="btn-secondary">Resetar filtros</button></a>
+                    <a href="dashboards"><button type="button" class="btn-secondary">Resetar filtros</button></a>
                 </form>
             </div>
         </div>

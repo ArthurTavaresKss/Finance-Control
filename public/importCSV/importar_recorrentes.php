@@ -55,7 +55,7 @@
                 </span>
             </div>
 
-            <form method="POST" action="processar_importacao_recorrentes.php" enctype="multipart/form-data">
+            <form method="POST" action="processar_importacao_recorrentes" enctype="multipart/form-data">
                 <div class="input-group">
                     <label for="arquivo_csv">Selecione o arquivo CSV</label>
                     <div class="file-drop">
@@ -64,7 +64,7 @@
                 </div>
 
                 <div class="dialog-actions">
-                    <button type="button" class="btn-secondary" onclick="window.location.href='../recorrentes.php'">Voltar</button>
+                    <button type="button" class="btn-secondary" onclick="window.location.href='../recorrentes'">Voltar</button>
                     <button type="submit" class="btn-primary">Importar recorrentes</button>
                 </div>
             </form>

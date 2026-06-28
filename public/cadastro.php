@@ -29,26 +29,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($userByEmail) {
             $_SESSION['cadastro_error'] = "Email já cadastrado. Use outro Email.";
-            redirect('cadastro.php');
+            redirect('cadastro');
         } elseif ($userByUsername) {
             $_SESSION['cadastro_error'] = "Nome de usuário já cadastrado. Crie outro nome.";
-            redirect('cadastro.php');
+            redirect('cadastro');
         } elseif ($senha != $senha_confirmada) {
             $_SESSION['cadastro_error'] = "Senhas não coincidem. Tente novamente.";
-            redirect('cadastro.php');
+            redirect('cadastro');
         } else {
             unset($_SESSION['old_inputs']);
             $senhaCriptografada = password_hash($senha, PASSWORD_DEFAULT);
             insertUser($pdo, $username, $email, $senhaCriptografada);
             
             $_SESSION['cadastro_sucesso'] = true;
-            redirect('cadastro.php');
+            redirect('cadastro');
         }
     } catch (PDOException $e) {
         handleDBException($e);
     } catch (Exception $e) {
         $_SESSION['cadastro_error'] = $e->getMessage();
-        redirect('cadastro.php');
+        redirect('cadastro');
     }
 }
 ?>
@@ -85,10 +85,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         Usuário cadastrado com sucesso!
                     </p>
                     <div class="form-footer" style="margin-top: 0;">
-                        <a href="login.php">Voltar para o login</a>
+                        <a href="login">Voltar para o login</a>
                     </div>
                 <?php else: ?>
-                    <form method="POST" action="cadastro.php" class="login-form">
+                    <form method="POST" action="cadastro" class="login-form">
                         <div class="input-group">
                             <label for="username">Nome de usuário</label>
                             <input type="text" id="username" name="username" required placeholder="seu.usuario" value="<?= sanitizeInput($old_inputs['username'] ?? '') ?>" autocomplete="username">
@@ -112,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <button type="submit" class="btn-submit">Criar conta</button>
 
                         <div class="form-footer">
-                            <a href="login.php">Já tem uma conta? Entrar</a>
+                            <a href="login">Já tem uma conta? Entrar</a>
                         </div>
                     </form>
                 <?php endif; ?>

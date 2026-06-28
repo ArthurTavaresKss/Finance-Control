@@ -1,0 +1,11 @@
+# Impede o XAMPP de listar os arquivos das pastas no navegador
+Options -Indexes
+
+RewriteEngine On
+
+# Se o usuário acessar a raiz (/Finance-Control/ ou /Finance-Control), abre direto o login
+RewriteRule ^$ public/login [L]
+
+# Redireciona as outras requisições para a pasta public, mantendo a URL limpa
+RewriteCond %{REQUEST_URI} !^/Finance-Control/public/
+RewriteRule ^(.*)$ public/$1 [L]

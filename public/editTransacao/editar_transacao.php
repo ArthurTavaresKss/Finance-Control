@@ -37,7 +37,7 @@
         } else {
             $_SESSION['status_transacao'] = 'erro_transacao_alterada';
         }
-        redirect("../transacoes.php?");
+        redirect("../transacoes?");
     }
 ?>
 <!DOCTYPE html>
@@ -55,7 +55,7 @@
         <div class="dialog-inner">
             <h2>Editar Transação</h2>
 
-            <form method="POST" action="editar_transacao.php">
+            <form method="POST" action="editar_transacao">
                 <div class="input-group">
                     <label for="tipo">Tipo</label>
                     <select id="tipo" name="tipo" required>
@@ -110,7 +110,7 @@
                 <input type="hidden" name="id" value="<?= $transacao['id'] ?>">
 
                 <div class="dialog-actions">
-                    <button type="button" class="btn-secondary" onclick="window.location.href='../transacoes.php'">Cancelar</button>
+                    <button type="button" class="btn-secondary" onclick="window.location.href='../transacoes'">Cancelar</button>
                     <button type="submit" class="btn-primary">Salvar</button>
                 </div>
             </form>

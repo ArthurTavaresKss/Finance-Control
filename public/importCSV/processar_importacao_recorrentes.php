@@ -9,7 +9,7 @@
 
         if ($arquivo['error'] !== UPLOAD_ERR_OK || empty($arquivo['tmp_name'])) {
             $_SESSION['status_importacao'] = 'erro_arquivo';
-            redirect("importar_transacoes.php");
+            redirect("importar_transacoes");
             exit;
         }
 
@@ -117,10 +117,10 @@
             $_SESSION['status_importacao'] = 'erro_processamento';
         }
 
-        redirect("importar_recorrentes.php");
+        redirect("importar_recorrentes");
         exit;
     } else {
-        redirect("importar_recorrentes.php");
+        redirect("importar_recorrentes");
         exit;
     }
 ?>

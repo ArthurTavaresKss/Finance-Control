@@ -3,6 +3,10 @@ session_start();
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/functions.php';
 
+if (isLoggedIn()) {
+    redirect("transacoes");
+}
+
 $error = isset($_SESSION['login_error']) ? $_SESSION['login_error'] : null;
 unset($_SESSION['login_error']);
 
@@ -16,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['login_error'] = "E-mail inválido.";
-        redirect("login.php");
+        redirect("login");
         exit;
     }
 
@@ -28,11 +32,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['idUsuario'] = $user['id'];
             $_SESSION['usernameUsuario'] = $user['username'];
             $_SESSION['ultimo_acesso'] = time();
-            redirect("transacoes.php");
+            redirect("transacoes");
             exit;
         } else {
             $_SESSION['login_error'] = "Email ou senha inválidos.";
-            redirect("login.php");
+            redirect("login");
             exit;
         }
 
@@ -40,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         handleDBException($e);
     } catch (Exception $e) {
         $_SESSION['login_error'] = $e->getMessage();
-        redirect('login.php');
+        redirect('login');
     }
 }
 ?>
@@ -95,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 <?php endif; ?>
 
-                <form method="POST" action="login.php" class="login-form">
+                <form method="POST" action="login" class="login-form">
                     <div class="input-group">
                         <label for="email">E-mail</label>
                         <input type="email" id="email" name="email" required placeholder="nome@exemplo.com" value="<?= sanitizeInput($email ?? '') ?>" autocomplete="username">
@@ -109,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <button type="submit" class="btn-submit">Acessar painel</button>
 
                     <div class="form-footer">
-                        <a href="cadastro.php">Novo por aqui? Crie sua conta</a>
+                        <a href="cadastro">Novo por aqui? Crie sua conta</a>
                     </div>
                 </form>
 

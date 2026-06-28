@@ -12,7 +12,7 @@
         $recorrente = getRecurringByUserIdAndId($pdo, $idUsuario, $idRecorrente);
         
         if (!$recorrente) {
-            redirect("../recorrentes.php");
+            redirect("../recorrentes");
         }
     } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id                     = $_POST['id'];
@@ -27,7 +27,7 @@
 
         if (empty($_POST['data_transacao_inicio']) || !preg_match('/^(0[1-9]|1[0-2])\/[0-9]{4}$/', $_POST['data_transacao_inicio'])) {
             $_SESSION['status_recorrente'] = 'data_termino_maior';
-            redirect("../recorrentes.php");
+            redirect("../recorrentes");
             exit;
         }
 
@@ -40,7 +40,7 @@
             
             if (!preg_match('/^(0[1-9]|1[0-2])\/[0-9]{4}$/', $_POST['data_transacao_termino'])) {
                 $_SESSION['status_recorrente'] = 'data_termino_maior';
-                redirect("../recorrentes.php");
+                redirect("../recorrentes");
                 exit;
             }
 
@@ -51,7 +51,7 @@
             
             if (strtotime($data_transacao_termino) <= strtotime($data_transacao_inicio)) {
                 $_SESSION['status_recorrente'] = 'data_termino_maior';
-                redirect("../recorrentes.php");
+                redirect("../recorrentes");
                 exit;
             }
         } else {
@@ -80,7 +80,7 @@
         } else {
             $_SESSION['status_recorrente'] = 'erro_recorrente_editada';
         }
-        redirect("../recorrentes.php");
+        redirect("../recorrentes");
     }
 ?>
 <!DOCTYPE html>
@@ -94,7 +94,7 @@
 </head>
 <body>
     <h1>Editar Transação Recorrente</h1>
-    <form method="POST" action="editar_recorrente.php">
+    <form method="POST" action="editar_recorrente">
         
         <label for="tipo">Tipo:</label>
         <select id="tipo" name="tipo" required>
@@ -165,7 +165,7 @@
 
         <input type="hidden" name="id" value="<?= $recorrente['id'] ?>">
 
-        <button type="button" onclick="window.location.href='../recorrentes.php'">Cancelar</button>
+        <button type="button" onclick="window.location.href='../recorrentes'">Cancelar</button>
         <button type="submit">Salvar</button>
     </form>
 

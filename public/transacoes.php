@@ -125,12 +125,12 @@
         </div>
 
         <nav class="app-nav">
-            <a href="transacoes.php" class="active">Transações</a>
-            <a href="recorrentes.php">Transações Recorrentes</a>
-            <a href="dashboards.php">Dashboards</a>
-            <a href="perfil.php">Perfil</a>
+            <a href="transacoes" class="active">Transações</a>
+            <a href="recorrentes">Transações Recorrentes</a>
+            <a href="dashboards">Dashboards</a>
+            <a href="perfil">Perfil</a>
             <span class="app-nav-divider"></span>
-            <a href="logout.php" class="logout">Sair</a>
+            <a href="logout" class="logout">Sair</a>
         </nav>
     </header>
 
@@ -145,16 +145,16 @@
                 <button type="button" class="btn-primary" onclick="document.getElementById('modalTransacao').showModal()">
                     + Adicionar transação
                 </button>
-                <button type="button" class="btn-secondary" onclick="window.location.href='importCSV/importar_transacoes.php'">
+                <button type="button" class="btn-secondary" onclick="window.location.href='importCSV/importar_transacoes'">
                     Importar CSV
                 </button>
-                <button type="button" class="btn-secondary" onclick="window.location.href='exportCSV/exportar_transacoes.php'">
+                <button type="button" class="btn-secondary" onclick="window.location.href='exportCSV/exportar_transacoes'">
                     Exportar CSV
                 </button>
             </div>
         </div>
 
-        <form method="GET" action="transacoes.php">
+        <form method="GET" action="transacoes">
 
             <div class="app-card">
                 <div class="filter-bar">
@@ -228,7 +228,7 @@
                                 </th>
                                 <th style="white-space: nowrap;">
                                     <button type="submit" class="btn-primary" style="height: 36px; padding: 0 14px; font-size: 13px;">Filtrar</button>
-                                    <button type="button" class="btn-secondary" style="height: 36px; padding: 0 12px; font-size: 13px;" onclick="window.location.href='transacoes.php'">Resetar</button>
+                                    <button type="button" class="btn-secondary" style="height: 36px; padding: 0 12px; font-size: 13px;" onclick="window.location.href='transacoes'">Resetar</button>
                                 </th>
                             </tr>
                         </thead>
@@ -252,10 +252,10 @@
                                         <td><?= date('d/m/Y', strtotime(sanitizeInput($transacao['data_transacao']))) ?></td>
                                         <td>
                                             <div class="row-actions">
-                                                <a href="editTransacao/editar_transacao.php?id=<?= $transacao['id'] ?>" class="row-action-btn edit">
+                                                <a href="editTransacao/editar_transacao?id=<?= $transacao['id'] ?>" class="row-action-btn edit">
                                                     <img src="assets/img/editar.png" alt="Editar" width="20" height="20">
                                                 </a>
-                                                <a href="editTransacao/excluir_transacao.php?id=<?= $transacao['id'] ?>"
+                                                <a href="editTransacao/excluir_transacao?id=<?= $transacao['id'] ?>"
                                                    onclick="return confirm('Tem certeza que deseja excluir esta transação?')" class="row-action-btn delete">
                                                     <img src="assets/img/excluir.png" alt="Excluir" width="20" height="20">
                                                 </a>
@@ -315,7 +315,7 @@
     <dialog id="modalTransacao" class="app-dialog">
         <div class="dialog-inner">
             <h2>Nova Transação</h2>
-            <form method="POST" action="editTransacao/salvar_transacao.php">
+            <form method="POST" action="editTransacao/salvar_transacao">
                 <div class="input-group">
                     <label for="tipo">Tipo</label>
                     <select id="tipo" name="tipo" required>

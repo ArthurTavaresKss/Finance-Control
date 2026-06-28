@@ -149,12 +149,12 @@
         </div>
 
         <nav class="app-nav">
-            <a href="transacoes.php">Transações</a>
-            <a href="recorrentes.php" class="active">Transações Recorrentes</a>
-            <a href="dashboards.php">Dashboards</a>
-            <a href="perfil.php">Perfil</a>
+            <a href="transacoes">Transações</a>
+            <a href="recorrentes" class="active">Transações Recorrentes</a>
+            <a href="dashboards">Dashboards</a>
+            <a href="perfil">Perfil</a>
             <span class="app-nav-divider"></span>
-            <a href="logout.php" class="logout">Sair</a>
+            <a href="logout" class="logout">Sair</a>
         </nav>
     </header>
 
@@ -169,16 +169,16 @@
                 <button type="button" class="btn-primary" onclick="document.getElementById('modalRecorrente').showModal()">
                     + Adicionar transação recorrente
                 </button>
-                <button type="button" class="btn-secondary" onclick="window.location.href='importCSV/importar_recorrentes.php'">
+                <button type="button" class="btn-secondary" onclick="window.location.href='importCSV/importar_recorrentes'">
                     Importar CSV
                 </button>
-                <button type="button" class="btn-secondary" onclick="window.location.href='exportCSV/exportar_recorrentes.php'">
+                <button type="button" class="btn-secondary" onclick="window.location.href='exportCSV/exportar_recorrentes'">
                     Exportar CSV
                 </button>
             </div>
         </div>
 
-        <form method="GET" action="recorrentes.php">
+        <form method="GET" action="recorrentes">
 
             <div class="app-card">
                 <div class="filter-bar">
@@ -271,7 +271,7 @@
                                 </th>
                                 <th style="white-space: nowrap;">
                                     <button type="submit" class="btn-primary" style="height: 36px; padding: 0 14px; font-size: 13px;">Filtrar</button>
-                                    <button type="button" class="btn-secondary" style="height: 36px; padding: 0 12px; font-size: 13px;" onclick="window.location.href='recorrentes.php'">Resetar</button>
+                                    <button type="button" class="btn-secondary" style="height: 36px; padding: 0 12px; font-size: 13px;" onclick="window.location.href='recorrentes'">Resetar</button>
                                 </th>
                             </tr>
                         </thead>
@@ -298,10 +298,10 @@
                                             date('m/Y', strtotime(sanitizeInput($recorrente['data_transacao_termino']))) : 'N/A' ?></td>
                                         <td>
                                             <div class="row-actions">
-                                                <a href="editRecorrente/editar_recorrente.php?id=<?= $recorrente['id'] ?>" class="row-action-btn edit">
+                                                <a href="editRecorrente/editar_recorrente?id=<?= $recorrente['id'] ?>" class="row-action-btn edit">
                                                     <img src="assets/img/editar.png" alt="Editar" width="20" height="20">
                                                 </a>
-                                                <a href="editRecorrente/excluir_recorrente.php?id=<?= $recorrente['id'] ?>"
+                                                <a href="editRecorrente/excluir_recorrente?id=<?= $recorrente['id'] ?>"
                                                    onclick="return confirm('Tem certeza que deseja excluir esta transação?')" class="row-action-btn delete">
                                                     <img src="assets/img/excluir.png" alt="Excluir" width="20" height="20">
                                                 </a>
@@ -361,7 +361,7 @@
     <dialog id="modalRecorrente" class="app-dialog">
         <div class="dialog-inner">
             <h2>Nova Transação Recorrente</h2>
-            <form method="POST" action="editRecorrente/salvar_recorrente.php">
+            <form method="POST" action="editRecorrente/salvar_recorrente">
                 <div class="input-group">
                     <label for="tipo">Tipo</label>
                     <select id="tipo" name="tipo" required>

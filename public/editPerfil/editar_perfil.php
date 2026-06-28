@@ -30,10 +30,10 @@
         }
 
         $queryString = http_build_query($params);
-        redirect('../perfil.php?' . $queryString);
+        redirect('../perfil?' . $queryString);
 
     } else {
-        redirect('../perfil.php');
+        redirect('../perfil');
     }
     
 ?>

@@ -22,8 +22,8 @@
         } else {
             $_SESSION['status_transacao'] = 'erro_transacao_adicionada';
         }
-        redirect("../transacoes.php?");
+        redirect("../transacoes?");
     } else {
-        redirect("../transacoes.php");
+        redirect("../transacoes");
     }
 ?>

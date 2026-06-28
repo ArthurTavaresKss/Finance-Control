@@ -36,7 +36,7 @@
         <div class="dialog-inner">
             <h2>Importar Transações via CSV</h2>
 
-            <form method="POST" action="processar_importacao_transacoes.php" enctype="multipart/form-data">
+            <form method="POST" action="processar_importacao_transacoes" enctype="multipart/form-data">
                 <div class="notice-box">
                     <strong class="notice-title">⚠️ Atenção aos requisitos do arquivo</strong>
                     <ul>
@@ -63,7 +63,7 @@
                 </div>
 
                 <div class="dialog-actions">
-                    <button type="button" class="btn-secondary" onclick="window.location.href='../transacoes.php'">Voltar</button>
+                    <button type="button" class="btn-secondary" onclick="window.location.href='../transacoes'">Voltar</button>
                     <button type="submit" class="btn-primary">Importar dados</button>
                 </div>
             </form>
