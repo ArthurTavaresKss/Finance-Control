@@ -1,5 +1,5 @@
 <?php
-$host = getenv('DB_HOST') ?: 'localhost'; 
+$host = getenv('DB_HOST') ?: 'db'; 
 $db   = 'financecontrol'; 
 $user = getenv('DB_USER') ?: 'root';
 $pass = getenv('DB_PASSWORD') ?: '';
