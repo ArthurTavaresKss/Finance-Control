@@ -1,5 +1,5 @@
 <?php
-$host = getenv('DB_HOST') ?: 'db'; 
+$host = getenv('DB_HOST') ?: 'localhost'; 
 $db   = 'financecontrol'; 
 $user = getenv('DB_USER') ?: 'root';
 $pass = getenv('DB_PASSWORD') ?: '';
@@ -16,6 +16,9 @@ $options = [
 try {
     $pdo = new PDO($dsn, $user, $pass, $options);
 } catch(PDOException $e) {
-    echo("ERRO DE CONEXÃO: " . $e->getMessage() . "<br>");
-    die("Acho que algo está errado com o banco..");
+    @session_start();
+    $_SESSION['erro_db'] = $e->getMessage(); 
+    
+    require_once __DIR__ . '/../public/500.php'; 
+    die();
 }
