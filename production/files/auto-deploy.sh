@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # ==================== CONFIGURAÇÕES ====================
-PROJECT_DIR="/home/arthur/finance-control/app"
-COMPOSE_DIR="/home/arthur/finance-control"
+PROJECT_DIR="~/finance-control/app"
+COMPOSE_DIR="~/finance-control"
 COMPOSE_FILE="$COMPOSE_DIR/docker-compose.yml"
 LOG_FILE="$COMPOSE_DIR/deploy.log"
 BRANCH="main"
