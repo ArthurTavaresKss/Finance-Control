@@ -32,7 +32,7 @@ if [ "$LOCAL" != "$REMOTE" ]; then
 
     # Reinicia o container (executa do diretório correto)
     cd "$COMPOSE_DIR"
-    docker compose restart 2>&1 | tee -a "$LOG_FILE"
+    docker compose restart app2>&1 | tee -a "$LOG_FILE"
 
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Deploy concluído com sucesso." | tee -a "$LOG_FILE"
 else
