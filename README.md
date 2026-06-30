@@ -70,7 +70,7 @@ Esta é a forma mais recomendada para rodar o sistema de forma isolada e profiss
 #### Passo a passo:
 
 1. **Clone o repositório para uma pasta temporária**
-   ```git
+   ```bash
    git clone https://github.com/ArthurTavaresKss/Finance-Control.git ~/tmp/finance-install
    ```
 
@@ -150,7 +150,7 @@ docker compose up -d
 
 ## 🔐 Segurança
 
-- Sempre use senhas fortes ao instalar via Docker.
+- Sempre use senhas fortes com os parâmetros -rp e -p. via Docker
 - Recomenda-se alterar as senhas padrão após a instalação.
 
 ---
