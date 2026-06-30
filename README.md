@@ -8,7 +8,7 @@ Sistema web simples de **controle financeiro pessoal**, desenvolvido em PHP puro
 
 - Cadastro e gerenciamento de transações
 - Transações recorrentes (assinaturas, salários, etc.)
-- Controle de usuários
+- Controle de perfil
 - Exportação e importação de dados em CSV
 - Interface simples e responsiva
 
@@ -27,7 +27,7 @@ Escolha uma das opções abaixo:
 
 Quer entender a estrutura e o fluxo do sistema?
 
-→ Leia: [ABOUT.md](ABOUT.md)
+→ [Entenda como funciona](ABOUT.md)
 
 ---
 
@@ -35,8 +35,8 @@ Quer entender a estrutura e o fluxo do sistema?
 
 - PHP 8+
 - MySQL / MariaDB
-- Docker + Docker Compose (produção)
-- HTML + CSS + JavaScript (frontend simples)
+- Docker + Docker Compose
+- HTML + CSS + JavaScript
 
 ---
 
