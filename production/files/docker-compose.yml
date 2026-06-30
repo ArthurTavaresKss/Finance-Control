@@ -1,0 +1,31 @@
+
+services:
+  app:
+    build: .
+    container_name: finance-app
+    ports:
+      - "8085:80"
+    volumes:
+      - ./app:/var/www/html
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=financeAdmin
+      - DB_PASSWORD=financecontrol
+    restart: unless-stopped
+
+  db:
+    image: mariadb:11.4
+    container_name: finance-db
+    environment:
+      MYSQL_ROOT_PASSWORD: financecontrol
+      MYSQL_DATABASE: financecontrol
+      MYSQL_USER: financeAdmin
+      MYSQL_PASSWORD: financecontrol
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  db_data:
