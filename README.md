@@ -18,8 +18,8 @@ Sistema web simples de **controle financeiro pessoal**, desenvolvido em PHP puro
 
 Escolha uma das opções abaixo:
 
-- **[Instalação com XAMPP (Desenvolvimento Local)](INSTALL.md#opção-1-xampp)**
-- **[Instalação com Docker (Produção)](INSTALL.md#opção-2-docker)** ← Recomendado
+- **[Instalação com XAMPP (Desenvolvimento Local)](INSTALL.md#opção-1-xampp-desenvolvimento-local)**
+- **[Instalação com Docker (Produção)](INSTALL.md#opção-2-docker-recomendado-para-produção)**
 
 ---
 
@@ -41,4 +41,4 @@ Quer entender a estrutura e o fluxo do sistema?
 ---
 
 **Desenvolvido por Arthur Tavares**  
-[GitHub](https://github.com/ArthurTavaresKss/Finance-Control)
+[GitHub](https://github.com/ArthurTavaresKss)
