@@ -71,5 +71,5 @@ O Finance Control é uma aplicação web local simples, leve e funcional para co
 
 ---
 
-**Desenvolvido por Arthur Tavares**
+**Desenvolvido por Arthur Tavares**  
 [GitHub](https://github.com/ArthurTavaresKss)

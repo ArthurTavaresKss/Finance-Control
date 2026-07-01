@@ -188,4 +188,4 @@ Finance-Control/
 ---
 
 **Desenvolvido por Arthur Tavares**  
-Repositório: [Finance-Control](https://github.com/ArthurTavaresKss/Finance-Control)
+[GitHub](https://github.com/ArthurTavaresKss)
