@@ -22,14 +22,24 @@ Sistema de Controle Financeiro Web desenvolvido em PHP puro.
 
 ### Opção 1: XAMPP (Desenvolvimento Local)
 
-1. **Clone o repositório**
+1. **Clone o repositório para a raiz do htdocs**
    ```bash
-   git clone https://github.com/ArthurTavaresKss/Finance-Control.git
+   git clone https://github.com/ArthurTavaresKss/Finance-Control.git /CAMINHO_PARA_O_SEU_HTDOCS/Finance-Control
    ```
 
-2. **Copie a pasta do projeto para o XAMPP**
-   - Copie a pasta `Finance-Control` para dentro de `htdocs` do XAMPP.
-   - Ou acesse diretamente: `http://localhost/Finance-Control/public`
+2. **Configurações do XAMPP**
+   - Acesse o painel de Admin do XAMPP e clique em Config no Apache.
+   - Abra o httpd.conf e procure por:
+   ```bash
+   DocumentRoot "C:/xampp/htdocs" 
+   <Directory "C:/xampp/htdocs">
+   ```
+   - Altere para:
+   ```bash
+   DocumentRoot "C:/xampp/htdocs/Finance-Control" 
+   <Directory "C:/xampp/htdocs/Finance-Control">
+   ```
+   - E salve o arquivo. **(Isso é necessário por conta dos arquivos .htaccess, que mudam a estrutura das pastas)**
 
 3. **Importe o banco de dados**
    - Abra o phpMyAdmin (`http://localhost/phpmyadmin`)
@@ -49,7 +59,7 @@ Sistema de Controle Financeiro Web desenvolvido em PHP puro.
    ```
 
 5. **Acesse o sistema**
-   - Acesse: `http://localhost/Finance-Control/public/login.php`
+   - Acesse: `http://localhost:8080/`
 
 ---
 
@@ -59,32 +69,34 @@ Esta é a forma mais recomendada para rodar o sistema de forma isolada e profiss
 
 #### Passo a passo:
 
-1. **Clone o repositório**
-   ```bash
-   git clone https://github.com/ArthurTavaresKss/Finance-Control.git /tmp/finance-install
+1. **Clone o repositório para uma pasta temporária**
+   ```git
+   git clone https://github.com/ArthurTavaresKss/Finance-Control.git ~/tmp/finance-install
    ```
 
 2. **Entre na pasta de instalação**
    ```bash
-   cd /tmp/finance-install/main/production
+   cd ~/tmp/finance-install/main/production
    ```
 
 3. **Execute o instalador**
+   - **Execute com *sudo*, para poder usar o crontab, e automatizar o script de auto-deploy.sh.
    ```bash
    chmod +x install.sh
-   ./install.sh -rp "SuaSenhaRootForte" -p "SuaSenhaUserForte"
+   sudo ./install.sh -rp "SuaSenhaRootForte" -p "SuaSenhaUserForte"
    ```
 
    **Parâmetros disponíveis:**
    - `-rp` ou `--root-password`: Define a senha do usuário **root** do MariaDB
    - `-p` ou `--password`: Define a senha do usuário **financeAdmin**
+   - `-pt` ou `--port`: Define a porta de acesso da aplicação *(padrão: `3847`)*
 
    Exemplo completo:
    ```bash
-   ./install.sh -rp "Root@Finance2026!" -p "User@Finance2026!"
+   ./install.sh -rp "Root@Finance2026!" -p "User@Finance2026!" -pt 3847
    ```
 
-4. **Aguarde a instalação**
+5. **Aguarde a instalação**
    - O script vai:
      - Instalar Git e Docker (se necessário)
      - Criar a pasta `~/finance-control`
@@ -93,11 +105,12 @@ Esta é a forma mais recomendada para rodar o sistema de forma isolada e profiss
      - Importar o banco de dados
      - Configurar o Auto-Deploy
 
-5. **Acesse o sistema**
+6. **Acesse o sistema**
    - Após a instalação, acesse:
      ```
-     http://SEU_IP_DO_SERVIDOR:8085
+     http://SEU_IP_DO_SERVIDOR:3847
      ```
+   - Ou a porta que você adicionou
 
 ---
 
@@ -123,10 +136,10 @@ cat ~/finance-control/deploy.log
 docker compose ps
 
 # Reiniciar apenas a aplicação
-docker compose restart finance-app
+docker compose restart app
 
 # Ver logs da aplicação
-docker compose logs -f finance-app
+docker compose logs -f app
 
 # Parar todos os containers
 docker compose down
@@ -139,8 +152,6 @@ docker compose up -d
 
 ## 🔐 Segurança
 
-- **Nunca** commite o arquivo `config/config.php` com senhas reais.
-- O arquivo já está configurado no `.gitignore`.
 - Sempre use senhas fortes ao instalar via Docker.
 - Recomenda-se alterar as senhas padrão após a instalação.
 
@@ -155,8 +166,7 @@ Finance-Control/
 ├── public/              # Arquivos acessíveis via navegador
 ├── production/
 │   ├── install.sh       # Script de instalação
-│   └── files/           # Arquivos para Docker
-├── banco.sql            # Script do banco de dados
+│   └── files/           # Arquivos para Instalação com Docker
 └── .gitignore
 ```
 
@@ -169,3 +179,6 @@ Finance-Control/
 - O Auto-Deploy facilita muito a manutenção e atualização do sistema.
 
 ---
+
+**Desenvolvido por Arthur Tavares**  
+Repositório: [Finance-Control](https://github.com/ArthurTavaresKss/Finance-Control)

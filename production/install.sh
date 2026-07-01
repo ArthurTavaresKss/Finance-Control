@@ -12,9 +12,10 @@ REPO_ROOT="$(cd "$(dirname "$0")/../../" && pwd)"   # Detecta a raiz do reposit�
 FILES_DIR="$(dirname "$0")/files"
 # ========================================================
 
-# Lê parâmetros -rp e -p
+# Lê parâmetros -rp, -p e -pt
 ROOT_PASSWORD="financecontrol"
 USER_PASSWORD="financecontrol"
+APP_PORT="3847"
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -22,8 +23,10 @@ while [[ $# -gt 0 ]]; do
       ROOT_PASSWORD="$2"; shift 2 ;;
     -p|--password)
       USER_PASSWORD="$2"; shift 2 ;;
+    -pt|--port)
+      APP_PORT="$2"; shift 2 ;;
     *)
-      echo "Uso: $0 [-rp senha_root] [-p senha_usuario]"
+      echo "Uso: $0 [-rp senha_root] [-p senha_usuario] [-pt porta]"
       exit 1 ;;
   esac
 done
@@ -55,10 +58,13 @@ echo "[4/9] Copiando arquivos Docker e scripts..."
 cp -r "$FILES_DIR"/* "$PROJECT_DIR"/
 
 echo ""
-echo "[5/9] Aplicando senhas personalizadas..."
+echo "[5/9] Aplicando senhas e porta personalizadas..."
 sed -i "s/MYSQL_ROOT_PASSWORD: financecontrol/MYSQL_ROOT_PASSWORD: $ROOT_PASSWORD/" "$PROJECT_DIR/docker-compose.yml"
 sed -i "s/MYSQL_PASSWORD: financecontrol/MYSQL_PASSWORD: $USER_PASSWORD/" "$PROJECT_DIR/docker-compose.yml"
 sed -i "s/DB_PASSWORD=financecontrol/DB_PASSWORD=$USER_PASSWORD/" "$PROJECT_DIR/docker-compose.yml"
+
+# Injeta a porta como variável de ambiente para o docker compose
+echo "APP_PORT=$APP_PORT" > "$PROJECT_DIR/.env"
 
 echo ""
 echo "[6/9] Configurando permissões e log..."
@@ -83,12 +89,13 @@ echo "=========================================="
 echo "   INSTALAÇÃO CONCLUÍDA COM SUCESSO!"
 echo "=========================================="
 echo ""
-echo "Acesse em: http://SEU_IP:8085"
+echo "Acesse em: http://SEU_IP:$APP_PORT"
 echo "Diretório do projeto: $PROJECT_DIR"
 echo ""
 echo "Senhas configuradas:"
-echo "  Root MariaDB:        $ROOT_PASSWORD"
+echo "  Root MariaDB:         $ROOT_PASSWORD"
 echo "  Usuário financeAdmin: $USER_PASSWORD"
+echo "  Porta da aplicação:   $APP_PORT"
 echo ""
 echo "Comandos úteis:"
 echo "  cat $PROJECT_DIR/deploy.log"
