@@ -6,8 +6,6 @@ services:
       - "8085:80"
     volumes:
       - ./app:/var/www/html
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
     depends_on:
       - db
     environment:
@@ -29,8 +27,6 @@ services:
     command: --default-time-zone=-03:00
     volumes:
       - db_data:/var/lib/mysql
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
     restart: unless-stopped
 
 volumes:
