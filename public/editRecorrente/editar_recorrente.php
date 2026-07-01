@@ -88,86 +88,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Transação Recorrente</title>
+    <title>Finance Control - Editar Transação Recorrente</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <script src="../assets/js/script.js"></script>
 </head>
-<body>
-    <h1>Editar Transação Recorrente</h1>
-    <form method="POST" action="editar_recorrente">
-        
-        <label for="tipo">Tipo:</label>
-        <select id="tipo" name="tipo" required>
-            <option value="Entrada" <?= ($recorrente['tipo'] == 'Entrada') ? 'selected' : '' ?>>
-                Entrada
-            </option>
-            <option value="Saída" <?= ($recorrente['tipo'] == 'Saída') ? 'selected' : '' ?>>
-                Saída
-            </option>
-        </select><br><br>
+<body id="app-page">
 
-        <label for="descricao">Descrição:</label>
-        <input type="text" id="descricao" name="descricao" maxlength="90" required 
-        placeholder="Ex: Assinatura Netflix" value="<?= sanitizeInput($recorrente['descricao']) ?>"><br><br>
+    <div class="modal-page-wrap">
+        <div class="dialog-inner">
+            <h2>Editar Transação Recorrente</h2>
 
-        <label for="valor">Valor (R$):</label>
-        <input type="number" step="0.01" id="valor" name="valor" required 
-        placeholder="0.00" value="<?= $recorrente['valor'] ?>"><br><br>
+            <form method="POST" action="editar_recorrente">
 
-        <label for="categoria">Categoria:</label>
-        <select id="categoria" name="categoria" required onchange="mostrarCampoNovaCategoria()">
-            <option value="" disabled>Selecione uma categoria</option>
-            <?php
-            $todasTransacoes = getTransactionsByUserId($pdo, $idUsuario);
-            $categoriasUnicas = [];
-            foreach ($todasTransacoes as $t) {
-                $cat = sanitizeInput($t['categoria']);
-                if (!empty($cat) && !in_array($cat, $categoriasUnicas)) {
-                    $categoriasUnicas[] = $cat;
-                }
-            }
-            foreach ($categoriasUnicas as $cat) {
-                $selected = ($cat === $recorrente['categoria']) ? 'selected' : '';
-                echo '<option value="' . sanitizeInput($cat) . '" ' . $selected . '>'
-                    . sanitizeInput($cat) . '</option>';
-            }
-            ?>
-            <option value="nova_categoria">+ Adicionar nova categoria...</option>
-        </select>
+                <div class="input-group">
+                    <label for="tipo">Tipo</label>
+                    <select id="tipo" name="tipo" required>
+                        <option value="Entrada" <?= ($recorrente['tipo'] == 'Entrada') ? 'selected' : '' ?>>Entrada</option>
+                        <option value="Saída"   <?= ($recorrente['tipo'] == 'Saída')   ? 'selected' : '' ?>>Saída</option>
+                    </select>
+                </div>
 
-        <input type="text" id="nova_categoria" name="nova_categoria" 
-            placeholder="Digite a nova categoria" style="display: none; margin-top: 5px;">
-        
-        <br><br>
-        
-        <label for="dia_transacao">Dia da Transação:</label><br>
-        <input type="number" id="dia_transacao" name="dia_transacao" min="1" max="28" step="1" placeholder="Dia da transação (1 a 28)"
-        value="<?= $recorrente['dia_transacao'] ?>"><br><br>
+                <div class="input-group">
+                    <label for="descricao">Descrição</label>
+                    <input type="text" id="descricao" name="descricao" maxlength="90" required
+                           placeholder="Ex: Assinatura Netflix"
+                           value="<?= sanitizeInput($recorrente['descricao']) ?>">
+                </div>
 
-        <label for="data_transacao_inicio">Data de Início:</label>
-        <input type="text" 
-               id="data_transacao_inicio" 
-               name="data_transacao_inicio" 
-               required 
-               placeholder="MM/AAAA"
-               maxlength="7"
-               style="text-align: center; width: 100px;"
-               value="<?= date('m/Y', strtotime($recorrente['data_transacao_inicio'])) ?>"><br><br>
+                <div class="input-group">
+                    <label for="valor">Valor (R$)</label>
+                    <input type="number" step="0.01" id="valor" name="valor" required
+                           placeholder="0.00"
+                           value="<?= $recorrente['valor'] ?>">
+                </div>
 
-        <label for="data_transacao_termino">Data de Término (Opcional):</label>
-        <input type="text" 
-               id="data_transacao_termino" 
-               name="data_transacao_termino"
-               placeholder="MM/AAAA"
-               maxlength="7"
-               style="text-align: center; width: 100px;"
-               value="<?= !empty($recorrente['data_transacao_termino']) ? date('m/Y', strtotime($recorrente['data_transacao_termino'])) : '' ?>"><br><br>
+                <div class="input-group">
+                    <label for="categoria">Categoria</label>
+                    <select id="categoria" name="categoria" required onchange="mostrarCampoNovaCategoria()">
+                        <option value="" disabled>Selecione uma categoria</option>
+                        <?php
+                        $todasTransacoes = getTransactionsByUserId($pdo, $idUsuario);
+                        $categoriasUnicas = [];
+                        foreach ($todasTransacoes as $t) {
+                            $cat = sanitizeInput($t['categoria']);
+                            if (!empty($cat) && !in_array($cat, $categoriasUnicas)) {
+                                $categoriasUnicas[] = $cat;
+                            }
+                        }
+                        foreach ($categoriasUnicas as $cat) {
+                            $selected = ($cat === $recorrente['categoria']) ? 'selected' : '';
+                            echo '<option value="' . sanitizeInput($cat) . '" ' . $selected . '>'
+                                . sanitizeInput($cat) . '</option>';
+                        }
+                        ?>
+                        <option value="nova_categoria">+ Adicionar nova categoria...</option>
+                    </select>
+                    <input type="text" id="nova_categoria" name="nova_categoria"
+                           placeholder="Digite a nova categoria" style="display: none; margin-top: 8px;">
+                </div>
 
-        <input type="hidden" name="id" value="<?= $recorrente['id'] ?>">
+                <div class="input-group">
+                    <label for="dia_transacao">Dia da Transação <span style="font-weight:400; color: var(--ink-faint);">(1 a 28)</span></label>
+                    <input type="number" id="dia_transacao" name="dia_transacao" min="1" max="28" step="1"
+                           placeholder="Ex: 15"
+                           value="<?= $recorrente['dia_transacao'] ?>">
+                </div>
 
-        <button type="button" onclick="window.location.href='../recorrentes'">Cancelar</button>
-        <button type="submit">Salvar</button>
-    </form>
+                <div class="input-group">
+                    <label for="data_transacao_inicio">Data de Início</label>
+                    <input type="text"
+                           id="data_transacao_inicio"
+                           name="data_transacao_inicio"
+                           required
+                           placeholder="MM/AAAA"
+                           maxlength="7"
+                           value="<?= date('m/Y', strtotime($recorrente['data_transacao_inicio'])) ?>">
+                </div>
+
+                <div class="input-group">
+                    <label for="data_transacao_termino">Data de Término <span style="font-weight:400; color: var(--ink-faint);">(opcional)</span></label>
+                    <input type="text"
+                           id="data_transacao_termino"
+                           name="data_transacao_termino"
+                           placeholder="MM/AAAA"
+                           maxlength="7"
+                           value="<?= !empty($recorrente['data_transacao_termino']) ? date('m/Y', strtotime($recorrente['data_transacao_termino'])) : '' ?>">
+                </div>
+
+                <input type="hidden" name="id" value="<?= $recorrente['id'] ?>">
+
+                <div class="dialog-actions">
+                    <button type="button" class="btn-secondary" onclick="window.location.href='../recorrentes'">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -175,5 +192,6 @@
             aplicarMascaraMesAno('data_transacao_termino');
         });
     </script>
+
 </body>
 </html>
