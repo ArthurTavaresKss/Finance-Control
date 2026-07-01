@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     && a2enmod rewrite \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Configura o timezone no PHP (afeta date(), time(), DateTime, etc.)
+# Configura o timezone no PHP
 RUN echo "date.timezone=America/Sao_Paulo" > /usr/local/etc/php/conf.d/timezone.ini
 
 # Copia os arquivos do projeto
