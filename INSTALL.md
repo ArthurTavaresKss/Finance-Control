@@ -114,6 +114,11 @@ Esta é a forma mais recomendada para rodar o sistema de forma isolada e profiss
      ```
    - Ou a porta que você adicionou
 
+7. **Remova a pasta temporária**
+   ```bash
+   rm /rf ~/tmp/finance-install
+   ```
+
 ---
 
 ## 🔄 Auto-Deploy (Atualização Automática)
