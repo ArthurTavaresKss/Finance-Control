@@ -2,6 +2,8 @@
 
 Sistema de Controle Financeiro Web desenvolvido em PHP puro.
 
+### **[⇽ Voltar](README.md)**
+
 ---
 
 ## 📋 Requisitos

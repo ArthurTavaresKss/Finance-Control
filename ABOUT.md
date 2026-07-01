@@ -2,6 +2,8 @@
 
 Sistema web de controle financeiro pessoal, desenvolvido em PHP puro com banco de dados MySQL/MariaDB e autenticação por sessão.
 
+### **[⇽ Voltar](README.md)**
+
 ---
 
 ## 📖 Como o Sistema Funciona
