@@ -82,10 +82,9 @@ Esta é a forma mais recomendada para rodar o sistema de forma isolada e profiss
    ```
 
 3. **Execute o instalador**
-   - **Execute com *sudo*, para poder usar o crontab, e automatizar o script de auto-deploy.sh.
    ```bash
    chmod +x install.sh
-   sudo ./install.sh -rp "SuaSenhaRootForte" -p "SuaSenhaUserForte"
+   ./install.sh -rp "SuaSenhaRootForte" -p "SuaSenhaUserForte" -pt 3847
    ```
 
    **Parâmetros disponíveis:**
@@ -116,7 +115,7 @@ Esta é a forma mais recomendada para rodar o sistema de forma isolada e profiss
 
 7. **Remova a pasta temporária**
    ```bash
-   rm /rf ~/tmp/finance-install
+   rm -rf ~/tmp/finance-install
    ```
 
 ---
