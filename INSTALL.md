@@ -75,6 +75,7 @@ Esta é a forma mais recomendada para rodar o sistema de forma isolada e profiss
    ```git
    git clone https://github.com/ArthurTavaresKss/Finance-Control.git ~/tmp/finance-install
    ```
+   - *Use especificamente o caminho `~/tmp/finance-install` para a pasta temporária. O `install.sh` conta com isso.
 
 2. **Entre na pasta de instalação**
    ```bash
