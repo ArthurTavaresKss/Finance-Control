@@ -105,7 +105,26 @@ cd "$PROJECT_DIR"
 docker compose up -d --build
 
 echo ""
-echo "[9/9] Importando banco de dados..."
+echo "[9/9] Aguardando o MariaDB ficar pronto..."
+
+# Na primeira execução, o MariaDB cria o banco/usuário e REINICIA internamente,
+# então não basta o container estar "Started" — é preciso esperar o servidor
+# aceitar conexões de fato, senão a importação falha com erro de socket.
+MAX_TRIES=100
+TRIES=0
+until docker exec finance-db mariadb -u financeAdmin -p"$USER_PASSWORD" -e "SELECT 1;" &> /dev/null; do
+    TRIES=$((TRIES+1))
+    if [ "$TRIES" -ge "$MAX_TRIES" ]; then
+        echo "ERRO: MariaDB não ficou pronto a tempo. Verifique com: docker logs finance-db"
+        exit 1
+    fi
+    echo "  Ainda não está pronto, tentando novamente ($TRIES/$MAX_TRIES)..."
+    sleep 2
+done
+echo "MariaDB pronto."
+
+echo ""
+echo "Importando banco de dados..."
 docker exec -i finance-db mariadb -u financeAdmin -p"$USER_PASSWORD" financecontrol < "$PROJECT_DIR/banco.sql"
 
 echo ""
