@@ -78,7 +78,7 @@ Esta é a forma mais recomendada para rodar o sistema de forma isolada e profiss
 
 2. **Entre na pasta de instalação**
    ```bash
-   cd ~/tmp/finance-install/main/production
+   cd ~/tmp/finance-install/production
    ```
 
 3. **Execute o instalador**
