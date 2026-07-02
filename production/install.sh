@@ -50,23 +50,42 @@ fi
 
 echo ""
 echo "[2/9] Criando diretório do projeto: $PROJECT_DIR"
-mkdir -p "$PROJECT_DIR/app"
+mkdir -p "$PROJECT_DIR"
 
 echo ""
-echo "[3/9] Copiando código da aplicação para app/..."
+echo "[3/9] Clonando código da aplicação para app/ (git)..."
 
-# Validação explícita: se algo não existir no REPO_ROOT esperado, o script
-# avisa e para, em vez de falhar silenciosamente como antes (2>/dev/null || true).
+# MUDANÇA: antes, o app/ era criado com "cp -r" a partir do checkout local,
+# então nunca tinha pasta .git — e o auto-deploy.sh (que faz git fetch/reset)
+# não tinha como funcionar. Agora clonamos de verdade, para app/ ser um
+# repositório git independente que o auto-deploy.sh consegue atualizar.
+
+# Descobre a URL de origin e a branch atual a partir do clone usado para instalar,
+# assim não fica hardcoded e acompanha o repo/branch que a pessoa está usando.
+if ! REPO_URL="$(git -C "$REPO_ROOT" config --get remote.origin.url 2>/dev/null)"; then
+    echo "ERRO: não consegui detectar a URL do repositório git em $REPO_ROOT."
+    echo "Rode o install.sh a partir de um clone git válido do Finance-Control."
+    exit 1
+fi
+
+BRANCH="$(git -C "$REPO_ROOT" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")"
+if [ "$BRANCH" = "HEAD" ]; then
+    BRANCH="main"
+fi
+echo "Repositório detectado: $REPO_URL (branch: $BRANCH)"
+
+# Remove qualquer app/ residual de uma instalação anterior antes de clonar
+rm -rf "$PROJECT_DIR/app"
+git clone --branch "$BRANCH" --single-branch "$REPO_URL" "$PROJECT_DIR/app"
+
+# Validação: confirma que a estrutura esperada veio no clone
 for item in config includes public .htaccess; do
-    if [ ! -e "$REPO_ROOT/$item" ]; then
-        echo "ERRO: não encontrei '$REPO_ROOT/$item'."
-        echo "Verifique se REPO_ROOT está correto. REPO_ROOT atual: $REPO_ROOT"
+    if [ ! -e "$PROJECT_DIR/app/$item" ]; then
+        echo "ERRO: '$item' não está presente em $PROJECT_DIR/app após o clone."
         exit 1
     fi
 done
-
-cp -r "$REPO_ROOT/config" "$REPO_ROOT/includes" "$REPO_ROOT/public" "$REPO_ROOT/.htaccess" "$PROJECT_DIR/app/"
-echo "Copiado com sucesso. Conteúdo de app/:"
+echo "Clonado com sucesso. Conteúdo de app/:"
 ls -la "$PROJECT_DIR/app"
 
 echo ""
@@ -81,6 +100,9 @@ sed -i "s/DB_PASSWORD=financecontrol/DB_PASSWORD=$USER_PASSWORD/" "$PROJECT_DIR/
 
 # Injeta a porta como variável de ambiente para o docker compose
 echo "APP_PORT=$APP_PORT" > "$PROJECT_DIR/.env"
+
+# Garante que o auto-deploy.sh siga acompanhando a mesma branch usada no clone
+sed -i "s/^BRANCH=\".*\"/BRANCH=\"$BRANCH\"/" "$PROJECT_DIR/auto-deploy.sh"
 
 echo ""
 echo "[6/9] Configurando permissões e log..."
@@ -110,7 +132,7 @@ echo "[9/9] Aguardando o MariaDB ficar pronto..."
 # Na primeira execução, o MariaDB cria o banco/usuário e REINICIA internamente,
 # então não basta o container estar "Started" — é preciso esperar o servidor
 # aceitar conexões de fato, senão a importação falha com erro de socket.
-MAX_TRIES=100
+MAX_TRIES=30
 TRIES=0
 until docker exec finance-db mariadb -u financeAdmin -p"$USER_PASSWORD" -e "SELECT 1;" &> /dev/null; do
     TRIES=$((TRIES+1))
