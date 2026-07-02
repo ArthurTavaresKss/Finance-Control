@@ -30,7 +30,7 @@ Sistema de Controle Financeiro Web desenvolvido em PHP puro.
    ```
 
 2. **Configurações do XAMPP**
-   - Acesse o painel de admin do XAMPP e clique em Config no Apache.
+   - Acesse o painel de Admin do XAMPP e clique em Config no Apache.
    - Abra o httpd.conf e procure por:
    ```bash
    DocumentRoot "C:/xampp/htdocs" 
