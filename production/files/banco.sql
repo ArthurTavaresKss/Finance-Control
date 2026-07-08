@@ -81,7 +81,31 @@ CREATE TABLE `transacoes_recorrentes` (
   PRIMARY KEY (`id`),
   KEY `fk_transacoes_recorrentes_usuarios_idx` (`id_usuario`),
   CONSTRAINT `fk_transacoes_recorrentes_usuarios` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- 4. Table structure for table `predefinicoes`
+--
+DROP TABLE IF EXISTS `predefinicoes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `predefinicoes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `tipo` varchar(45) NOT NULL,
+  `descricao` varchar(90) NOT NULL,
+  `valor` decimal(10,2) NOT NULL,
+  `categoria` varchar(90) NOT NULL,
+  `data_cadastro` timestamp NOT NULL DEFAULT current_timestamp(),
+  `data_alteracao` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `fk_predefinicoes_usuarios_idx` (`id_usuario`),
+  CONSTRAINT `fk_predefinicoes_usuarios` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
