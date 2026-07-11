@@ -1,47 +1,76 @@
-# Finance Control
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ArthurTavaresKss/Finance-Control/main/public/assets/img/logo.png" alt="Finance Control" width="220">
+</p>
 
-Sistema web simples de **controle financeiro pessoal**, desenvolvido em PHP puro. Permite gerenciar transações, transações recorrentes, e visualizar relatórios de forma prática.
+<h1 align="center">Finance Control</h1>
+
+<p align="center">
+  Sistema web de controle financeiro pessoal, desenvolvido em PHP puro.
+</p>
+
+<p align="center">
+  <a href="INSTALL.md">Instalação</a> ·
+  <a href="ABOUT.md">Documentação</a> ·
+  <a href="#licença">Licença</a>
+</p>
 
 ---
 
-## ✨ Funcionalidades
+## Sobre
 
-- Cadastro e gerenciamento de transações
-- Transações recorrentes (assinaturas, salários, etc.)
-- Predefinições de transações (modelos reutilizáveis para preencher o formulário com um clique)
-- Controle de perfil
+Finance Control é uma aplicação web para gerenciamento de finanças pessoais. Permite o registro de transações, transações recorrentes e predefinições reutilizáveis, além de indicadores e relatórios visuais organizados por período e categoria.
+
+Para uma descrição detalhada da arquitetura e do funcionamento interno do sistema, consulte [ABOUT.md](ABOUT.md).
+
+## Funcionalidades
+
+- Cadastro e gerenciamento de transações, com filtros e paginação
+- Transações recorrentes (assinaturas, salários, contas fixas)
+- Predefinições de transações: modelos reutilizáveis que preenchem o formulário automaticamente
+- Painel com indicadores mensais e gráficos por categoria
 - Exportação e importação de dados em CSV
-- Interface simples e responsiva
+- Autenticação por sessão e gerenciamento de perfil
 
----
+## Tecnologias
 
-## 🚀 Instalação
+| Camada           | Tecnologia                |
+|------------------|----------------------------|
+| Linguagem        | PHP 8+                     |
+| Banco de dados   | MySQL / MariaDB            |
+| Frontend         | HTML, CSS, JavaScript      |
+| Infraestrutura   | Docker, Docker Compose     |
 
-Escolha uma das opções abaixo:
+## Instalação
 
-- **[Instalação com XAMPP (Desenvolvimento Local)](INSTALL.md#opção-1-xampp-desenvolvimento-local)**
-- **[Instalação com Docker (Produção)](INSTALL.md#opção-2-docker-recomendado-para-produção)**
+O sistema pode ser executado localmente com XAMPP, para desenvolvimento, ou via Docker, para produção.
 
----
+Instruções completas em [INSTALL.md](INSTALL.md):
 
-## 📖 Como o Sistema Funciona
+- [Instalação com XAMPP](INSTALL.md#opção-1-xampp-desenvolvimento-local)
+- [Instalação com Docker](INSTALL.md#opção-2-docker-recomendado-para-produção)
 
-Quer entender a estrutura e o fluxo do sistema?
+## Documentação
 
-→ [Entenda como funciona](ABOUT.md)
+| Documento                 | Conteúdo                                                        |
+|----------------------------|-------------------------------------------------------------------|
+| [ABOUT.md](ABOUT.md)       | Fluxo do sistema, arquitetura e estrutura do banco de dados       |
+| [INSTALL.md](INSTALL.md)   | Instalação, deploy, migrations e backup/restauração               |
 
----
+## Estrutura do projeto
 
-## 🛠️ Tecnologias
+```
+Finance-Control/
+├── config/          Configurações do sistema
+├── includes/        Funções e autenticação
+├── public/          Arquivos acessíveis via navegador
+├── migrations/       Mudanças de schema do banco, aplicadas incrementalmente
+└── production/       Scripts e arquivos de instalação/deploy
+```
 
-- PHP 8+
-- MySQL / MariaDB
-- Docker + Docker Compose
-- HTML + CSS + JavaScript
+## Licença
 
----
+Este projeto ainda não possui uma licença definida.
 
----
+## Autor
 
-**Desenvolvido por Arthur Tavares**  
-[GitHub](https://github.com/ArthurTavaresKss)
+Arthur Tavares — [GitHub](https://github.com/ArthurTavaresKss)
