@@ -22,12 +22,16 @@ O Finance Control foi pensado para ser um gerenciador simples e prático de fina
    - O sistema também suporta despesas ou receitas recorrentes, como assinaturas, salários e contas fixas.
    - Essas transações tem início e podem ter término definidos, além de um dia de ocorrência.
 
-4. **Painel e indicadores**
+4. **Predefinições de transações**
+   - O usuário pode salvar modelos de transação (tipo, descrição, valor e categoria) para reutilizar depois.
+   - Ao cadastrar uma nova transação ou transação recorrente, é possível escolher uma predefinição no topo do formulário e ela preenche os campos automaticamente, agilizando lançamentos repetitivos (ex: salário, aluguel, assinaturas).
+
+5. **Painel e indicadores**
    - O dashboard apresenta indicadores mensais, como entradas, saídas e total movimentado.
    - Também são exibidos gráficos e agrupamentos por categoria para facilitar a análise financeira.
 
-5. **Importação e exportação de dados**
-   - O sistema permite exportar transações e recorrentes em CSV.
+6. **Importação e exportação de dados**
+   - O sistema permite exportar transações, recorrentes e predefinições em CSV.
    - Também há suporte para importação de arquivos CSV, facilitando a migração de dados de planilhas manuais.
 
 ---
@@ -50,6 +54,7 @@ A estrutura do projeto é organizada de forma simples:
   - cadastro e autenticação de usuários;
   - CRUD de transações;
   - CRUD de transações recorrentes;
+  - CRUD de predefinições de transações;
   - cálculo de indicadores mensais e anuais;
   - filtros e paginação.
 
@@ -60,14 +65,15 @@ O sistema trabalha com tabelas como:
 - `usuarios`
 - `transacoes`
 - `transacoes_recorrentes`
+- `predefinicoes`
 
-Essas tabelas armazenam as informações de perfil, movimentações financeiras e recorrências.
+Essas tabelas armazenam as informações de perfil, movimentações financeiras, recorrências e modelos de predefinição.
 
 ---
 
 ## 📝 Resumo Conciso
 
-O Finance Control é uma aplicação web local simples, leve e funcional para controlar finanças pessoais. Ele permite registrar receitas e despesas, organizar transações recorrentes, acompanhar indicadores financeiros e exportar ou importar dados em CSV, tudo com uma interface direta e fácil de usar.
+O Finance Control é uma aplicação web local simples, leve e funcional para controlar finanças pessoais. Ele permite registrar receitas e despesas, organizar transações recorrentes, salvar predefinições para agilizar lançamentos repetitivos, acompanhar indicadores financeiros e exportar ou importar dados em CSV, tudo com uma interface direta e fácil de usar.
 
 ---
 

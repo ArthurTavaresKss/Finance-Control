@@ -8,6 +8,7 @@ Sistema web simples de **controle financeiro pessoal**, desenvolvido em PHP puro
 
 - Cadastro e gerenciamento de transações
 - Transações recorrentes (assinaturas, salários, etc.)
+- Predefinições de transações (modelos reutilizáveis para preencher o formulário com um clique)
 - Controle de perfil
 - Exportação e importação de dados em CSV
 - Interface simples e responsiva
@@ -37,6 +38,8 @@ Quer entender a estrutura e o fluxo do sistema?
 - MySQL / MariaDB
 - Docker + Docker Compose
 - HTML + CSS + JavaScript
+
+---
 
 ---
 
