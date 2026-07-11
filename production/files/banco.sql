@@ -61,7 +61,7 @@ CREATE TABLE `transacoes` (
 
 
 --
--- 3. Table structure for table `assinaturas`
+-- 3. Table structure for table `transacoes_recorrentes`
 --
 DROP TABLE IF EXISTS `transacoes_recorrentes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

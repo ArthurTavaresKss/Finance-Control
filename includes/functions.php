@@ -699,3 +699,160 @@ function getRecurringByUserIdAndId($pdo, $idUsuario, $idRecorrente) {
     return $stmt->fetch(PDO::FETCH_ASSOC);
 
 }
+
+function getPredefinitionsByUserId($pdo, $idUsuario,) {
+    $sql = "SELECT id, tipo, descricao, valor, categoria
+            FROM predefinicoes 
+            WHERE id_usuario = :id_usuario";
+            
+    $stmt = $pdo->prepare($sql);
+    
+    $stmt->bindValue(':id_usuario', $idUsuario, PDO::PARAM_INT);
+    
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+}
+
+function getPredefinitionsByUserIdAndParams($pdo, $idUsuario, $tipo, $descricao, $categoria, $operadorValor, $valor) {
+    
+    $sql = "SELECT * FROM predefinicoes WHERE id_usuario = :idUsuario";
+    $conditions = [];
+    $params = [':idUsuario' => $idUsuario];
+
+    if (!empty($tipo)) {
+        $conditions[] = "tipo = :tipo";
+        $params[':tipo'] = $tipo;
+    }
+    if (!empty($descricao)) {
+        $conditions[] = "descricao LIKE :descricao";
+        $params[':descricao'] = "%$descricao%";
+    }
+    if (!empty($categoria)) {
+        $conditions[] = "categoria = :categoria";
+        $params[':categoria'] = $categoria;
+    }
+    if (!empty($valor) && !empty($operadorValor)) {
+        if ($operadorValor === 'igual_a') {
+            $conditions[] = "valor = :valor";
+        } elseif ($operadorValor === 'maior_que') {
+            $conditions[] = "valor > :valor";
+        } elseif ($operadorValor === 'menor_que') {
+            $conditions[] = "valor < :valor";
+        }
+        $params[':valor'] = $valor;
+    }
+
+    if (!empty($conditions)) {
+        $sql .= " AND " . implode(" AND ", $conditions);
+    }
+
+    $sql .= " ORDER BY id DESC";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getPredefinitionsByUserIdAndParamsAndPagination($pdo, $idUsuario, $tipo, $descricao, $categoria, $operadorValor, $valor, $limite, $offset) {
+    
+    $sql = "SELECT * FROM predefinicoes WHERE id_usuario = :idUsuario";
+    $conditions = [];
+    $params = [':idUsuario' => $idUsuario];
+
+    if (!empty($tipo)) {
+        $conditions[] = "tipo = :tipo";
+        $params[':tipo'] = $tipo;
+    }
+    if (!empty($descricao)) {
+        $conditions[] = "descricao LIKE :descricao";
+        $params[':descricao'] = "%$descricao%";
+    }
+    if (!empty($categoria)) {
+        $conditions[] = "categoria = :categoria";
+        $params[':categoria'] = $categoria;
+    }
+    if (!empty($valor) && !empty($operadorValor)) {
+        if ($operadorValor === 'igual_a') {
+            $conditions[] = "valor = :valor";
+        } elseif ($operadorValor === 'maior_que') {
+            $conditions[] = "valor > :valor";
+        } elseif ($operadorValor === 'menor_que') {
+            $conditions[] = "valor < :valor";
+        }
+        $params[':valor'] = $valor;
+    }
+
+    if (!empty($conditions)) {
+        $sql .= " AND " . implode(" AND ", $conditions);
+    }
+
+    $sql .= " ORDER BY id DESC";
+    $sql .= " LIMIT :limite OFFSET :offset";
+
+    $params[':limite']  = (int)$limite;
+    $params[':offset'] = (int)$offset;
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':limite',  $params[':limite'],  PDO::PARAM_INT);
+    $stmt->bindParam(':offset', $params[':offset'], PDO::PARAM_INT);
+    $stmt->execute($params);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function insertPredefinition($pdo, $idUsuario, $tipo, $descricao, $valor, $categoria) {
+    $sql = "INSERT INTO predefinicoes (id_usuario, tipo, descricao, valor, categoria) 
+            VALUES (:idUsuario, :tipo, :descricao, :valor, :categoria)";
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':idUsuario', $idUsuario);
+    $stmt->bindParam(':tipo', $tipo);
+    $stmt->bindParam(':descricao', $descricao);
+    $stmt->bindParam(':valor', $valor);
+    $stmt->bindParam(':categoria', $categoria);
+    
+    return $stmt->execute();
+}
+
+function getPredefinitionByUserIdAndId($pdo, $idUsuario, $idPredefinicao) {
+    $sql = "SELECT * FROM predefinicoes WHERE id_usuario = :idUsuario AND id = :id";
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':idUsuario', $idUsuario);
+    $stmt->bindParam(':id', $idPredefinicao);
+    $stmt->execute();
+    
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function alterPredefinitionById($pdo, $id, $idUsuario, $tipo, $descricao, $valor, $categoria) {
+    $sql = "UPDATE predefinicoes
+            SET
+                tipo = :tipo,
+                descricao = :descricao,
+                valor = :valor,
+                categoria = :categoria
+            WHERE id = :id
+              AND id_usuario = :idUsuario";
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':tipo', $tipo);
+    $stmt->bindParam(':descricao', $descricao);
+    $stmt->bindParam(':valor', $valor);
+    $stmt->bindParam(':categoria', $categoria);
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->bindParam(':idUsuario', $idUsuario, PDO::PARAM_INT);
+    
+    return $stmt->execute();
+}
+
+function deletePredefinitionByUserIdAndId($pdo, $idUsuario, $idPredefinicao) {
+    $sql = "DELETE FROM predefinicoes WHERE id_usuario = :idUsuario AND id = :id";
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':idUsuario', $idUsuario);
+    $stmt->bindParam(':id', $idPredefinicao);
+    
+    return $stmt->execute();
+}

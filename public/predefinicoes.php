@@ -6,48 +6,26 @@
     $idUsuario = $_SESSION['idUsuario'];
     $usernameUsuario = $_SESSION['usernameUsuario'];
     
-    $data_inicial           = $_GET['data_inicial']           ?? date('Y-m-01');
-    $data_final             = $_GET['data_final']             ?? date('Y-m-t');
-    $tipo                   = $_GET['tipo']                   ?? '';
-    $descricao              = $_GET['descricao']              ?? '';
-    $categoria              = $_GET['categoria']              ?? '';
-    $operador_valor         = $_GET['operador_valor']         ?? '';
-    $valor                  = $_GET['valor']                  ?? '';
-    $dia_transacao          = $_GET['dia_transacao']          ?? '';
-    $data_inicio_filtro     = $_GET['data_inicio_transacao']  ?? '';
-    $data_termino_filtro    = $_GET['data_termino_transacao'] ?? '';
-    $limite          = $_GET['tamanho_paginas']               ?? 10;
-
-    $data_inicio_transacao = '';
-    if (!empty($data_inicio_filtro) && preg_match('/^(0[1-9]|1[0-2])\/[0-9]{4}$/', $data_inicio_filtro)) {
-        $partesInicio = explode('/', $data_inicio_filtro);
-        $data_inicio_transacao = $partesInicio[1] . '-' . $partesInicio[0] . '-01';
-    }
-
-    $data_termino_transacao = '';
-    if (!empty($data_termino_filtro) && preg_match('/^(0[1-9]|1[0-2])\/[0-9]{4}$/', $data_termino_filtro)) {
-        $partesTermino = explode('/', $data_termino_filtro);
-        $data_termino_transacao = $partesTermino[1] . '-' . $partesTermino[0] . '-01';
-    }
+    $tipo            = $_GET['tipo']            ?? '';
+    $descricao       = $_GET['descricao']       ?? '';
+    $categoria       = $_GET['categoria']       ?? '';
+    $operador_valor  = $_GET['operador_valor']  ?? '';
+    $valor           = $_GET['valor']           ?? '';
+    $limite          = $_GET['tamanho_paginas'] ?? 10;
     
     $paginaAtual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
 
-    $recorrentes = getRecurringByUserIdAndParams(
+    $predefinicoes = getPredefinitionsByUserIdAndParams(
         $pdo,
         $idUsuario,
-        $data_inicial,
-        $data_final,
         $tipo,
         $descricao,
         $categoria,
         $operador_valor,
-        $valor,
-        $dia_transacao,
-        $data_inicio_transacao,
-        $data_termino_transacao
+        $valor
     );
 
-    $totalPaginas = (int) ceil(count($recorrentes) / $limite);
+    $totalPaginas = (int) ceil(count($predefinicoes) / $limite);
     
     if ($paginaAtual < 1 || ($totalPaginas > 0 && $paginaAtual > $totalPaginas)) {
         $query_params = $_GET;
@@ -58,25 +36,20 @@
     
     $offset = ($paginaAtual - 1) * $limite;
 
-    $recorrentesPaginadas = getRecurringByUserIdAndParamsAndPagination(
+    $predefinicoesPaginadas = getPredefinitionsByUserIdAndParamsAndPagination(
         $pdo,
         $idUsuario,
-        $data_inicial,
-        $data_final,
         $tipo,
         $descricao,
         $categoria,
         $operador_valor,
         $valor,
-        $dia_transacao,
-        $data_inicio_transacao,
-        $data_termino_transacao,
         $limite,
         $offset
     );
 
-    $status = $_SESSION['status_recorrente'] ?? '';
-    unset($_SESSION['status_recorrente']);
+    $status = $_SESSION['status_predefinicao'] ?? '';
+    unset($_SESSION['status_predefinicao']);
     $mostrarModal = false;
     $modalTitulo = '';
     $modalMensagem = '';
@@ -85,44 +58,38 @@
         $mostrarModal = true;
 
         switch ($status) {
-            case 'recorrente_adicionada':
-                $modalTitulo = 'Sucesso!';
-                $modalMensagem = 'Sua nova transação recorrente foi cadastrada com sucesso.';
-                break;
-            
-            case 'data_termino_maior':
-                $modalTitulo = 'Data Incorreta.';
-                $modalMensagem = 'Você inseriu a data incorretamente, ou tentou inserir a data de término anterior ou igual à data de inicio.';
+            case 'predefinicao_adicionada':
+                $modalTitulo = 'Predefinição Adicionada!';
+                $modalMensagem = 'Sua nova predefinição foi cadastrada com sucesso.';
                 break;
 
-            case 'erro_recorrente_adicionada':
-                $modalTitulo = 'Erro ao cadastrar';
-                $modalMensagem = 'Não foi possível salvar a transação recorrente. Por favor, tente novamente.';
+            case 'erro_predefinicao_adicionada':
+                $modalTitulo = 'Erro ao Adicionar!';
+                $modalMensagem = 'Não foi possível cadastrar a predefinição. Por favor, verifique os dados e tente novamente.';
                 break;
 
-            case 'recorrente_deletada':
-                $modalTitulo = 'Excluído!';
-                $modalMensagem = 'A transação recorrente foi removida com sucesso.';
+            case 'predefinicao_alterada':
+                $modalTitulo = 'Predefinição Atualizada!';
+                $modalMensagem = 'Os dados da sua predefinição foram editados e salvos com sucesso.';
                 break;
 
-            case 'erro_recorrente_deletada':
-                $modalTitulo = 'Erro ao excluir';
-                $modalMensagem = 'Houve um problema ao tentar excluir a transação recorrente.';
+            case 'erro_predefinicao_alterada':
+                $modalTitulo = 'Erro ao Editar';
+                $modalMensagem = 'Não foi possível salvar as alterações da predefinição. Tente novamente.';
                 break;
 
-            case 'recorrente_editada':
-                $modalTitulo = 'Atualizado!';
-                $modalMensagem = 'As alterações da transação recorrente foram salvas com sucesso.';
+            case 'predefinicao_deletada':
+                $modalTitulo = 'Predefinição Removida';
+                $modalMensagem = 'A predefinição foi excluída permanentemente do seu histórico.';
                 break;
 
-            case 'erro_recorrente_editada':
-                $modalTitulo = 'Erro ao editar';
-                $modalMensagem = 'Não foi possível atualizar os dados desta transação recorrente.';
+            case 'erro_predefinicao_deletada':
+                $modalTitulo = 'Erro ao Excluir';
+                $modalMensagem = 'Houve uma falha ao tentar excluir a predefinição. Por favor, tente de novo.';
                 break;
 
             default:
-                $modalTitulo = 'Aviso';
-                $modalMensagem = 'Ação concluída.';
+                $mostrarModal = false;
                 break;
         }
     }
@@ -132,7 +99,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finance Control - Transações Recorrentes</title>
+    <title>Finance Control - Predefinições</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="assets/js/script.js"></script>
 </head>
@@ -150,8 +117,8 @@
 
         <nav class="app-nav">
             <a href="transacoes">Transações</a>
-            <a href="recorrentes" class="active">Transações Recorrentes</a>
-            <a href="predefinicoes">Predefinições</a>
+            <a href="recorrentes">Transações Recorrentes</a>
+            <a href="predefinicoes" class="active">Predefinições</a>
             <a href="dashboards">Dashboards</a>
             <a href="perfil">Perfil</a>
             <span class="app-nav-divider"></span>
@@ -164,31 +131,22 @@
         <div class="app-page-header">
             <div>
                 <span class="eyebrow">Olá, <?= sanitizeInput($usernameUsuario) ?></span>
-                <h2>Transações Recorrentes</h2>
+                <h2>Predefinições</h2>
             </div>
             <div class="app-header-actions">
-                <button type="button" class="btn-primary" onclick="document.getElementById('modalRecorrente').showModal()">
-                    + Adicionar transação recorrente
+                <button type="button" class="btn-primary" onclick="document.getElementById('modalPredefinicao').showModal()">
+                    + Adicionar predefinição
                 </button>
-                <button type="button" class="btn-secondary" onclick="window.location.href='importCSV/importar_recorrentes'">
+                <button type="button" class="btn-secondary" onclick="window.location.href='importCSV/importar_predefinicoes'">
                     Importar CSV
                 </button>
-                <button type="button" class="btn-secondary" onclick="window.location.href='exportCSV/exportar_recorrentes'">
+                <button type="button" class="btn-secondary" onclick="window.location.href='exportCSV/exportar_predefinicoes'">
                     Exportar CSV
                 </button>
             </div>
         </div>
 
-        <form method="GET" action="recorrentes">
-
-            <div class="app-card">
-                <div class="filter-bar">
-                    <span>Mostrando transações recorrentes ativas no período de</span>
-                    <input type="date" name="data_inicial" value="<?= sanitizeInput($data_inicial) ?>" required>
-                    <span>até</span>
-                    <input type="date" name="data_final" value="<?= sanitizeInput($data_final) ?>" required>
-                </div>
-            </div>
+        <form method="GET" action="predefinicoes">
 
             <div class="app-card">
                 <div class="app-table-wrap">
@@ -200,9 +158,6 @@
                                 <th>Descrição</th>
                                 <th>Categoria</th>
                                 <th>Valor</th>
-                                <th>Dia da Transação</th>
-                                <th>Mês de Início</th>
-                                <th>Mês de Término</th>
                                 <th>Ações</th>
                             </tr>
                             <tr class="filter-row">
@@ -250,60 +205,36 @@
                                                value="<?= sanitizeInput($valor) ?>">
                                     </div>
                                 </th>
-                                <th>
-                                    <input type="number" id="dia_transacao" name="dia_transacao" min="1" max="28" step="1" placeholder="1 a 28"
-                                           value="<?= sanitizeInput($dia_transacao) ?>">
-                                </th>
-                                <th>
-                                    <input type="text"
-                                           id="filtra_data_inicio"
-                                           name="data_inicio_transacao"
-                                           placeholder="MM/AAAA"
-                                           maxlength="7"
-                                           value="<?= sanitizeInput($data_inicio_filtro) ?>">
-                                </th>
-                                <th>
-                                    <input type="text"
-                                           id="filtra_data_termino"
-                                           name="data_termino_transacao"
-                                           placeholder="MM/AAAA"
-                                           maxlength="7"
-                                           value="<?= sanitizeInput($data_termino_filtro) ?>">
-                                </th>
                                 <th style="white-space: nowrap;">
                                     <button type="submit" class="btn-primary" style="height: 36px; padding: 0 14px; font-size: 13px;">Filtrar</button>
-                                    <button type="button" class="btn-secondary" style="height: 36px; padding: 0 12px; font-size: 13px;" onclick="window.location.href='recorrentes'">Resetar</button>
+                                    <button type="button" class="btn-secondary" style="height: 36px; padding: 0 12px; font-size: 13px;" onclick="window.location.href='predefinicoes'">Resetar</button>
                                 </th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            <?php if (count($recorrentesPaginadas) === 0): ?>
+                            <?php if (count($predefinicoesPaginadas) === 0): ?>
                                 <tr class="empty-row">
-                                    <td colspan="9">Nenhuma transação encontrada.</td>
+                                    <td colspan="7">Nenhuma predefinição encontrada.</td>
                                 </tr>
                             <?php else: ?>
-                                <?php $order = $offset; foreach ($recorrentesPaginadas as $recorrente): ?>
+                                <?php $order = $offset; foreach ($predefinicoesPaginadas as $predefinicao): ?>
                                     <tr>
                                         <td><?php $order += 1; echo($order); ?></td>
                                         <td>
-                                            <?php $tipoClasse = sanitizeInput($recorrente['tipo']) === 'Entrada' ? 'entrada' : 'saida'; ?>
-                                            <span class="badge <?= $tipoClasse ?>"><?= sanitizeInput($recorrente['tipo']) ?></span>
+                                            <?php $tipoClasse = sanitizeInput($predefinicao['tipo']) === 'Entrada' ? 'entrada' : 'saida'; ?>
+                                            <span class="badge <?= $tipoClasse ?>"><?= sanitizeInput($predefinicao['tipo']) ?></span>
                                         </td>
-                                        <td><?= sanitizeInput($recorrente['descricao']) ?></td>
-                                        <td><?= sanitizeInput($recorrente['categoria']) ?></td>
-                                        <td>R$ <?= sanitizeInput($recorrente['valor']) ?></td>
-                                        <td><?= sanitizeInput($recorrente['dia_transacao']) ?></td>
-                                        <td><?= date('m/Y', strtotime(sanitizeInput($recorrente['data_transacao_inicio']))) ?></td>
-                                        <td><?= !empty($recorrente['data_transacao_termino']) ?
-                                            date('m/Y', strtotime(sanitizeInput($recorrente['data_transacao_termino']))) : 'N/A' ?></td>
+                                        <td><?= sanitizeInput($predefinicao['descricao']) ?></td>
+                                        <td><?= sanitizeInput($predefinicao['categoria']) ?></td>
+                                        <td>R$ <?= sanitizeInput($predefinicao['valor']) ?></td>
                                         <td>
                                             <div class="row-actions">
-                                                <a href="editRecorrente/editar_recorrente?id=<?= $recorrente['id'] ?>" class="row-action-btn edit">
+                                                <a href="editPredefinicao/editar_predefinicao?id=<?= $predefinicao['id'] ?>" class="row-action-btn edit">
                                                     <img src="assets/img/editar.png" alt="Editar" width="20" height="20">
                                                 </a>
-                                                <a href="editRecorrente/excluir_recorrente?id=<?= $recorrente['id'] ?>"
-                                                   onclick="return confirm('Tem certeza que deseja excluir esta transação?')" class="row-action-btn delete">
+                                                <a href="editPredefinicao/excluir_predefinicao?id=<?= $predefinicao['id'] ?>"
+                                                   onclick="return confirm('Tem certeza que deseja excluir esta predefinição?')" class="row-action-btn delete">
                                                     <img src="assets/img/excluir.png" alt="Excluir" width="20" height="20">
                                                 </a>
                                             </div>
@@ -359,10 +290,10 @@
 
     </main>
 
-    <dialog id="modalRecorrente" class="app-dialog">
+    <dialog id="modalPredefinicao" class="app-dialog">
         <div class="dialog-inner">
-            <h2>Nova Transação Recorrente</h2>
-            <form method="POST" action="editRecorrente/salvar_recorrente">
+            <h2>Nova Predefinição</h2>
+            <form method="POST" action="editPredefinicao/salvar_predefinicao">
                 <div class="input-group">
                     <label for="tipo">Tipo</label>
                     <select id="tipo" name="tipo" required>
@@ -374,7 +305,7 @@
 
                 <div class="input-group">
                     <label for="descricao">Descrição</label>
-                    <input type="text" id="descricao" name="descricao" maxlength="90" required placeholder="Ex: Assinatura Netflix">
+                    <input type="text" id="descricao" name="descricao" maxlength="90" required placeholder="Ex: Compra de chocolate">
                 </div>
 
                 <div class="input-group">
@@ -404,35 +335,8 @@
                         placeholder="Digite a nova categoria" style="display: none; margin-top: 8px;">
                 </div>
 
-                <div class="input-group">
-                    <label for="dia_transacao">Dia da Transação</label>
-                    <input type="number" id="dia_transacao" name="dia_transacao" min="1" max="28" step="1" placeholder="Dia da transação (1 a 28)"
-                           value="<?= sanitizeInput($dia_transacao) ?>">
-                </div>
-
-                <div class="input-group">
-                    <label for="data_transacao_inicio">Data de Início</label>
-                    <input type="text"
-                        id="data_transacao_inicio"
-                        name="data_transacao_inicio"
-                        required
-                        placeholder="MM/AAAA"
-                        maxlength="7"
-                        value="<?= date('m/Y') ?>">
-                </div>
-
-                <div class="input-group">
-                    <label for="data_transacao_termino">Data de Término (opcional)</label>
-                    <input type="text"
-                        id="data_transacao_termino"
-                        name="data_transacao_termino"
-                        placeholder="MM/AAAA"
-                        maxlength="7">
-                    <small style="color: var(--ink-faint); display: block; margin-top: 6px; font-size: 12px;">Deixe em branco se for por tempo indeterminado.</small>
-                </div>
-
                 <div class="dialog-actions">
-                    <button type="button" class="btn-secondary" onclick="document.getElementById('modalRecorrente').close()">Cancelar</button>
+                    <button type="button" class="btn-secondary" onclick="document.getElementById('modalPredefiniacao').close()">Cancelar</button>
                     <button type="submit" class="btn-primary">Salvar</button>
                 </div>
             </form>
@@ -454,15 +358,6 @@
             document.getElementById('modalStatus').showModal();
         </script>
     <?php endif; ?>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            aplicarMascaraMesAno('data_transacao_inicio');
-            aplicarMascaraMesAno('data_transacao_termino');
-            aplicarMascaraMesAno('filtra_data_inicio');
-            aplicarMascaraMesAno('filtra_data_termino');
-        });
-    </script>
 
 </body>
 </html>

@@ -94,6 +94,7 @@
         <nav class="app-nav">
             <a href="transacoes">Transações</a>
             <a href="recorrentes">Transações Recorrentes</a>
+            <a href="predefinicoes">Predefinições</a>
             <a href="dashboards" class="active">Dashboards</a>
             <a href="perfil">Perfil</a>
             <span class="app-nav-divider"></span>
