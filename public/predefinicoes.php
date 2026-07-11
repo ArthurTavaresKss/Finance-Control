@@ -153,12 +153,12 @@
                     <table class="app-table">
                         <thead>
                             <tr>
-                                <th>Ordem</th>
+                                <th class="col-order">Ordem</th>
                                 <th>Tipo</th>
                                 <th>Descrição</th>
                                 <th>Categoria</th>
-                                <th>Valor</th>
-                                <th>Ações</th>
+                                <th class="col-valor">Valor</th>
+                                <th class="col-actions">Ações</th>
                             </tr>
                             <tr class="filter-row">
                                 <th></th>
@@ -215,20 +215,20 @@
                         <tbody>
                             <?php if (count($predefinicoesPaginadas) === 0): ?>
                                 <tr class="empty-row">
-                                    <td colspan="7">Nenhuma predefinição encontrada.</td>
+                                    <td colspan="6">Nenhuma predefinição encontrada.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php $order = $offset; foreach ($predefinicoesPaginadas as $predefinicao): ?>
                                     <tr>
-                                        <td><?php $order += 1; echo($order); ?></td>
+                                        <td class="col-order"><?php $order += 1; echo($order); ?></td>
                                         <td>
                                             <?php $tipoClasse = sanitizeInput($predefinicao['tipo']) === 'Entrada' ? 'entrada' : 'saida'; ?>
                                             <span class="badge <?= $tipoClasse ?>"><?= sanitizeInput($predefinicao['tipo']) ?></span>
                                         </td>
                                         <td><?= sanitizeInput($predefinicao['descricao']) ?></td>
                                         <td><?= sanitizeInput($predefinicao['categoria']) ?></td>
-                                        <td>R$ <?= sanitizeInput($predefinicao['valor']) ?></td>
-                                        <td>
+                                        <td class="col-valor">R$ <?= sanitizeInput($predefinicao['valor']) ?></td>
+                                        <td class="col-actions">
                                             <div class="row-actions">
                                                 <a href="editPredefinicao/editar_predefinicao?id=<?= $predefinicao['id'] ?>" class="row-action-btn edit">
                                                     <img src="assets/img/editar.png" alt="Editar" width="20" height="20">

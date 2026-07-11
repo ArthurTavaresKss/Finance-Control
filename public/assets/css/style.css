@@ -699,6 +699,31 @@ table.app-table tbody tr:last-child td {
     border-bottom: none;
 }
 
+/* Colunas com alinhamento próprio: número de ordem centralizado,
+   valores monetários alinhados à direita (convenção contábil),
+   e ações centralizadas em vez de coladas à esquerda da célula. */
+.app-table .col-order {
+    width: 56px;
+    text-align: center;
+    color: var(--ink-faint);
+    font-weight: 600;
+}
+
+.app-table .col-valor {
+    text-align: right;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.app-table .col-actions {
+    text-align: center;
+}
+
+.app-table .col-actions .row-actions {
+    justify-content: center;
+}
+
 .app-table .filter-row th {
     padding: 10px 14px;
     background: #ffffff;
@@ -995,43 +1020,96 @@ dialog.app-dialog {
     inset: 0;
     margin: auto;
     width: 100%;
-    max-width: 460px;
+    max-width: 520px;
     max-height: calc(100vh - 64px);
     padding: 0;
     border: none;
-    border-radius: 16px;
-    box-shadow: 0 30px 60px -24px rgba(4, 19, 31, 0.45);
+    border-radius: 18px;
+    box-shadow: 0 34px 68px -22px rgba(4, 19, 31, 0.50);
     background: transparent;
     overflow: visible;
 }
 
 dialog.app-dialog::backdrop {
-    background: rgba(8, 16, 28, 0.45);
-    backdrop-filter: blur(2px);
+    background: rgba(8, 16, 28, 0.62);
 }
 
 .dialog-inner {
     position: relative;
-    background:
-        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.80' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E"),
-        #ffffff;
-    border-radius: 16px;
-    padding: 32px 32px 26px;
+    background: #ffffff;
+    border: 1.5px solid var(--input-border);
+    border-radius: 18px;
+    padding: 40px 40px 34px;
     max-height: calc(100vh - 64px);
     overflow-y: auto;
 }
 
 .dialog-inner h2 {
     font-family: 'Archivo', sans-serif;
-    font-size: 21px;
+    font-size: 22px;
     font-weight: 700;
     color: var(--ink);
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     letter-spacing: -0.01em;
 }
 
 .dialog-inner .input-group {
-    margin-bottom: 16px;
+    margin-bottom: 18px;
+}
+
+/* ---------- Seletor de predefinição: destacado do resto do formulário ---------- */
+
+.predefinicao-picker {
+    margin-bottom: 22px;
+    padding: 16px 18px;
+    border: 1.5px solid rgba(22, 160, 95, 0.35);
+    border-radius: var(--radius-field);
+    background:
+        linear-gradient(180deg, rgba(22, 160, 95, 0.08) 0%, rgba(22, 160, 95, 0.04) 100%);
+}
+
+.predefinicao-picker label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 9px;
+    font-size: 12.5px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--emerald-dark);
+}
+
+.predefinicao-picker select {
+    width: 100%;
+    padding: 11px 13px;
+    border: 1.5px solid rgba(22, 160, 95, 0.45);
+    border-radius: var(--radius-field);
+    background: #ffffff;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 500;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.predefinicao-picker select:hover {
+    border-color: var(--emerald);
+}
+
+.predefinicao-picker select:focus {
+    border-color: var(--emerald);
+    box-shadow: 0 0 0 3px rgba(22, 160, 95, 0.20);
+}
+
+.predefinicao-picker .predefinicao-hint {
+    display: block;
+    margin-top: 9px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    text-transform: none;
+    letter-spacing: normal;
 }
 
 .dialog-inner label {
@@ -1071,7 +1149,7 @@ dialog.app-dialog::backdrop {
 /* Modal de status: usa o mesmo dialog-inner, com ícone de feedback */
 .status-dialog-body {
     text-align: center;
-    padding: 10px 6px 4px;
+    padding: 24px 30px 18px;
 }
 
 .status-dialog-body h2 {
@@ -1087,7 +1165,7 @@ dialog.app-dialog::backdrop {
 }
 
 .dialog-inner:has(.status-dialog-body) {
-    padding: 40px 38px 34px;
+    padding: 44px 40px 36px;
 }
 
 /* =================================================================== */
@@ -1291,17 +1369,35 @@ dialog.app-dialog::backdrop {
 
 @media (max-width: 900px) {
     .app-topbar {
-        padding: 0 20px;
-        flex-wrap: wrap;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 16px 20px 0;
         height: auto;
-        min-height: 64px;
-        gap: 10px;
+        gap: 0;
+    }
+
+    .app-brand {
+        padding-bottom: 14px;
     }
 
     .app-nav {
-        gap: 16px;
-        flex-wrap: wrap;
-        padding: 10px 0 12px;
+        width: 100%;
+        gap: 22px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+        padding: 12px 0 14px;
+        border-top: 1px solid rgba(238, 242, 246, 0.10);
+        scrollbar-width: none;
+    }
+
+    .app-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .app-nav-divider {
+        display: none;
     }
 
     .app-content {

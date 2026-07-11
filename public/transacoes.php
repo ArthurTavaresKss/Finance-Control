@@ -59,6 +59,18 @@
 
     $predefinicoesUsuario = getPredefinitionsByUserId($pdo, $idUsuario);
 
+
+    $todasTransacoesUsuario = getTransactionsByUserId($pdo, $idUsuario);
+    $categoriasUnicas = [];
+    foreach ($todasTransacoesUsuario as $t) {
+        $cat = sanitizeInput($t['categoria']);
+        if ($cat !== '') {
+            $categoriasUnicas[$cat] = true; // chave = dedup em O(1)
+        }
+    }
+    $categoriasUnicas = array_keys($categoriasUnicas);
+    sort($categoriasUnicas);
+
     $status = $_SESSION['status_transacao'] ?? '';
     unset($_SESSION['status_transacao']);
     $mostrarModal = false;
@@ -173,13 +185,13 @@
                     <table class="app-table">
                         <thead>
                             <tr>
-                                <th>Ordem</th>
+                                <th class="col-order">Ordem</th>
                                 <th>Tipo</th>
                                 <th>Descrição</th>
                                 <th>Categoria</th>
-                                <th>Valor</th>
+                                <th class="col-valor">Valor</th>
                                 <th>Data</th>
-                                <th>Ações</th>
+                                <th class="col-actions">Ações</th>
                             </tr>
                             <tr class="filter-row">
                                 <th></th>
@@ -197,21 +209,11 @@
                                 <th>
                                     <select name="categoria">
                                         <option value="">Todas</option>
-                                        <?php
-                                        $todasTransacoes = getTransactionsByUserId($pdo, $idUsuario);
-                                        $categoriasUnicas = [];
-                                        foreach ($todasTransacoes as $t) {
-                                            $cat = sanitizeInput($t['categoria']);
-                                            if (!empty($cat) && !in_array($cat, $categoriasUnicas)) {
-                                                $categoriasUnicas[] = $cat;
-                                            }
-                                        }
-                                        foreach ($categoriasUnicas as $cat) {
-                                            $selected = ($cat === $categoria) ? 'selected' : '';
-                                            echo '<option value="' . sanitizeInput($cat) . '" ' . $selected . '>'
-                                                 . sanitizeInput($cat) . '</option>';
-                                        }
-                                        ?>
+                                        <?php foreach ($categoriasUnicas as $cat): ?>
+                                            <option value="<?= sanitizeInput($cat) ?>" <?= $cat === $categoria ? 'selected' : '' ?>>
+                                                <?= sanitizeInput($cat) ?>
+                                            </option>
+                                        <?php endforeach; ?>
                                     </select>
                                 </th>
                                 <th style="min-width: 170px;">
@@ -244,16 +246,16 @@
                             <?php else: ?>
                                 <?php $order = $offset; foreach ($transacoesPaginadas as $transacao): ?>
                                     <tr>
-                                        <td><?php $order += 1; echo($order); ?></td>
+                                        <td class="col-order"><?php $order += 1; echo($order); ?></td>
                                         <td>
                                             <?php $tipoClasse = sanitizeInput($transacao['tipo']) === 'Entrada' ? 'entrada' : 'saida'; ?>
                                             <span class="badge <?= $tipoClasse ?>"><?= sanitizeInput($transacao['tipo']) ?></span>
                                         </td>
                                         <td><?= sanitizeInput($transacao['descricao']) ?></td>
                                         <td><?= sanitizeInput($transacao['categoria']) ?></td>
-                                        <td>R$ <?= sanitizeInput($transacao['valor']) ?></td>
+                                        <td class="col-valor">R$ <?= sanitizeInput($transacao['valor']) ?></td>
                                         <td><?= date('d/m/Y', strtotime(sanitizeInput($transacao['data_transacao']))) ?></td>
-                                        <td>
+                                        <td class="col-actions">
                                             <div class="row-actions">
                                                 <a href="editTransacao/editar_transacao?id=<?= $transacao['id'] ?>" class="row-action-btn edit">
                                                     <img src="assets/img/editar.png" alt="Editar" width="20" height="20">
@@ -320,8 +322,8 @@
             <h2>Nova Transação</h2>
             <form method="POST" action="editTransacao/salvar_transacao">
                 <?php if (!empty($predefinicoesUsuario)): ?>
-                <div class="input-group">
-                    <label for="predefinicao">Usar predefinição (opcional)</label>
+                <div class="predefinicao-picker">
+                    <label for="predefinicao">⚡ Usar predefinição</label>
                     <select id="predefinicao" name="predefinicao_usada" onchange="aplicarPredefinicao(this)">
                         <option value="">Nenhuma, preencher manualmente</option>
                         <?php foreach ($predefinicoesUsuario as $p): ?>
@@ -334,6 +336,7 @@
                             </option>
                         <?php endforeach; ?>
                     </select>
+                    <span class="predefinicao-hint">Preenche o formulário abaixo automaticamente.</span>
                 </div>
                 <?php endif; ?>
 
@@ -360,18 +363,9 @@
                     <label for="categoria">Categoria</label>
                     <select id="categoria" name="categoria" required onchange="mostrarCampoNovaCategoria()">
                         <option value="" disabled selected>Selecione uma categoria</option>
-                        <?php
-                        $transacoes = getTransactionsByUserId($pdo, $idUsuario);
-                        $categoriasRepetidas = [];
-                        foreach ($transacoes as $transacao) {
-                            $categoriaOpt = sanitizeInput($transacao['categoria']);
-                            if (!empty($categoriaOpt) && !in_array($categoriaOpt, $categoriasRepetidas)) {
-                                echo '<option value="' . sanitizeInput($categoriaOpt) . '">'
-                                    . sanitizeInput($categoriaOpt) . '</option>';
-                                $categoriasRepetidas[] = $categoriaOpt;
-                            }
-                        }
-                        ?>
+                        <?php foreach ($categoriasUnicas as $cat): ?>
+                            <option value="<?= sanitizeInput($cat) ?>"><?= sanitizeInput($cat) ?></option>
+                        <?php endforeach; ?>
                         <option value="nova_categoria">+ Adicionar nova categoria..</option>
                     </select>
                     <input type="text" id="nova_categoria" name="nova_categoria"
