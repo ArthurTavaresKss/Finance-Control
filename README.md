@@ -1,6 +1,9 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/ArthurTavaresKss/Finance-Control/main/public/assets/img/logo.png" alt="Finance Control" width="220">
 </p>
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
+</p>
 
 <h1 align="center">Finance Control</h1>
 
@@ -69,7 +72,7 @@ Finance-Control/
 
 ## Licença
 
-Este projeto ainda não possui uma licença definida.
+Este projeto está licenciado sob a **MIT License** — veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ## Autor
 
