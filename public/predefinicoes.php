@@ -336,7 +336,7 @@
                 </div>
 
                 <div class="dialog-actions">
-                    <button type="button" class="btn-secondary" onclick="document.getElementById('modalPredefiniacao').close()">Cancelar</button>
+                    <button type="button" class="btn-secondary" onclick="document.getElementById('modalPredefinicao').close()">Cancelar</button>
                     <button type="submit" class="btn-primary">Salvar</button>
                 </div>
             </form>

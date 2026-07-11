@@ -75,6 +75,8 @@
         $offset
     );
 
+    $predefinicoesUsuario = getPredefinitionsByUserId($pdo, $idUsuario);
+
     $status = $_SESSION['status_recorrente'] ?? '';
     unset($_SESSION['status_recorrente']);
     $mostrarModal = false;
@@ -363,6 +365,24 @@
         <div class="dialog-inner">
             <h2>Nova Transação Recorrente</h2>
             <form method="POST" action="editRecorrente/salvar_recorrente">
+                <?php if (!empty($predefinicoesUsuario)): ?>
+                <div class="input-group">
+                    <label for="predefinicao">Usar predefinição (opcional)</label>
+                    <select id="predefinicao" name="predefinicao_usada" onchange="aplicarPredefinicao(this)">
+                        <option value="">Nenhuma, preencher manualmente</option>
+                        <?php foreach ($predefinicoesUsuario as $p): ?>
+                            <option value="<?= $p['id'] ?>"
+                                data-tipo="<?= sanitizeInput($p['tipo']) ?>"
+                                data-descricao="<?= sanitizeInput($p['descricao']) ?>"
+                                data-valor="<?= sanitizeInput($p['valor']) ?>"
+                                data-categoria="<?= sanitizeInput($p['categoria']) ?>">
+                                <?= sanitizeInput($p['tipo']) ?> — <?= sanitizeInput($p['descricao']) ?> (R$ <?= sanitizeInput($p['valor']) ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <?php endif; ?>
+
                 <div class="input-group">
                     <label for="tipo">Tipo</label>
                     <select id="tipo" name="tipo" required>
@@ -462,6 +482,47 @@
             aplicarMascaraMesAno('filtra_data_inicio');
             aplicarMascaraMesAno('filtra_data_termino');
         });
+
+        function aplicarPredefinicao(select) {
+            const opt = select.options[select.selectedIndex];
+
+            // "Nenhuma, preencher manualmente" selecionada: limpa os campos
+            if (!opt.value) {
+                document.getElementById('tipo').value = '';
+                document.getElementById('descricao').value = '';
+                document.getElementById('valor').value = '';
+                document.getElementById('categoria').value = '';
+                document.getElementById('nova_categoria').style.display = 'none';
+                document.getElementById('nova_categoria').value = '';
+                return;
+            }
+
+            document.getElementById('tipo').value = opt.dataset.tipo;
+            document.getElementById('descricao').value = opt.dataset.descricao;
+            document.getElementById('valor').value = opt.dataset.valor;
+
+            const categoriaSelect = document.getElementById('categoria');
+            const novaCategoriaInput = document.getElementById('nova_categoria');
+            const categoria = opt.dataset.categoria;
+
+            let categoriaExiste = false;
+            for (const option of categoriaSelect.options) {
+                if (option.value === categoria) {
+                    categoriaExiste = true;
+                    break;
+                }
+            }
+
+            if (categoriaExiste) {
+                categoriaSelect.value = categoria;
+                novaCategoriaInput.style.display = 'none';
+                novaCategoriaInput.value = '';
+            } else {
+                categoriaSelect.value = 'nova_categoria';
+                novaCategoriaInput.style.display = 'block';
+                novaCategoriaInput.value = categoria;
+            }
+        }
     </script>
 
 </body>

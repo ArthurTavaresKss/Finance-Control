@@ -11,9 +11,9 @@
 
         $sucesso = deletePredefinitionByUserIdAndId($pdo, $idUsuario, $idPredefinicao);
         if ($sucesso) {
-            $_SESSION['status_predefinicao_deletada'] = 'predefinicao_deletada';
+            $_SESSION['status_predefinicao'] = 'predefinicao_deletada';
         } else {
-            $_SESSION['status_predefinicao_deletada'] = 'erro_predefinicao_deletada_deletada';
+            $_SESSION['status_predefinicao'] = 'erro_predefinicao_deletada';
         }
         redirect("../predefinicoes?");
     } else {
