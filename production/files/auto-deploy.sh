@@ -39,8 +39,20 @@ REMOTE=$(git rev-parse origin/"$BRANCH")
 if [ "$LOCAL" != "$REMOTE" ]; then
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Nova atualização detectada! Aplicando..." | tee -a "$LOG_FILE"
 
+    # Backup ANTES de qualquer mudança de schema, como rede de segurança
+    "$COMPOSE_DIR/backup-db.sh" || {
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERRO no backup, abortando deploy por segurança." | tee -a "$LOG_FILE"
+        exit 1
+    }
+
     # Força a atualização (sobrescreve mudanças locais)
     git reset --hard origin/"$BRANCH" 2>&1 | tee -a "$LOG_FILE"
+
+    # Aplica migrations pendentes (novas tabelas/colunas), sem apagar dados existentes
+    "$COMPOSE_DIR/run-migrations.sh" || {
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERRO ao aplicar migrations, abortando deploy." | tee -a "$LOG_FILE"
+        exit 1
+    }
 
     # Reinicia o container (executa do diretório correto)
     # BUG CORRIGIDO: faltava espaço antes de "2>&1" ("app2>&1" era lido

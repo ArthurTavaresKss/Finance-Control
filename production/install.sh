@@ -98,8 +98,12 @@ sed -i "s/MYSQL_ROOT_PASSWORD: financecontrol/MYSQL_ROOT_PASSWORD: $ROOT_PASSWOR
 sed -i "s/MYSQL_PASSWORD: financecontrol/MYSQL_PASSWORD: $USER_PASSWORD/" "$PROJECT_DIR/docker-compose.yml"
 sed -i "s/DB_PASSWORD=financecontrol/DB_PASSWORD=$USER_PASSWORD/" "$PROJECT_DIR/docker-compose.yml"
 
-# Injeta a porta como variável de ambiente para o docker compose
-echo "APP_PORT=$APP_PORT" > "$PROJECT_DIR/.env"
+# Injeta a porta e a senha do banco como variáveis de ambiente
+# (DB_USER_PASSWORD é usada pelos scripts backup-db.sh e run-migrations.sh)
+cat > "$PROJECT_DIR/.env" <<EOF
+APP_PORT=$APP_PORT
+DB_USER_PASSWORD=$USER_PASSWORD
+EOF
 
 # Garante que o auto-deploy.sh siga acompanhando a mesma branch usada no clone
 sed -i "s/^BRANCH=\".*\"/BRANCH=\"$BRANCH\"/" "$PROJECT_DIR/auto-deploy.sh"
@@ -107,16 +111,22 @@ sed -i "s/^BRANCH=\".*\"/BRANCH=\"$BRANCH\"/" "$PROJECT_DIR/auto-deploy.sh"
 echo ""
 echo "[6/9] Configurando permissões e log..."
 chmod +x "$PROJECT_DIR/auto-deploy.sh" 2>/dev/null || true
+chmod +x "$PROJECT_DIR/run-migrations.sh" 2>/dev/null || true
+chmod +x "$PROJECT_DIR/backup-db.sh" 2>/dev/null || true
 touch "$PROJECT_DIR/deploy.log"
 
 echo ""
-echo "[7/9] Configurando Auto-Deploy (Cron)..."
+echo "[7/9] Configurando Auto-Deploy (Cron) e Backup diário..."
 
 # BUG CORRIGIDO: quando não existia crontab prévio, "crontab -l" falhava e
 # "grep -v" num input vazio retornava código 1. Com "set -e" isso abortava
 # o subshell ANTES do echo rodar, resultando num crontab vazio instalado.
 # O "|| true" abaixo garante que o subshell sempre chegue até o echo.
-(crontab -l 2>/dev/null | grep -v "auto-deploy.sh" || true; echo "* * * * * $PROJECT_DIR/auto-deploy.sh") | crontab -
+(
+  crontab -l 2>/dev/null | grep -v "auto-deploy.sh" | grep -v "backup-db.sh" || true
+  echo "* * * * * $PROJECT_DIR/auto-deploy.sh"
+  echo "0 3 * * * $PROJECT_DIR/backup-db.sh"
+) | crontab -
 
 echo "Cron instalado. Conteúdo atual:"
 crontab -l
@@ -148,6 +158,10 @@ echo "MariaDB pronto."
 echo ""
 echo "Importando banco de dados..."
 docker exec -i finance-db mariadb -u financeAdmin -p"$USER_PASSWORD" financecontrol < "$PROJECT_DIR/banco.sql"
+
+echo ""
+echo "Aplicando migrations pendentes..."
+"$PROJECT_DIR/run-migrations.sh"
 
 echo ""
 echo "=========================================="
