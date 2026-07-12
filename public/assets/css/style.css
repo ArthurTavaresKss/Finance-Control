@@ -401,6 +401,8 @@ body#app-page {
     color: var(--ink);
     background: var(--paper);
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ---------- Topbar ---------- */
@@ -472,12 +474,39 @@ body#app-page {
     background: rgba(238, 242, 246, 0.16);
 }
 
+/* ---------- Footer ---------- */
+
+.app-footer {
+    position: relative;
+    margin-top: 48px;
+    background: linear-gradient(165deg, var(--navy-deep) 0%, var(--navy-mid) 100%);
+    border-top: 1px solid rgba(238, 242, 246, 0.10);
+    flex-shrink: 0;
+}
+
+.app-footer .app-content {
+    padding: 12px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.app-footer p {
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--on-navy-soft);
+    text-align: center;
+}
+
 /* ---------- Conteúdo ---------- */
 
 .app-content {
     max-width: 1320px;
     margin: 0 auto;
     padding: 36px 36px 60px;
+    width: 100%;
+    flex: 1 0 auto;
 }
 
 .app-page-header {
@@ -1402,6 +1431,10 @@ dialog.app-dialog::backdrop {
 
     .app-content {
         padding: 24px 18px 48px;
+    }
+
+    .app-footer .app-content {
+        padding: 12px 20px;
     }
 
     .filter-bar {
