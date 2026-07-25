@@ -68,6 +68,38 @@
     }
 
     $mesesNomesCompletos = $listaNomesMeses;
+
+    // ---------- 1. Comparativo com o mês anterior ----------
+    $mesAnterior = $mesAtual - 1;
+    $anoAnterior = $anoAtual;
+    if ($mesAnterior < 1) {
+        $mesAnterior = 12;
+        $anoAnterior--;
+    }
+    $indicadoresAnterior = getIndicadoresMensais($pdo, $idUsuario, $anoAnterior, $mesAnterior);
+    $saldoMesAnterior = $indicadoresAnterior['valor_entradas'] - $indicadoresAnterior['valor_saidas'];
+
+    $variacaoEntradas = calcularVariacaoPercentual($indicadores['valor_entradas'], $indicadoresAnterior['valor_entradas']);
+    $variacaoSaidas   = calcularVariacaoPercentual($indicadores['valor_saidas'], $indicadoresAnterior['valor_saidas']);
+    $variacaoSaldo    = calcularVariacaoPercentual($saldoMes, $saldoMesAnterior);
+
+    // ---------- 2. Saldo acumulado no ano (soma corrida dos saldos mensais) ----------
+    $anualSaldoAcumulado = [];
+    $acumulado = 0;
+    foreach ($anualSaldos as $s) {
+        $acumulado += $s;
+        $anualSaldoAcumulado[] = $acumulado;
+    }
+
+    // ---------- 4. Maior transação do mês ----------
+    $maiorEntrada = getMaiorTransacaoDoMes($pdo, $idUsuario, $anoAtual, $mesAtual, 'Entrada');
+    $maiorSaida   = getMaiorTransacaoDoMes($pdo, $idUsuario, $anoAtual, $mesAtual, 'Saída');
+
+    // ---------- 6. Top 5 categorias (gastos e entradas já vêm ordenados por total desc) ----------
+    $totalGastosCat    = array_sum($gCatValores);
+    $totalEntradasCat  = array_sum($eCatValores);
+    $top5Gastos        = array_slice($dadosGastosCat, 0, 5);
+    $top5Entradas      = array_slice($dadosEntradasCat, 0, 5);
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -166,6 +198,46 @@
             </div>
         </div>
 
+        <h3 class="dashboard-section-title">Comparativo com o mês anterior — <?= sanitizeInput($mesesNomesCompletos[$mesAtual]) ?> vs <?= sanitizeInput($mesesNomesCompletos[$mesAnterior]) ?></h3>
+        <div class="dashboard-row">
+            <div class="card <?= $variacaoEntradas >= 0 ? 'positivo' : 'negativo' ?>">
+                <h4>Variação de Entradas</h4>
+                <p><?= $variacaoEntradas >= 0 ? '↑' : '↓' ?> <?= number_format(abs($variacaoEntradas), 1, ',', '.') ?>%</p>
+            </div>
+            <div class="card <?= $variacaoSaidas <= 0 ? 'positivo' : 'negativo' ?>">
+                <h4>Variação de Saídas</h4>
+                <p><?= $variacaoSaidas >= 0 ? '↑' : '↓' ?> <?= number_format(abs($variacaoSaidas), 1, ',', '.') ?>%</p>
+            </div>
+            <div class="card <?= $variacaoSaldo >= 0 ? 'positivo' : 'negativo' ?>">
+                <h4>Variação de Saldo</h4>
+                <p><?= $variacaoSaldo >= 0 ? '↑' : '↓' ?> <?= number_format(abs($variacaoSaldo), 1, ',', '.') ?>%</p>
+            </div>
+        </div>
+
+        <h3 class="dashboard-section-title">Maiores transações — <?= sanitizeInput($mesesNomesCompletos[$mesAtual]) ?> de <?= $anoAtual ?></h3>
+        <div class="dashboard-row">
+            <div class="card positivo">
+                <h4>Maior Entrada</h4>
+                <?php if ($maiorEntrada): ?>
+                    <p>R$ <?= number_format($maiorEntrada['valor'], 2, ',', '.') ?></p>
+                    <span class="card-subtext"><?= sanitizeInput($maiorEntrada['descricao']) ?> — <?= sanitizeInput($maiorEntrada['categoria']) ?></span>
+                <?php else: ?>
+                    <p>—</p>
+                    <span class="card-subtext">Nenhuma entrada no período</span>
+                <?php endif; ?>
+            </div>
+            <div class="card negativo">
+                <h4>Maior Saída</h4>
+                <?php if ($maiorSaida): ?>
+                    <p>R$ <?= number_format($maiorSaida['valor'], 2, ',', '.') ?></p>
+                    <span class="card-subtext"><?= sanitizeInput($maiorSaida['descricao']) ?> — <?= sanitizeInput($maiorSaida['categoria']) ?></span>
+                <?php else: ?>
+                    <p>—</p>
+                    <span class="card-subtext">Nenhuma saída no período</span>
+                <?php endif; ?>
+            </div>
+        </div>
+
         <h3 class="dashboard-section-title">Dados por categoria — <?= sanitizeInput($mesesNomesCompletos[$mesAtual]) ?> de <?= $anoAtual ?></h3>
         <div class="dashboard-row">
             <div class="chart-box">
@@ -178,6 +250,78 @@
             </div>
         </div>
 
+        <h3 class="dashboard-section-title">Distribuição percentual por categoria — <?= sanitizeInput($mesesNomesCompletos[$mesAtual]) ?> de <?= $anoAtual ?></h3>
+        <div class="dashboard-row">
+            <div class="chart-box">
+                <h3>% de Gastos por Categoria</h3>
+                <canvas id="chartGastosCatPizza"></canvas>
+            </div>
+            <div class="chart-box">
+                <h3>% de Entradas por Categoria</h3>
+                <canvas id="chartEntradasCatPizza"></canvas>
+            </div>
+        </div>
+
+        <h3 class="dashboard-section-title">Top 5 categorias — <?= sanitizeInput($mesesNomesCompletos[$mesAtual]) ?> de <?= $anoAtual ?></h3>
+        <div class="dashboard-row">
+            <div class="app-card dashboard-top5">
+                <div class="app-table-wrap">
+                <table class="app-table">
+                    <thead>
+                        <tr>
+                            <th>Categoria (Gastos)</th>
+                            <th class="col-valor">Valor</th>
+                            <th class="col-valor">%</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php for ($i = 0; $i < 5; $i++): ?>
+                            <?php if (isset($top5Gastos[$i])): $item = $top5Gastos[$i]; ?>
+                                <tr>
+                                    <td><?= sanitizeInput($item['categoria']) ?></td>
+                                    <td class="col-valor">R$ <?= number_format($item['total'], 2, ',', '.') ?></td>
+                                    <td class="col-valor"><?= $totalGastosCat > 0 ? number_format(($item['total'] / $totalGastosCat) * 100, 1, ',', '.') : '0,0' ?>%</td>
+                                </tr>
+                            <?php else: ?>
+                                <tr class="empty-row-filler">
+                                    <td colspan="3">—</td>
+                                </tr>
+                            <?php endif; ?>
+                        <?php endfor; ?>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+            <div class="app-card dashboard-top5">
+                <div class="app-table-wrap">
+                <table class="app-table">
+                    <thead>
+                        <tr>
+                            <th>Categoria (Entradas)</th>
+                            <th class="col-valor">Valor</th>
+                            <th class="col-valor">%</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php for ($i = 0; $i < 5; $i++): ?>
+                            <?php if (isset($top5Entradas[$i])): $item = $top5Entradas[$i]; ?>
+                                <tr>
+                                    <td><?= sanitizeInput($item['categoria']) ?></td>
+                                    <td class="col-valor">R$ <?= number_format($item['total'], 2, ',', '.') ?></td>
+                                    <td class="col-valor"><?= $totalEntradasCat > 0 ? number_format(($item['total'] / $totalEntradasCat) * 100, 1, ',', '.') : '0,0' ?>%</td>
+                                </tr>
+                            <?php else: ?>
+                                <tr class="empty-row-filler">
+                                    <td colspan="3">—</td>
+                                </tr>
+                            <?php endif; ?>
+                        <?php endfor; ?>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+
         <h3 class="dashboard-section-title">Dados por saldos — Ano de <?= $anoAtual ?></h3>
         <div class="dashboard-row">
             <div class="chart-box">
@@ -187,6 +331,13 @@
             <div class="chart-box">
                 <h3>Saldo Total por Mês</h3>
                 <canvas id="chartSaldoAnualBarra"></canvas>
+            </div>
+        </div>
+
+        <div class="dashboard-row">
+            <div class="chart-box chart-box-full">
+                <h3>Saldo Acumulado no Ano</h3>
+                <canvas id="chartSaldoAcumulado"></canvas>
             </div>
         </div>
 
@@ -221,6 +372,60 @@
             options: { responsive: true, scales: { y: { beginAtZero: true } } }
         });
 
+        const paletaCategorias = [
+            '#16a05f', '#0a1628', '#b42323', '#e0a02c', '#4670d6',
+            '#8a4fd6', '#2ca6a4', '#d6704f', '#7a8699', '#c74f9c'
+        ];
+
+        function formatarMoeda(valor) {
+            return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        const opcoesPizza = {
+            responsive: true,
+            plugins: {
+                legend: { position: 'right' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const valor = context.parsed;
+                            const total = context.dataset.data.reduce((soma, v) => soma + v, 0);
+                            const percentual = total > 0 ? (valor / total) * 100 : 0;
+                            return `${percentual.toFixed(1)}% | R$ ${formatarMoeda(valor)}`;
+                        }
+                    }
+                }
+            }
+        };
+
+        new Chart(document.getElementById('chartGastosCatPizza'), {
+            type: 'doughnut',
+            data: {
+                labels: <?= json_encode($gCatLabels) ?>,
+                datasets: [{
+                    data: <?= json_encode($gCatValores) ?>,
+                    backgroundColor: paletaCategorias,
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: opcoesPizza
+        });
+
+        new Chart(document.getElementById('chartEntradasCatPizza'), {
+            type: 'doughnut',
+            data: {
+                labels: <?= json_encode($eCatLabels) ?>,
+                datasets: [{
+                    data: <?= json_encode($eCatValores) ?>,
+                    backgroundColor: paletaCategorias,
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: opcoesPizza
+        });
+
         new Chart(document.getElementById('chartEvolucaoAnual'), {
             type: 'line',
             data: {
@@ -246,6 +451,22 @@
                 }]
             },
             options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+
+        new Chart(document.getElementById('chartSaldoAcumulado'), {
+            type: 'line',
+            data: {
+                labels: <?= json_encode($mesesNomes) ?>,
+                datasets: [{
+                    label: 'Saldo Acumulado (R$)',
+                    data: <?= json_encode($anualSaldoAcumulado) ?>,
+                    borderColor: '#16a05f',
+                    backgroundColor: 'rgba(22, 160, 95, 0.12)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: { responsive: true }
         });
     </script>
 

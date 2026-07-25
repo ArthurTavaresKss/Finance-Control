@@ -856,3 +856,40 @@ function deletePredefinitionByUserIdAndId($pdo, $idUsuario, $idPredefinicao) {
     
     return $stmt->execute();
 }
+
+// Busca a transação individual de maior valor num mês, por tipo (Entrada/Saída).
+// Considera só a tabela "transacoes" (lançamentos concretos, com data própria),
+// não "transacoes_recorrentes" (que são regras, não instâncias de uma data específica).
+function getMaiorTransacaoDoMes($pdo, $idUsuario, $ano, $mes, $tipo) {
+    $dataInicial = sprintf('%04d-%02d-01', $ano, $mes);
+    $dataFinal   = date('Y-m-t', strtotime($dataInicial));
+
+    $sql = "SELECT descricao, categoria, valor, data_transacao
+            FROM transacoes
+            WHERE id_usuario = :id_usuario
+              AND tipo = :tipo
+              AND data_transacao BETWEEN :data_inicial AND :data_final
+            ORDER BY valor DESC
+            LIMIT 1";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':id_usuario'   => $idUsuario,
+        ':tipo'         => $tipo,
+        ':data_inicial' => $dataInicial,
+        ':data_final'   => $dataFinal,
+    ]);
+
+    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $resultado ?: null;
+}
+
+// Calcula a variação percentual entre dois valores (ex.: mês atual vs mês anterior).
+// Se o valor anterior for zero, evita divisão por zero: considera 100% se o atual
+// for maior que zero, ou 0% se os dois forem zero.
+function calcularVariacaoPercentual($valorAtual, $valorAnterior) {
+    if ($valorAnterior == 0) {
+        return $valorAtual == 0 ? 0.0 : 100.0;
+    }
+    return (($valorAtual - $valorAnterior) / abs($valorAnterior)) * 100;
+}
