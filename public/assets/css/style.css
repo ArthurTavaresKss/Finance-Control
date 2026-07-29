@@ -189,13 +189,11 @@ body#login-page {
     border: 1px solid var(--glass-border);
     animation: riseIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
 
-    /* Ruído sutil sobre o vidro, mantendo o que você já tinha */
-    background:
-        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.80' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E"),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.22) 100%);
-
-    backdrop-filter: blur(24px) saturate(140%);
-    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    /* Sem SVG de ruído (feTurbulence) nem backdrop-filter aqui: os dois
+       são caros de recalcular a cada frame, e como esse card anima
+       (riseIn), isso travava a animação de subir na tela de login/cadastro.
+       Fundo sólido semi-opaco mantém o efeito "vidro" sem o custo do blur ao vivo. */
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.90) 100%);
 
     box-shadow:
         0 30px 60px -24px rgba(4, 19, 31, 0.40),
@@ -553,7 +551,6 @@ body#app-page {
     border-radius: 14px;
     box-shadow: 0 18px 36px -24px rgba(14, 27, 44, 0.18);
     animation: riseIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-    overflow: hidden;
 }
 
 .app-card + .app-card {
@@ -1270,16 +1267,6 @@ dialog.app-dialog::backdrop {
     color: var(--error-text);
 }
 
-/* Texto de apoio nos cards (ex.: descrição da maior transação) */
-.dashboard-row .card .card-subtext {
-    display: block;
-    margin-top: 6px;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--ink-soft);
-    line-height: 1.4;
-}
-
 /* Caixas de gráfico, lado a lado */
 .dashboard-row .chart-box {
     flex: 1;
@@ -1290,38 +1277,6 @@ dialog.app-dialog::backdrop {
     padding: 22px 24px;
     box-shadow: 0 18px 36px -24px rgba(14, 27, 44, 0.16);
     animation: riseIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-/* Gráfico que ocupa a linha inteira (ex.: saldo acumulado) */
-.dashboard-row .chart-box-full {
-    flex-basis: 100%;
-}
-
-/* Cards de tabela dentro do dashboard-row (ex.: Top 5 categorias) */
-.dashboard-row .app-card {
-    flex: 1;
-    min-width: 320px;
-}
-
-.dashboard-row .app-card table.app-table {
-    margin: 0;
-}
-
-/* Top 5 categorias: impede que nomes de categoria mais longos quebrem
-   em duas linhas numa tabela e não na outra, o que desalinharia as alturas.
-   Nomes muito longos rolam horizontalmente (mesmo comportamento das outras tabelas). */
-.dashboard-top5 table.app-table td:first-child {
-    white-space: nowrap;
-}
-
-.dashboard-top5 table.app-table tbody tr {
-    height: 46px;
-}
-
-.dashboard-top5 .empty-row-filler td {
-    text-align: center;
-    color: var(--ink-faint);
-    font-weight: 400;
 }
 
 .dashboard-row .chart-box h3 {
