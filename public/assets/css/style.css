@@ -9,7 +9,6 @@ a {
 }
 
 :root {
-    /* Paleta: navy institucional + esmeralda como único accent */
     --navy-deep: #0a1628;
     --navy-mid: #122238;
     --navy-line: #1f3a56;
@@ -62,10 +61,6 @@ body#login-page {
     position: relative;
 }
 
-/* ============================================= */
-/* LAYOUT: split-screen — marca à esquerda, formulário à direita */
-/* ============================================= */
-
 #login-wrapper {
     width: 100%;
     min-height: 100vh;
@@ -73,7 +68,6 @@ body#login-page {
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
 }
 
-/* Inverte a ordem: usado na página de cadastro (form à esquerda, marca à direita) */
 #login-wrapper.reverse {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
 }
@@ -85,8 +79,6 @@ body#login-page {
 #login-wrapper.reverse .form-panel {
     order: 1;
 }
-
-/* ---------- Painel esquerdo: marca ---------- */
 
 .brand-panel {
     position: relative;
@@ -169,8 +161,6 @@ body#login-page {
     color: var(--emerald);
     letter-spacing: -0.01em;
 }
-
-/* ---------- Painel direito: formulário ---------- */
 
 .form-panel {
     background: #e3e7eb;
@@ -270,7 +260,6 @@ body#login-page {
     box-shadow: 0 0 0 3px rgba(22, 160, 95, 0.14);
 }
 
-/* Botão sólido esmeralda — único accent de cor saturada na peça inteira */
 .btn-submit {
     width: 100%;
     margin-top: 8px;
@@ -326,10 +315,6 @@ body#login-page {
     font-weight: 600;
     text-align: center;
 }
-
-/* ============================================= */
-/* RESPONSIVO */
-/* ============================================= */
 
 @media (max-width: 900px) {
     #login-wrapper {
@@ -389,11 +374,6 @@ body#login-page {
     }
 }
 
-/* =================================================================== */
-/* PÁGINAS INTERNAS DO APP (transações, recorrentes, dashboards, etc.) */
-/* Mesma paleta/tipografia do login, layout de topbar + conteúdo       */
-/* =================================================================== */
-
 body#app-page {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: var(--ink);
@@ -402,8 +382,6 @@ body#app-page {
     display: flex;
     flex-direction: column;
 }
-
-/* ---------- Topbar ---------- */
 
 .app-topbar {
     position: relative;
@@ -472,8 +450,6 @@ body#app-page {
     background: rgba(238, 242, 246, 0.16);
 }
 
-/* ---------- Footer ---------- */
-
 .app-footer {
     position: relative;
     margin-top: 48px;
@@ -496,8 +472,6 @@ body#app-page {
     color: var(--on-navy-soft);
     text-align: center;
 }
-
-/* ---------- Conteúdo ---------- */
 
 .app-content {
     max-width: 1320px;
@@ -541,9 +515,6 @@ body#app-page {
     letter-spacing: -0.01em;
 }
 
-/* Cartão "vidro claro" reaproveitando a mesma linguagem do login.
-   Sem backdrop-filter: nessas páginas o card cobre listas longas
-   (tabelas), e blur recalculado a cada frame de scroll trava a rolagem. */
 .app-card {
     position: relative;
     background: #fcfdfe;
@@ -556,8 +527,6 @@ body#app-page {
 .app-card + .app-card {
     margin-top: 24px;
 }
-
-/* ---------- Botão primário/secundário reutilizáveis fora do login ---------- */
 
 .btn-primary {
     display: inline-flex;
@@ -629,8 +598,6 @@ body#app-page {
     transform: translateY(1px);
 }
 
-/* Versão apenas-texto, usada para abrir ações destrutivas sem chamar
-   tanta atenção quanto um botão sólido vermelho na tela de perfil */
 .btn-text-danger {
     display: inline-flex;
     align-items: center;
@@ -649,8 +616,6 @@ body#app-page {
     color: #7a1717;
     text-decoration: underline;
 }
-
-/* ---------- Filtro de período / barra de filtros ---------- */
 
 .filter-bar {
     padding: 20px 24px;
@@ -686,8 +651,6 @@ body#app-page {
     border-color: var(--input-border-focus);
     box-shadow: 0 0 0 3px rgba(22, 160, 95, 0.14);
 }
-
-/* ---------- Tabela ---------- */
 
 .app-table-wrap {
     overflow-x: auto;
@@ -726,9 +689,6 @@ table.app-table tbody tr:last-child td {
     border-bottom: none;
 }
 
-/* Colunas com alinhamento próprio: número de ordem centralizado,
-   valores monetários alinhados à direita (convenção contábil),
-   e ações centralizadas em vez de coladas à esquerda da célula. */
 .app-table .col-order {
     width: 56px;
     text-align: center;
@@ -775,8 +735,6 @@ table.app-table tbody tr:last-child td {
     box-shadow: 0 0 0 3px rgba(22, 160, 95, 0.14);
 }
 
-/* Grupo operador + valor: operador estreito e fixo, valor ocupa o resto.
-   Precisa vencer .app-table .filter-row select/input (width: 100%). */
 .app-table .filter-row .value-filter-group {
     display: flex;
     gap: 6px;
@@ -799,7 +757,6 @@ table.app-table tbody tr:last-child td {
     min-width: 70px;
 }
 
-/* Remove as setas (spinners) dos campos number em toda a aplicação */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -874,8 +831,6 @@ input[type="number"] {
     transform: translateY(1px);
 }
 
-/* ---------- Paginação ---------- */
-
 .pagination-bar {
     display: flex;
     align-items: center;
@@ -943,10 +898,6 @@ input[type="number"] {
     font-size: 12.5px;
 }
 
-/* ---------- Página-modal (ex: editar transação) ----------
-   Página própria que se comporta visualmente como um modal:
-   card centralizado na tela, sobre o fundo padrão do app. */
-
 .modal-page-wrap {
     min-height: 100vh;
     display: flex;
@@ -957,16 +908,13 @@ input[type="number"] {
 
 .modal-page-wrap .dialog-inner {
     width: 100%;
-    max-width: 460px;
+    max-width: 520px;
 }
 
-/* Variante mais larga, para páginas-modal com mais conteúdo
-   (ex: importação de arquivo, com lista de requisitos) */
 .modal-page-wrap.wide .dialog-inner {
     max-width: 620px;
 }
 
-/* Card de aviso/requisitos — reaproveita a paleta de erro/atenção */
 .notice-box {
     position: relative;
     z-index: 1;
@@ -1017,8 +965,6 @@ input[type="number"] {
     font-size: 13px;
 }
 
-/* ---------- Upload de arquivo ---------- */
-
 .file-drop {
     display: block;
     border: 1.5px dashed var(--input-border);
@@ -1039,8 +985,6 @@ input[type="number"] {
     font-size: 13.5px;
     color: var(--ink-soft);
 }
-
-/* ---------- Dialogs (modal nova transação / status) ---------- */
 
 dialog.app-dialog {
     position: fixed;
@@ -1083,8 +1027,6 @@ dialog.app-dialog::backdrop {
 .dialog-inner .input-group {
     margin-bottom: 18px;
 }
-
-/* ---------- Seletor de predefinição: destacado do resto do formulário ---------- */
 
 .predefinicao-picker {
     margin-bottom: 22px;
@@ -1147,6 +1089,11 @@ dialog.app-dialog::backdrop {
     color: var(--ink-soft);
 }
 
+.dialog-inner label .field-hint {
+    font-weight: 400;
+    color: var(--ink-faint);
+}
+
 .dialog-inner input,
 .dialog-inner select {
     width: 100%;
@@ -1173,7 +1120,6 @@ dialog.app-dialog::backdrop {
     margin-top: 22px;
 }
 
-/* Modal de status: usa o mesmo dialog-inner, com ícone de feedback */
 .status-dialog-body {
     text-align: center;
     padding: 24px 30px 18px;
@@ -1195,10 +1141,6 @@ dialog.app-dialog::backdrop {
     padding: 44px 40px 36px;
 }
 
-/* =================================================================== */
-/* DASHBOARDS                                                          */
-/* =================================================================== */
-
 .dashboard-section-title {
     margin: 36px 0 16px;
     font-family: 'Archivo', sans-serif;
@@ -1212,7 +1154,6 @@ dialog.app-dialog::backdrop {
     margin-top: 28px;
 }
 
-/* Linha de cards/gráficos lado a lado */
 .dashboard-row {
     display: flex;
     flex-wrap: wrap;
@@ -1220,7 +1161,6 @@ dialog.app-dialog::backdrop {
     margin-bottom: 8px;
 }
 
-/* Cards de indicador (Qtd. Entradas, Valor Saídas, Saldo, etc.) */
 .dashboard-row .card {
     flex: 1;
     min-width: 170px;
@@ -1267,7 +1207,6 @@ dialog.app-dialog::backdrop {
     color: var(--error-text);
 }
 
-/* Caixas de gráfico, lado a lado */
 .dashboard-row .chart-box {
     flex: 1;
     min-width: 320px;
@@ -1294,7 +1233,6 @@ dialog.app-dialog::backdrop {
     max-height: 320px;
 }
 
-/* Formulário de filtro de mês/ano */
 #filtro-periodo {
     display: flex;
     align-items: center;
@@ -1327,10 +1265,6 @@ dialog.app-dialog::backdrop {
 #filtro-periodo button {
     height: 38px;
 }
-
-/* =================================================================== */
-/* PERFIL                                                              */
-/* =================================================================== */
 
 .profile-header-card {
     display: flex;
@@ -1391,8 +1325,6 @@ dialog.app-dialog::backdrop {
     font-size: 13px;
     color: var(--ink-faint);
 }
-
-/* ---------- Responsivo ---------- */
 
 @media (max-width: 900px) {
     .app-topbar {
@@ -1464,10 +1396,6 @@ dialog.app-dialog::backdrop {
         transform: translateY(0);
     }
 }
-
-/* =================================================================== */
-/* PÁGINA 404                                                          */
-/* =================================================================== */
 
 body#error-404-page {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;

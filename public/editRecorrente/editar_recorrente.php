@@ -1,4 +1,5 @@
 <?php
+    require_once __DIR__ . '/../../config/version.php';
     require_once __DIR__ . '/../../includes/auth.php';
     require_once __DIR__ . '/../../config/db.php';
     require_once __DIR__ . '/../../includes/functions.php';
@@ -89,8 +90,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finance Control - Editar Transação Recorrente</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <script src="../assets/js/script.js"></script>
+    <link rel="stylesheet" href="/../assets/css/style.css?v=<?= urlencode(APP_VERSION) ?>">
+    <script src="/../assets/js/script.js?v=<?= urlencode(APP_VERSION) ?>"></script>
 </head>
 <body id="app-page">
 
@@ -148,7 +149,7 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="dia_transacao">Dia da Transação <span style="font-weight:400; color: var(--ink-faint);">(1 a 28)</span></label>
+                    <label for="dia_transacao">Dia da Transação <span class="field-hint">(1 a 28)</span></label>
                     <input type="number" id="dia_transacao" name="dia_transacao" min="1" max="28" step="1"
                            placeholder="Ex: 15"
                            value="<?= $recorrente['dia_transacao'] ?>">
@@ -166,7 +167,7 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="data_transacao_termino">Data de Término <span style="font-weight:400; color: var(--ink-faint);">(opcional)</span></label>
+                    <label for="data_transacao_termino">Data de Término <span class="field-hint">(opcional)</span></label>
                     <input type="text"
                            id="data_transacao_termino"
                            name="data_transacao_termino"
@@ -194,4 +195,5 @@
     </script>
 
 </body>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>
 </html>

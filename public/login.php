@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../config/version.php';
 session_start();
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/functions.php';
@@ -54,8 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finance Control - Login</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <script src="assets/js/script.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css?v=<?= urlencode(APP_VERSION) ?>">
+    <script src="assets/js/script.js?v=<?= urlencode(APP_VERSION) ?>"></script>
 </head>
 <body id="login-page">
 
