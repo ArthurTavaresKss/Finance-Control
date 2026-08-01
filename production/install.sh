@@ -88,7 +88,7 @@ sudo git clone --branch "$BRANCH" --single-branch "$REPO_URL" "$PROJECT_DIR/app"
 
 # Validação: confirma que a estrutura esperada veio no clone
 for item in config includes public .htaccess; do
-    if [ ! -e "$PROJECT_DIR/app/$item" ]; then
+    if ! sudo test -e "$PROJECT_DIR/app/$item"; then
         echo "ERRO: '$item' não está presente em $PROJECT_DIR/app após o clone."
         exit 1
     fi
