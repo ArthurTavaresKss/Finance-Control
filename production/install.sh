@@ -102,15 +102,25 @@ sudo cp -r "$FILES_DIR"/* "$PROJECT_DIR"/
 
 echo ""
 echo "[5/11] Aplicando senhas e porta personalizadas..."
-sudo sed -i "s/MYSQL_ROOT_PASSWORD: financecontrol/MYSQL_ROOT_PASSWORD: $ROOT_PASSWORD/" "$PROJECT_DIR/docker-compose.yml"
-sudo sed -i "s/MYSQL_PASSWORD: financecontrol/MYSQL_PASSWORD: $USER_PASSWORD/" "$PROJECT_DIR/docker-compose.yml"
-sudo sed -i "s/DB_PASSWORD=financecontrol/DB_PASSWORD=$USER_PASSWORD/" "$PROJECT_DIR/docker-compose.yml"
+ROOT_PASSWORD_ESCAPED=$(printf '%s' "$ROOT_PASSWORD" | sed 's/[\/&]/\\&/g')
+USER_PASSWORD_ESCAPED=$(printf '%s' "$USER_PASSWORD" | sed 's/[\/&]/\\&/g')
+sudo sed -i \
+"s/MYSQL_ROOT_PASSWORD: financecontrol/MYSQL_ROOT_PASSWORD: $ROOT_PASSWORD_ESCAPED/" \
+"$PROJECT_DIR/docker-compose.yml"
+
+sudo sed -i \
+"s/MYSQL_PASSWORD: financecontrol/MYSQL_PASSWORD: $USER_PASSWORD_ESCAPED/" \
+"$PROJECT_DIR/docker-compose.yml"
+
+sudo sed -i \
+"s/DB_PASSWORD=financecontrol/DB_PASSWORD=$USER_PASSWORD_ESCAPED/" \
+"$PROJECT_DIR/docker-compose.yml"
 
 # Injeta a porta e a senha do banco como variáveis de ambiente
 # (DB_USER_PASSWORD é usada pelos scripts backup-db.sh e run-migrations.sh)
 sudo tee "$PROJECT_DIR/.env" > /dev/null <<EOF
-APP_PORT=$APP_PORT
-DB_USER_PASSWORD=$USER_PASSWORD
+APP_PORT="$APP_PORT"
+DB_USER_PASSWORD="$USER_PASSWORD"
 EOF
 
 # Garante que o auto-deploy.sh siga acompanhando a mesma branch usada no clone
