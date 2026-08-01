@@ -2,14 +2,14 @@
 
 # ==================== CONFIGURAÇÕES ====================
 # MUDANÇA: caminho fixo em /opt/financecontrol, que agora é a home do usuário
-# de sistema dedicado "financecontrol" - o próprio diretório do usuário já É
+# de sistema dedicado "financecontrol" — o próprio diretório do usuário já É
 # a raiz do projeto (não mais uma subpasta "finance-control" dentro da home
 # de quem instalou). Fixo em vez de usar $HOME porque cron e systemd às vezes
 # não definem $HOME de forma confiável.
 PROJECT_DIR="/opt/financecontrol/app"
 COMPOSE_DIR="/opt/financecontrol"
 COMPOSE_FILE="$COMPOSE_DIR/docker-compose.yml"
-LOG_FILE="$COMPOSE_DIR/deploy.log"
+LOG_FILE="/var/log/financecontrol/deploy.log"
 BRANCH="main"
 # =======================================================
 
