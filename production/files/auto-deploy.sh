@@ -1,11 +1,13 @@
 #!/bin/bash
 
 # ==================== CONFIGURAÇÕES ====================
-# BUG CORRIGIDO: "~" não expande dentro de aspas em bash, então
-# PROJECT_DIR/COMPOSE_DIR viravam paths literais que não existiam.
-# Usar $HOME resolve isso corretamente.
-PROJECT_DIR="$HOME/finance-control/app"
-COMPOSE_DIR="$HOME/finance-control"
+# MUDANÇA: caminho fixo em /opt/financecontrol, que agora é a home do usuário
+# de sistema dedicado "financecontrol" - o próprio diretório do usuário já É
+# a raiz do projeto (não mais uma subpasta "finance-control" dentro da home
+# de quem instalou). Fixo em vez de usar $HOME porque cron e systemd às vezes
+# não definem $HOME de forma confiável.
+PROJECT_DIR="/opt/financecontrol/app"
+COMPOSE_DIR="/opt/financecontrol"
 COMPOSE_FILE="$COMPOSE_DIR/docker-compose.yml"
 LOG_FILE="$COMPOSE_DIR/deploy.log"
 BRANCH="main"

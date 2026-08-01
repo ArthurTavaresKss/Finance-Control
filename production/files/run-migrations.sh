@@ -2,9 +2,10 @@
 set -e
 
 # ==================== CONFIGURAÇÕES ====================
-COMPOSE_DIR="$HOME/finance-control"
+# Caminho fixo: /opt/financecontrol é a home do usuário de sistema dedicado.
+COMPOSE_DIR="/opt/financecontrol"
 MIGRATIONS_DIR="$COMPOSE_DIR/app/migrations"
-LOG_FILE="$COMPOSE_DIR/deploy.log"
+LOG_FILE="/var/log/financecontrol/database.log"
 DB_CONTAINER="finance-db"
 DB_USER="financeAdmin"
 DB_NAME="financecontrol"

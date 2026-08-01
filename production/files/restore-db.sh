@@ -2,8 +2,9 @@
 set -e
 
 # ==================== CONFIGURAÇÕES ====================
-COMPOSE_DIR="$HOME/finance-control"
+COMPOSE_DIR="/opt/financecontrol"
 BACKUP_DIR="$COMPOSE_DIR/backups"
+LOG_FILE="/var/log/financecontrol/database.log"
 DB_CONTAINER="finance-db"
 DB_USER="financeAdmin"
 DB_NAME="financecontrol"
@@ -47,11 +48,16 @@ if [ "$CONFIRM" != "SIM" ]; then
     exit 1
 fi
 
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Iniciando restauração a partir de: $1" | tee -a "$LOG_FILE"
+
 # Backup de segurança do estado atual, antes de sobrescrever
-echo "Fazendo backup de segurança do estado atual antes de restaurar..."
+echo "Fazendo backup de segurança do estado atual antes de restaurar..." | tee -a "$LOG_FILE"
 "$COMPOSE_DIR/backup-db.sh"
 
-echo "Restaurando $1 ..."
-gunzip -c "$BACKUP_FILE" | docker exec -i "$DB_CONTAINER" mariadb -u "$DB_USER" -p"$DB_USER_PASSWORD" "$DB_NAME"
-
-echo "Restauração concluída."
+echo "Restaurando $1 ..." | tee -a "$LOG_FILE"
+if gunzip -c "$BACKUP_FILE" | docker exec -i "$DB_CONTAINER" mariadb -u "$DB_USER" -p"$DB_USER_PASSWORD" "$DB_NAME"; then
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Restauração concluída com sucesso: $1" | tee -a "$LOG_FILE"
+else
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERRO durante a restauração de: $1" | tee -a "$LOG_FILE"
+    exit 1
+fi
