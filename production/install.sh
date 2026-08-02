@@ -143,6 +143,9 @@ sudo chown -R "$SERVICE_USER:$SERVICE_USER" "$LOG_DIR"
 # Tudo em /opt/financecontrol passa a pertencer ao usuário de serviço -
 # é ele quem vai rodar o cron, o systemd, e precisa poder ler/escrever aqui
 # (inclusive o bind mount ./app:/var/www/html usado pelo container).
+# Também cria o subdiretório backups/ antes do chown, 
+# para que o usuário de serviço possa escrever backups do banco.
+sudo mkdir -p "$PROJECT_DIR/backups"
 sudo chown -R "$SERVICE_USER:$SERVICE_USER" "$PROJECT_DIR"
 
 sudo chmod +x "$PROJECT_DIR/auto-deploy.sh" 2>/dev/null || true
