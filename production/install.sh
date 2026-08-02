@@ -152,6 +152,7 @@ sudo chmod +x "$PROJECT_DIR/auto-deploy.sh" 2>/dev/null || true
 sudo chmod +x "$PROJECT_DIR/run-migrations.sh" 2>/dev/null || true
 sudo chmod +x "$PROJECT_DIR/backup-db.sh" 2>/dev/null || true
 sudo chmod +x "$PROJECT_DIR/restore-db.sh" 2>/dev/null || true
+sudo chmod +x "$PROJECT_DIR/uninstall.sh" 2>/dev/null || true
 
 echo ""
 echo "[7/11] Configurando Auto-Deploy (Cron) e Backup diário..."
