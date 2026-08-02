@@ -99,6 +99,7 @@ sudo ls -la "$PROJECT_DIR/app"
 echo ""
 echo "[4/11] Copiando arquivos Docker e scripts..."
 sudo cp -r "$FILES_DIR"/* "$PROJECT_DIR"/
+sudo cp "$(dirname "$0")/uninstall.sh" "$PROJECT_DIR"/
 
 echo ""
 echo "[5/11] Aplicando senhas e porta personalizadas..."
