@@ -278,9 +278,7 @@ sudo -u financecontrol bash -c "cd /opt/financecontrol && docker compose restart
 Para remover completamente o Finance Control do servidor — containers, volumes do banco, usuário de sistema, serviço `systemd` e `cron` — use o `uninstall.sh` incluído no repositório:
 
 ```bash
-cd ~/tmp/finance-install/production
-chmod +x uninstall.sh
-./uninstall.sh
+sudo cd /opt/financecontrol/uninstall.sh
 ```
 
 O script pede confirmação (`SIM`) antes de prosseguir e, antes de apagar qualquer coisa, preserva automaticamente uma cópia dos backups e dos logs em `~/financecontrol-uninstall-backup-AAAAMMDD_HHMMSS`, no diretório de quem executou o comando.
